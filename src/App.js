@@ -8,6 +8,7 @@ import QuotesScreen from './components/Quotes';
 import NotificationsScreen from './components/Notifications';
 import AccountScreen from './components/Account';
 import SignInScreen from './components/SignIn';
+import SignUpForm from './components/SignUp';
 
 const airtableConfig = {
   apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
@@ -36,6 +37,7 @@ function App() {
           <Route path="/account" exact component={AccountScreen} />
           <Route path="/notifications" exact component={NotificationsScreen} />
           <Route path="/sign-in" exact component={SignInScreen} />
+          <Route path="/sign-up" exact component={SignUpForm} />
         </Switch>
       </Router>
     </div>

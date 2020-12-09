@@ -1,5 +1,10 @@
 import React from 'react';
+import MarketplaceInput from './MarketplaceInput';
 
 export default function MarketplaceScreen() {
-  return <h1>Marketplace Screen</h1>;
+  return (
+    <>
+      <MarketplaceInput />
+    </>
+  );
 }

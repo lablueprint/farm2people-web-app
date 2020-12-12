@@ -13,7 +13,6 @@ const base = new Airtable({ apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY })
 export default class AddFarm extends React.Component {
   constructor(props) {
     super(props);
-    console.log('constructor sb printed');
     this.state = {
       farmName: null,
       description: null,
@@ -36,11 +35,11 @@ export default class AddFarm extends React.Component {
     const {
       farmName, description, email, phone, address, zipCode, error,
     } = this.state;
-    this.setState({ error: this.checkFormInput() });
 
-    console.log(`form error = ${error}`);
+    console.log(`error = ${error}`);
 
     if (error === 'No error') {
+      console.log('submit to airtable');
       base('Farms').create([
         {
           fields: {
@@ -54,7 +53,8 @@ export default class AddFarm extends React.Component {
         },
       ], (err, records) => {
         if (err) {
-          console.error(`error: ${err}`);
+          this.setState({ error: error.length === 0 ? err : `${error},  ${err}` });
+          // console.error(`error: ${err}`);
           return;
         }
         records.forEach((record) => {
@@ -73,29 +73,31 @@ export default class AddFarm extends React.Component {
         error: null,
         // showAlert: false,
       });
-    } else {
-      // this.setState({ showAlert: true });
     }
-
-    console.log(`user submitted farm info'${farmName || 'null'}`);
   }
 
   /* Checks if form fields have valid input: email, phone number (check length), zip code */
-  checkFormInput() {
+  checkFormInput(event) {
     const { email, phone, zipCode } = this.state;
     let output = '';
-    const reg = /^([A-Za-z0-9_\-\\.])+\\@([A-Za-z0-9_\-\\.])+\.([A-Za-z]{2,4})$/;
+    const reg = /^[ ]*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})[ ]*$/i;
+    // const reg = /^([A-Za-z0-9_\-\\.])+\\@([A-Za-z0-9_\-\\.])+\.([A-Za-z]{2,4})$/;
     if (email !== null && reg.test(email) === false) {
+      console.log('email is bad');
       output += 'Email format is invalid \n';
     }
-    if (zipCode !== parseInt(zipCode, 10)) {
+    if (zipCode.length < 5 || Number.isNaN(Number(zipCode))) {
+      console.log('zip code is bad');
       output += 'Zipcode format is invalid \n';
     }
     if (phone === null || phone.length < 9) {
+      console.log('phone is bad');
       output += 'Phone number format is invalid \n';
     }
 
-    return output === '' ? 'No error' : output;
+    this.setState({
+      error: output === '' ? 'No error' : output,
+    }, () => { this.handleSubmit(event); });
   }
 
   render() {
@@ -105,17 +107,11 @@ export default class AddFarm extends React.Component {
 
     return (
       <div>
-        <form onSubmit={this.handleSubmit}>
-          <h1>
-            {farmName || 'no farm name :('}
-            {description || 'no description :('}
-            {email || 'no email :('}
-            {phone || 'no phone :('}
-            {address || 'no address :('}
-            {zipCode || 'no zip code :('}
-          </h1>
+        <form onSubmit={this.checkFormInput} className="addFarmForm">
+          <h1>Register Farm</h1>
           <div>
             <TextField
+              className="formFields"
               id="outlined-basic"
               label="Enter your farm name"
               value={farmName || ''}
@@ -169,6 +165,9 @@ export default class AddFarm extends React.Component {
             <Button
               type="submit"
               value="submit"
+              variant="contained"
+              color="primary"
+              style={{ marginTop: 10 }}
             >
               Submit!
             </Button>

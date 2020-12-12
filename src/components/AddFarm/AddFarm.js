@@ -36,10 +36,7 @@ export default class AddFarm extends React.Component {
       farmName, description, email, phone, address, zipCode, error,
     } = this.state;
 
-    console.log(`error = ${error}`);
-
     if (error === 'No error') {
-      console.log('submit to airtable');
       base('Farms').create([
         {
           fields: {
@@ -51,15 +48,10 @@ export default class AddFarm extends React.Component {
             'zip code': Number(zipCode),
           },
         },
-      ], (err, records) => {
+      ], (err) => {
         if (err) {
           this.setState({ error: error.length === 0 ? err : `${error},  ${err}` });
-          // console.error(`error: ${err}`);
-          return;
         }
-        records.forEach((record) => {
-          console.log(`record id: ${record.getId()}`);
-        });
       });
 
       this.setState({ // Reset state to initial blank values
@@ -83,15 +75,12 @@ export default class AddFarm extends React.Component {
     const reg = /^[ ]*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})[ ]*$/i;
     // const reg = /^([A-Za-z0-9_\-\\.])+\\@([A-Za-z0-9_\-\\.])+\.([A-Za-z]{2,4})$/;
     if (email !== null && reg.test(email) === false) {
-      console.log('email is bad');
       output += 'Email format is invalid \n';
     }
     if (zipCode.length < 5 || Number.isNaN(Number(zipCode))) {
-      console.log('zip code is bad');
       output += 'Zipcode format is invalid \n';
     }
     if (phone === null || phone.length < 9) {
-      console.log('phone is bad');
       output += 'Phone number format is invalid \n';
     }
 

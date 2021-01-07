@@ -1,7 +1,8 @@
 import {
   TextField, Button,
 } from '@material-ui/core';
-import React from 'react';
+import React, { useState } from 'react';
+import { useStateWithCallbackLazy } from 'use-state-with-callback';
 import './AddFarm.css';
 
 // Airtable set-up here
@@ -10,31 +11,20 @@ const Airtable = require('airtable');
 const base = new Airtable({ apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY })
   .base(process.env.REACT_APP_AIRTABLE_BASE_KEY);
 
-export default class AddFarm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      farmName: null,
-      description: null,
-      /* TODO: implement userID */
-      email: null,
-      phone: null,
-      address: null,
-      zipCode: null,
-      errorMsg: null,
-      // showAlert: false,
-    };
-
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.checkFormInput = this.checkFormInput.bind(this);
-  }
+export default function AddFarm() {
+  const [farmName, setFarmName] = useState(null);
+  const [description, setDescription] = useState(null);
+  const [email, setEmail] = useState(null);
+  const [phone, setPhone] = useState(null);
+  const [address, setAddress] = useState(null);
+  const [zipCode, setZipCode] = useState(null);
+  // useStateWithCallbackLazy is a custom hook allowing callbacks like w/ setState
+  const [errorMsg, setErrorMsg] = useStateWithCallbackLazy(null);
+  // const [showAlert, setAlert] = useState(false);
 
   /* Handles when the form is submitted, passes info to airtable */
-  handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
-    const {
-      farmName, description, email, phone, address, zipCode, errorMsg,
-    } = this.state;
 
     // If form input was valid, create new farm. Otherwise, alert error message(s)
     if (errorMsg === 'No error') {
@@ -51,26 +41,24 @@ export default class AddFarm extends React.Component {
         },
       ], (err) => {
         if (err) {
-          this.setState({ errorMsg: errorMsg.length === 0 ? err : `${errorMsg},  ${errorMsg}` });
+          setErrorMsg(errorMsg.length === 0 ? err : `${errorMsg},  ${errorMsg}`);
         }
       });
 
-      this.setState({ // Resets state to initial blank values for next form entry
-        farmName: null,
-        description: null,
-        email: null,
-        phone: null,
-        address: null,
-        zipCode: null,
-        errorMsg: null,
-        // showAlert: false,
-      });
+      // Reset state to initial blank values for next form entry
+      setFarmName(null);
+      setDescription(null);
+      setEmail(null);
+      setPhone(null);
+      setAddress(null);
+      setZipCode(null);
+      setErrorMsg(null);
+      // setAlert(false);
     }
   }
 
   /* Checks if form fields have valid input: email, phone number (check length), zip code */
-  checkFormInput(event) {
-    const { email, phone, zipCode } = this.state;
+  function checkFormInput(event) {
     let output = '';
     // regex check for email, checks that email input has (letters)@(letters).(letters)
     const reg = /^[ ]*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})[ ]*$/i;
@@ -86,86 +74,79 @@ export default class AddFarm extends React.Component {
       output += 'Phone number format is invalid \n';
     }
 
-    this.setState({
-      errorMsg: output === '' ? 'No error' : output,
-    }, () => { this.handleSubmit(event); });
+    // Set errorMsg, then handleSubmit (pass as callback so state changes before submit handled)
+    setErrorMsg(output === '' ? 'No error' : output, () => handleSubmit(event));
   }
 
-  render() {
-    const {
-      farmName, description, email, phone, address, zipCode, errorMsg,
-    } = this.state;
-
-    return (
-      <div>
-        <form onSubmit={this.checkFormInput} className="addFarmForm">
-          <h1>Register Farm</h1>
-          <div>
-            <TextField
-              className="formFields"
-              id="outlined-basic"
-              label="Enter your farm name"
-              value={farmName || ''}
-              required
-              onChange={(event) => this.setState({ farmName: event.target.value })}
-            />
-          </div>
-          <div>
-            <TextField
-              id="outlined-multiline-flexible"
-              label="Enter your description"
-              value={description || ''}
-              multiline
-              rowsMax={4}
-              onChange={(event) => this.setState({ description: event.target.value })}
-            />
-          </div>
+  return (
+    <div>
+      <form onSubmit={checkFormInput} className="addFarmForm">
+        <h1>Register Farm</h1>
+        <div>
+          <TextField
+            className="formFields"
+            id="outlined-basic"
+            label="Enter your farm name"
+            value={farmName || ''}
+            required
+            onChange={(event) => setFarmName(event.target.value)}
+          />
+        </div>
+        <div>
+          <TextField
+            id="outlined-multiline-flexible"
+            label="Enter your description"
+            value={description || ''}
+            multiline
+            rowsMax={4}
+            onChange={(event) => setDescription(event.target.value)}
+          />
+        </div>
+        <TextField
+          id="outlined-basic"
+          label="Enter your email"
+          value={email || ''}
+          required
+          onChange={(event) => setEmail(event.target.value)}
+        />
+        <div />
+        <div>
           <TextField
             id="outlined-basic"
-            label="Enter your email"
-            value={email || ''}
-            required
-            onChange={(event) => this.setState({ email: event.target.value })}
+            label="Enter your phone number"
+            value={phone || ''}
+            onChange={(event) => setPhone(event.target.value)}
           />
-          <div />
-          <div>
-            <TextField
-              id="outlined-basic"
-              label="Enter your phone number"
-              value={phone || ''}
-              onChange={(event) => this.setState({ phone: event.target.value })}
-            />
-          </div>
-          <div>
-            <TextField
-              id="outlined-basic"
-              label="Enter your address"
-              value={address || ''}
-              onChange={(event) => this.setState({ address: event.target.value })}
-            />
-          </div>
-          <div>
-            <TextField
-              id="outlined-basic"
-              label="Enter your zip code"
-              value={zipCode || ''}
-              onChange={(event) => this.setState({ zipCode: event.target.value })}
-            />
-          </div>
-          <div>
-            <Button
-              type="submit"
-              value="submit"
-              variant="contained"
-              color="primary"
-              style={{ marginTop: 10 }}
-            >
-              Submit!
-            </Button>
-          </div>
-        </form>
-        <h2>{errorMsg || ''}</h2>
-      </div>
-    );
-  }
+        </div>
+        <div>
+          <TextField
+            id="outlined-basic"
+            label="Enter your address"
+            value={address || ''}
+            onChange={(event) => setAddress(event.target.value)}
+          />
+        </div>
+        <div>
+          <TextField
+            id="outlined-basic"
+            label="Enter your zip code"
+            value={zipCode || ''}
+            onChange={(event) => setZipCode(event.target.value)}
+          />
+        </div>
+        <div>
+          <Button
+            type="submit"
+            value="submit"
+            variant="contained"
+            color="primary"
+            style={{ marginTop: 10 }}
+          >
+            Submit!
+          </Button>
+        </div>
+      </form>
+      <h2>{errorMsg || ''}</h2>
+    </div>
+  );
 }

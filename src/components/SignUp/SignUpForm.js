@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import Airtable from 'airtable';
+import React, { useState, useCallback, useMemo } from 'react';
+// import Airtable from 'airtable';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -7,45 +7,85 @@ import Select from '@material-ui/core/Select';
 import './SignUp.css';
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
+import Airlock from '@calblueprint/airlock';
 
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
+Airlock.configure({
+  endpointUrl: 'http://localhost:3000',
+  apiKey: 'airlock',
+});
+const base = Airlock.base('appBsavky1VJ0HK23');
+/* eslint-disable */
+// const createAccount = async () => {
+//   try {
+//     await base.register({
+//       username: 'chandra123',
+//       password: 'pwd',
+//     });
+//   } catch (err) {
+//     console.log('fail');
+//     console.error('Registration failed', err);
+//   }
+// };
 
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+// const airtableConfig = {
+//   apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+//   baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
+// };
+
+// const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 const INITIAL_FORM_STATE = {
   username: '',
   fullname: '',
   password: '',
+  confirmPassword: '',
 };
 
-// Main fields are, username (email), password, First Name, Last Name, Role
 export default function SignUpForm() {
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
   const [role, setRole] = React.useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const roleChange = (event) => {
     setRole(event.target.value);
   };
   const onSubmit = useCallback((event) => {
+  
     event.preventDefault();
-    base('Users').create([
-      {
+    setLoading(true);
+    try {
+      base.register({
+        username: formState.username,
+        password: formState.password,
         fields: {
-          username: formState.username,
-          password: formState.password,
-          'user type': role,
-          'display name': formState.fullname,
+          user_type: role,
+          display_name: formState.fullname,
           approval: 'unapproved',
-          'seller quotes': [
-            'recJFletqOGSpcwxu',
-            'rec2NN9Uc2gVMAD6O',
-          ],
         },
-      },
-    ]);
+      });
+    } catch (err) {
+      if (err) {
+        setErrorMsg(err);
+      }
+    }
+    // createAccount();
+    // base('Users').create([
+    //   {
+    //     fields: {
+    //       username: formState.username,
+    //       password: formState.password,
+    //       user_type: role,
+    //       display_name: formState.fullname,
+    //       approval: 'unapproved',
+    //     },
+    //   },
+    // ], (err) => {
+    //   if (err) {
+    //     setErrorMsg(err);
+    //   }
+    // });
+    setTimeout(() => { setLoading(false); }, 1000);
   }, [formState.username, formState.fullname, formState.password, role]);
 
   const onChange = useCallback((event) => {
@@ -57,6 +97,28 @@ export default function SignUpForm() {
       },
     );
   }, [formState]);
+
+  const isInvalid = useMemo(() => (
+    formState.password !== formState.confirmPassword
+      || formState.password === ''
+      || formState.email === ''
+      || formState.username === ''
+      || role === ''),
+  [formState.confirmPassword, formState.email, formState.password,
+    role, formState.username]);
+
+  const repeatPwdCheck = useMemo(() => {
+    let msg = '';
+    if (formState.password === '' && formState.confirmPassword === '') {
+      msg = '';
+    } else if (formState.password !== '' && formState.confirmPassword !== '') {
+      if (formState.password !== formState.confirmPassword) {
+        msg = "Passwords don't match!";
+      }
+    }
+    return msg;
+  },
+  [formState.confirmPassword, formState.password]);
 
   return (
     <form className="root" onSubmit={onSubmit}>
@@ -75,6 +137,7 @@ export default function SignUpForm() {
               value={formState.fullname}
               onChange={onChange}
               placeholder="Full Name"
+              disabled={loading}
             />
           </Grid>
           <Grid item xs={12}>
@@ -86,6 +149,7 @@ export default function SignUpForm() {
               value={formState.username}
               onChange={onChange}
               placeholder="Email Address"
+              disabled={loading}
             />
           </Grid>
           <Grid item xs={12}>
@@ -98,6 +162,20 @@ export default function SignUpForm() {
               onChange={onChange}
               type="password"
               placeholder="Password"
+              disabled={loading}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              className="text-fields"
+              required
+              name="confirmPassword"
+              id="standard-password-input"
+              value={formState.confirmPassword}
+              onChange={onChange}
+              type="password"
+              placeholder="Confirm Password"
+              disabled={loading}
             />
           </Grid>
           <Grid item xs={12}>
@@ -114,14 +192,17 @@ export default function SignUpForm() {
               id="demo-simple-select"
               value={role}
               onChange={roleChange}
+              disabled={loading}
             >
               <MenuItem value="vendor">Vendor</MenuItem>
               <MenuItem value="buyer">Buyer</MenuItem>
               <MenuItem value="agency">Agency</MenuItem>
             </Select>
           </Grid>
+          {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
+          {repeatPwdCheck && <Grid item xs={12} className="error-msg">{repeatPwdCheck}</Grid>}
           <Grid item xs={12}>
-            <Button className="text-fields" variant="contained" color="primary" type="submit">
+            <Button disabled={isInvalid || loading} className="text-fields" variant="contained" color="primary" type="submit">
               Sign Up
             </Button>
           </Grid>

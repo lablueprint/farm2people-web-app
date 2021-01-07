@@ -5,3 +5,7 @@
 .text-fields {
   width: 40%;
 }
+
+.error-msg {
+  color: red;
+}

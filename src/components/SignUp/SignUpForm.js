@@ -14,25 +14,6 @@ Airlock.configure({
   apiKey: 'airlock',
 });
 const base = Airlock.base('appBsavky1VJ0HK23');
-/* eslint-disable */
-// const createAccount = async () => {
-//   try {
-//     await base.register({
-//       username: 'chandra123',
-//       password: 'pwd',
-//     });
-//   } catch (err) {
-//     console.log('fail');
-//     console.error('Registration failed', err);
-//   }
-// };
-
-// const airtableConfig = {
-//   apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-//   baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-// };
-
-// const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 const INITIAL_FORM_STATE = {
   username: '',
@@ -51,11 +32,12 @@ export default function SignUpForm() {
     setRole(event.target.value);
   };
   const onSubmit = useCallback((event) => {
-  
     event.preventDefault();
     setLoading(true);
     try {
-      base.register({
+      /* eslint-disable */
+      // TODO: Figure out if user, token variables need to persist
+      const { user, token } = base.register({
         username: formState.username,
         password: formState.password,
         fields: {
@@ -69,22 +51,6 @@ export default function SignUpForm() {
         setErrorMsg(err);
       }
     }
-    // createAccount();
-    // base('Users').create([
-    //   {
-    //     fields: {
-    //       username: formState.username,
-    //       password: formState.password,
-    //       user_type: role,
-    //       display_name: formState.fullname,
-    //       approval: 'unapproved',
-    //     },
-    //   },
-    // ], (err) => {
-    //   if (err) {
-    //     setErrorMsg(err);
-    //   }
-    // });
     setTimeout(() => { setLoading(false); }, 1000);
   }, [formState.username, formState.fullname, formState.password, role]);
 

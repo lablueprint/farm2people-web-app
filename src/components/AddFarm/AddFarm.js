@@ -16,12 +16,12 @@ export default class AddFarm extends React.Component {
     this.state = {
       farmName: null,
       description: null,
-      /* userID: null, */
+      /* TODO: implement userID */
       email: null,
       phone: null,
       address: null,
       zipCode: null,
-      error: null,
+      errorMsg: null,
       // showAlert: false,
     };
 
@@ -33,10 +33,11 @@ export default class AddFarm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     const {
-      farmName, description, email, phone, address, zipCode, error,
+      farmName, description, email, phone, address, zipCode, errorMsg,
     } = this.state;
 
-    if (error === 'No error') {
+    // If form input was valid, create new farm. Otherwise, alert error message(s)
+    if (errorMsg === 'No error') {
       base('Farms').create([
         {
           fields: {
@@ -50,19 +51,18 @@ export default class AddFarm extends React.Component {
         },
       ], (err) => {
         if (err) {
-          this.setState({ error: error.length === 0 ? err : `${error},  ${err}` });
+          this.setState({ errorMsg: errorMsg.length === 0 ? err : `${errorMsg},  ${errorMsg}` });
         }
       });
 
-      this.setState({ // Reset state to initial blank values
+      this.setState({ // Resets state to initial blank values for next form entry
         farmName: null,
         description: null,
-        // userID: null,
         email: null,
         phone: null,
         address: null,
         zipCode: null,
-        error: null,
+        errorMsg: null,
         // showAlert: false,
       });
     }
@@ -72,26 +72,28 @@ export default class AddFarm extends React.Component {
   checkFormInput(event) {
     const { email, phone, zipCode } = this.state;
     let output = '';
+    // regex check for email, checks that email input has (letters)@(letters).(letters)
     const reg = /^[ ]*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})[ ]*$/i;
-    // const reg = /^([A-Za-z0-9_\-\\.])+\\@([A-Za-z0-9_\-\\.])+\.([A-Za-z]{2,4})$/;
     if (email !== null && reg.test(email) === false) {
       output += 'Email format is invalid \n';
     }
-    if (zipCode.length < 5 || Number.isNaN(Number(zipCode))) {
+    // Valid zip codes have lengths in between 5-10 and are numbers
+    if (zipCode.length < 5 || zipCode.length > 10 || Number.isNaN(Number(zipCode))) {
       output += 'Zipcode format is invalid \n';
     }
+    // Valid phone numbers have 9 or more digits
     if (phone === null || phone.length < 9) {
       output += 'Phone number format is invalid \n';
     }
 
     this.setState({
-      error: output === '' ? 'No error' : output,
+      errorMsg: output === '' ? 'No error' : output,
     }, () => { this.handleSubmit(event); });
   }
 
   render() {
     const {
-      farmName, description, email, phone, address, zipCode, error,
+      farmName, description, email, phone, address, zipCode, errorMsg,
     } = this.state;
 
     return (
@@ -162,7 +164,7 @@ export default class AddFarm extends React.Component {
             </Button>
           </div>
         </form>
-        <h2>{error || ''}</h2>
+        <h2>{errorMsg || ''}</h2>
       </div>
     );
   }

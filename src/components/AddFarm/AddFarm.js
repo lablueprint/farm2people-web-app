@@ -56,7 +56,6 @@ export default function AddFarm() {
   function handleSubmit(event) { // event
     event.preventDefault(); // Prevent auto refresh
     const formInputError = checkFormInput(event);
-    console.log(`handlesubmit, errorMsg = ${formInputError}`);
 
     // If form input was valid, create new farm. Otherwise, alert error message(s)
     if (formInputError === '') {
@@ -85,7 +84,6 @@ export default function AddFarm() {
       setAddress(null);
       setZipCode(null);
       setErrorMsg(null);
-      // setSubmitForm(false);
     } else {
       setErrorMsg(formInputError);
       setAlert(true);

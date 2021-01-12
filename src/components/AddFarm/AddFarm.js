@@ -2,7 +2,7 @@ import {
   TextField, Button,
 } from '@material-ui/core';
 import React, { useState } from 'react';
-import { useStateWithCallbackLazy } from 'use-state-with-callback';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import './AddFarm.css';
 
 // Airtable set-up here
@@ -18,16 +18,48 @@ export default function AddFarm() {
   const [phone, setPhone] = useState(null);
   const [address, setAddress] = useState(null);
   const [zipCode, setZipCode] = useState(null);
-  // useStateWithCallbackLazy is a custom hook allowing callbacks like w/ setState
-  const [errorMsg, setErrorMsg] = useStateWithCallbackLazy(null);
-  // const [showAlert, setAlert] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [showAlert, setAlert] = useState(false);
 
-  /* Handles when the form is submitted, passes info to airtable */
-  function handleSubmit(event) {
+  /* Checks if form fields have valid input: email, phone number (check length), zip code */
+  function checkFormInput(event) {
     event.preventDefault();
 
+    let output = '';
+    // regex check for email, checks that email input has (letters)@(letters).(letters)
+    const reg = /^[ ]*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})[ ]*$/i;
+    if (email !== null && reg.test(email) === false) {
+      output += 'Email format is invalid. \n';
+    }
+    // Valid zip codes have lengths in between 5-10 and are numbers
+    if (zipCode !== null) { // Eslint says no mixed operators
+      if (zipCode.length < 5 || zipCode.length > 10 || Number.isNaN(Number(zipCode))) {
+        if (output.length > 0) {
+          output += ' ';
+        }
+        output += 'Zipcode format is invalid. \n';
+      }
+    }
+    // Valid phone numbers have 9 or more digits
+    if (phone !== null) {
+      if (phone.length < 9) {
+        if (output.length > 0) {
+          output += ' ';
+        }
+        output += 'Phone number format is invalid. \n';
+      }
+    }
+    return output;
+  }
+
+  /* Handles when the form is submitted, passes info to airtable */
+  function handleSubmit(event) { // event
+    event.preventDefault(); // Prevent auto refresh
+    const formInputError = checkFormInput(event);
+    console.log(`handlesubmit, errorMsg = ${formInputError}`);
+
     // If form input was valid, create new farm. Otherwise, alert error message(s)
-    if (errorMsg === 'No error') {
+    if (formInputError === '') {
       base('Farms').create([
         {
           fields: {
@@ -41,7 +73,7 @@ export default function AddFarm() {
         },
       ], (err) => {
         if (err) {
-          setErrorMsg(errorMsg.length === 0 ? err : `${errorMsg},  ${errorMsg}`);
+          setErrorMsg(errorMsg.length === 0 ? err : `${errorMsg},  ${formInputError}`);
         }
       });
 
@@ -53,34 +85,23 @@ export default function AddFarm() {
       setAddress(null);
       setZipCode(null);
       setErrorMsg(null);
-      // setAlert(false);
+      // setSubmitForm(false);
+    } else {
+      setErrorMsg(formInputError);
+      setAlert(true);
     }
-  }
-
-  /* Checks if form fields have valid input: email, phone number (check length), zip code */
-  function checkFormInput(event) {
-    let output = '';
-    // regex check for email, checks that email input has (letters)@(letters).(letters)
-    const reg = /^[ ]*([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})[ ]*$/i;
-    if (email !== null && reg.test(email) === false) {
-      output += 'Email format is invalid \n';
-    }
-    // Valid zip codes have lengths in between 5-10 and are numbers
-    if (zipCode.length < 5 || zipCode.length > 10 || Number.isNaN(Number(zipCode))) {
-      output += 'Zipcode format is invalid \n';
-    }
-    // Valid phone numbers have 9 or more digits
-    if (phone === null || phone.length < 9) {
-      output += 'Phone number format is invalid \n';
-    }
-
-    // Set errorMsg, then handleSubmit (pass as callback so state changes before submit handled)
-    setErrorMsg(output === '' ? 'No error' : output, () => handleSubmit(event));
   }
 
   return (
     <div>
-      <form onSubmit={checkFormInput} className="addFarmForm">
+      {(showAlert && errorMsg)
+        && (
+          <Alert severity="error" className="errorAlert" onClose={() => setAlert(false)}>
+            <AlertTitle> Input error </AlertTitle>
+            {errorMsg}
+          </Alert>
+        )}
+      <form className="addFarmForm">
         <h1>Register Farm</h1>
         <div>
           <TextField
@@ -140,13 +161,12 @@ export default function AddFarm() {
             value="submit"
             variant="contained"
             color="primary"
-            style={{ marginTop: 10 }}
+            onClick={(event) => handleSubmit(event)}
           >
             Submit!
           </Button>
         </div>
       </form>
-      <h2>{errorMsg || ''}</h2>
     </div>
   );
 }

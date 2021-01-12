@@ -4,3 +4,8 @@
     margin: 10px;
     width: 100ch;
 }
+
+.errorAlert {
+    margin-left: 10px;
+    width: 80%;
+}

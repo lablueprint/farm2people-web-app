@@ -159,7 +159,6 @@ export default function AddFarm() {
             value="submit"
             variant="contained"
             color="primary"
-            required
           >
             Submit!
           </Button>

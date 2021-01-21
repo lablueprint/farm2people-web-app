@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useMemo } from 'react';
-// import Airtable from 'airtable';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -47,10 +46,12 @@ export default function SignUpForm() {
         },
       });
     } catch (err) {
+      console.log("Error in signupuser func")
       if (err) {
         setErrorMsg(err);
       }
     }
+    // TODO: Replace arbitrary time with calling setLoading(false) only when it finished signing up
     setTimeout(() => { setLoading(false); }, 1000);
   }, [formState.username, formState.fullname, formState.password, role]);
 
@@ -177,3 +178,5 @@ export default function SignUpForm() {
     </form>
   );
 }
+
+export { base };

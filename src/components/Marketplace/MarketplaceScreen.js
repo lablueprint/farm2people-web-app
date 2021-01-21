@@ -5,6 +5,7 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import './MarketplaceScreen.css';
+import FarmCard from './FarmCard';
 
 export default function MarketplaceScreen() {
   // 3 tab states: 0 (purchase buy), 1 (aggregate buy), 2 (distressed buy)
@@ -52,6 +53,7 @@ export default function MarketplaceScreen() {
         </AppBar>
         <h1>
           {currentTab}
+          <FarmCard />
         </h1>
       </div>
     </div>

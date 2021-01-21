@@ -12,7 +12,9 @@ Airlock.configure({
   endpointUrl: 'http://localhost:3000',
   apiKey: 'airlock',
 });
-const base = Airlock.base('appBsavky1VJ0HK23');
+const BASE_ID = process.env.REACT_APP_AIRTABLE_BASE_ID;
+
+const base = Airlock.base(BASE_ID);
 
 const INITIAL_FORM_STATE = {
   username: '',

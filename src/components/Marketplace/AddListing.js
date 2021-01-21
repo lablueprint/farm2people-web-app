@@ -8,7 +8,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import MarketplaceInputField from './MarketplaceInputField';
+import ListingInputField from './ListingInputField';
 
 const Airtable = require('airtable');
 
@@ -16,9 +16,10 @@ const airtableConfig = {
   apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
   baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
 };
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base('appBsavky1VJ0HK23');
+const base = new Airtable({ apiKey: airtableConfig.apiKey })
+  .base(airtableConfig.baseKey);
 const today = new Date().toDateString();
-export default function MarketplaceInput() {
+export default function AddListing() {
   const initialState = {
     crop: '',
     description: '',
@@ -36,17 +37,17 @@ export default function MarketplaceInput() {
     'units sold': 0,
     distressed: false,
   };
-  const [marketplaceRecord, setMarketplaceRecord] = useState(initialState);
+  const [ListingRecord, setListingRecord] = useState(initialState);
   function resetState() {
-    setMarketplaceRecord({ ...initialState });
+    setListingRecord({ ...initialState });
   }
 
   function createRecord(e) {
     e.preventDefault();
     const record = {
-      fields: marketplaceRecord,
+      fields: ListingRecord,
     };
-    base('MarketPlace').create([record]).then(resetState);
+    base('Listings').create([record]).then(resetState);
   }
   function onChangeField(e) {
     const { name, type } = e.target;
@@ -54,10 +55,10 @@ export default function MarketplaceInput() {
     if (type === 'number') {
       value = +value;
     }
-    setMarketplaceRecord({ ...marketplaceRecord, [name]: value });
+    setListingRecord({ ...ListingRecord, [name]: value });
   }
   function onChangeCheckbox(e) {
-    setMarketplaceRecord({ ...marketplaceRecord, [e.target.name]: e.target.checked });
+    setListingRecord({ ...ListingRecord, [e.target.name]: e.target.checked });
   }
 
   const UnitTypes = [
@@ -102,20 +103,22 @@ export default function MarketplaceInput() {
     <Container>
       <Grid container spacing={1} justify="center" align="center">
         <h1>
-          Marketplace Screen
+          Listings Screen
         </h1>
         <form onSubmit={createRecord}>
           <Grid container item xs={12} spacing={1}>
             <Grid item xs={3}>
-              <MarketplaceInputField
+              <ListingInputField
                 label="crop"
                 onChange={onChangeField}
+                val={ListingRecord.crop}
               />
             </Grid>
             <Grid item xs={3}>
-              <MarketplaceInputField
+              <ListingInputField
                 label="description"
                 onChange={onChangeField}
+                val={ListingRecord.description}
               />
             </Grid>
             <Grid item xs={3}>
@@ -126,6 +129,7 @@ export default function MarketplaceInput() {
                   name="unit type"
                   onChange={onChangeField}
                   defaultValue=""
+                  value={ListingRecord['unit type']}
                 >
                   {UnitTypes.map((name) => (
                     <MenuItem value={name.value}>
@@ -137,51 +141,57 @@ export default function MarketplaceInput() {
               </FormControl>
             </Grid>
             <Grid item xs={3}>
-              <MarketplaceInputField
+              <ListingInputField
                 id="standard-number"
                 label="units per pallet"
                 type="number"
                 onChange={onChangeField}
+                val={ListingRecord['units per pallet']}
               />
             </Grid>
             <Grid item xs={3}>
-              <MarketplaceInputField
+              <ListingInputField
                 id="standard-number"
                 label="lbs per unit"
                 type="number"
                 onChange={onChangeField}
+                val={ListingRecord['lbs per unit']}
               />
             </Grid>
             <Grid item xs={3}>
-              <MarketplaceInputField
+              <ListingInputField
                 id="standard-number"
                 label="standard price per unit"
                 type="number"
                 onChange={onChangeField}
+                val={ListingRecord['standard price per unit']}
               />
             </Grid>
             <Grid item xs={3}>
-              <MarketplaceInputField
+              <ListingInputField
                 id="date"
                 label="expiration date"
                 type="date"
                 onChange={onChangeField}
+                val={ListingRecord['expiration date']}
               />
             </Grid>
             <Grid item xs={3}>
-              <MarketplaceInputField
+              <ListingInputField
                 id="date"
                 label="first available date"
                 type="date"
                 onChange={onChangeField}
+                val={ListingRecord['first available date']}
               />
             </Grid>
             <Grid item xs={3}>
-              <MarketplaceInputField
+              <ListingInputField
                 id="date"
                 label="available until"
                 type="date"
                 onChange={onChangeField}
+                val={ListingRecord['available until']}
               />
             </Grid>
             <Grid item xs={3}>
@@ -192,6 +202,7 @@ export default function MarketplaceInput() {
                   name="growing season"
                   onChange={onChangeField}
                   defaultValue=""
+                  value={ListingRecord['growing season']}
                 >
                   {Seasons.map((name) => (
                     <MenuItem value={name.value}>
@@ -203,11 +214,12 @@ export default function MarketplaceInput() {
               </FormControl>
             </Grid>
             <Grid item xs={3}>
-              <MarketplaceInputField
+              <ListingInputField
                 id="standard-number"
                 label="units available"
                 type="number"
                 onChange={onChangeField}
+                val={ListingRecord['units available']}
               />
             </Grid>
 
@@ -215,7 +227,7 @@ export default function MarketplaceInput() {
               <FormControlLabel
                 control={(
                   <Checkbox
-                    checked={marketplaceRecord.distressed}
+                    checked={ListingRecord.distressed}
                     onChange={onChangeCheckbox}
                     name="distressed"
                     color="primary"

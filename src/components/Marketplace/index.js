@@ -1,3 +1,3 @@
-import MarketplaceScreen from './MarketplaceScreen';
+import AddListingScreen from './AddListingScreen';
 
-export default MarketplaceScreen;
+export default AddListingScreen;

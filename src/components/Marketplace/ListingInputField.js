@@ -1,10 +1,10 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
-import './MarketplaceScreen.css';
+import './AddListing.css';
 
-export default function MarketplaceInputField({
-  id, label, type, onChange,
+export default function ListingInputField({
+  id, label, type, val, onChange,
 }) {
   function getInputProps() {
     let InputProps = {};
@@ -39,6 +39,7 @@ export default function MarketplaceInputField({
         label={label}
         name={label}
         type={type}
+        value={val}
         InputProps={inputProps}
         InputLabelProps={inputLabelProps}
         onChange={onChange}
@@ -48,14 +49,15 @@ export default function MarketplaceInputField({
   );
 }
 
-MarketplaceInputField.defaultProps = {
+ListingInputField.defaultProps = {
   id: 'standard-basic',
   type: '',
 };
 
-MarketplaceInputField.propTypes = {
+ListingInputField.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string.isRequired,
   type: PropTypes.string,
+  val: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
 };

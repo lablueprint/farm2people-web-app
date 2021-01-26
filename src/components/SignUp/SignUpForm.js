@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useMemo } from 'react';
-// import Airtable from 'airtable';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -48,10 +47,14 @@ export default function SignUpForm() {
         },
       });
     } catch (err) {
+      console.log("Error in signupuser func")
       if (err) {
         setErrorMsg(err);
       }
     }
+    setFormState(INITIAL_FORM_STATE);
+    setRole('');
+    // TODO: Replace arbitrary time with calling setLoading(false) only when it finished signing up
     setTimeout(() => { setLoading(false); }, 1000);
   }, [formState.username, formState.fullname, formState.password, role]);
 
@@ -97,6 +100,7 @@ export default function SignUpForm() {
         <Grid container spacing={5}>
           <Grid item xs={12}>
             <TextField
+              autoFocus
               className="text-fields"
               required
               name="fullname"
@@ -178,3 +182,5 @@ export default function SignUpForm() {
     </form>
   );
 }
+
+export { base };

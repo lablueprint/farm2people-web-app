@@ -1,11 +1,11 @@
 import React from 'react';
-import AddFarm from '../AddFarm';
+import CartScreen from '../Cart/CartScreen';
 
 export default function HomeScreen() {
   return (
     <div>
       <h1> Home Screen </h1>
-      <AddFarm />
+      <CartScreen />
     </div>
   );
 }

@@ -6,27 +6,13 @@ import {
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import PropTypes from 'prop-types';
 
-const operationTypeTags = [
-  { key: 0, label: 'Women owned' },
-  { key: 1, label: 'BIPOC owned' },
-];
-
-const marketTags = [
-  { key: 0, label: 'NO MKRT' },
-  { key: 1, label: 'Kern' },
-  { key: 2, label: 'Kings' },
-];
-
-const miscTags = [
-  { key: 0, label: 'Delivery' },
-  { key: 1, label: 'PACA Certified' },
-];
-
-const description = 'Hello I am a farm I sell many farm items like apples pigs and yummy farm food.';
-
-export default function FarmCard() {
+export default function FarmCard(props) {
   const [expandCard, setExpandCard] = useState(false);
+  const {
+    operationTypeTags, marketTags, miscTags, description,
+  } = props;
 
   return (
     <Card className="cardContainer" variant="outlined">
@@ -94,3 +80,19 @@ export default function FarmCard() {
     </Card>
   );
 }
+
+FarmCard.propTypes = {
+  operationTypeTags: PropTypes.arrayOf({
+    key: PropTypes.number.isRequired,
+    label: PropTypes.string.isRequired,
+  }).isRequired,
+  miscTags: PropTypes.arrayOf({
+    key: PropTypes.number.isRequired,
+    label: PropTypes.string.isRequired,
+  }).isRequired,
+  marketTags: PropTypes.arrayOf({
+    key: PropTypes.number.isRequired,
+    label: PropTypes.string.isRequired,
+  }).isRequired,
+  description: PropTypes.string.isRequired,
+};

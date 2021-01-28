@@ -7,6 +7,24 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import './MarketplaceScreen.css';
 import FarmCard from './FarmCard';
 
+const operationTypeTags = [
+  { key: 0, label: 'Women owned' },
+  { key: 1, label: 'BIPOC owned' },
+];
+
+const marketTags = [
+  { key: 0, label: 'NO MKRT' },
+  { key: 1, label: 'Kern' },
+  { key: 2, label: 'Kings' },
+];
+
+const miscTags = [
+  { key: 0, label: 'Delivery' },
+  { key: 1, label: 'PACA Certified' },
+];
+
+const description = 'Hello I am a farm I sell many farm items like apples pigs and yummy farm food.';
+
 export default function MarketplaceScreen() {
   // 3 tab states: 0 (purchase buy), 1 (aggregate buy), 2 (distressed buy)
   const [currentTab, setCurrentTab] = useState(0);
@@ -53,7 +71,12 @@ export default function MarketplaceScreen() {
         </AppBar>
         <h1>
           {currentTab}
-          <FarmCard />
+          <FarmCard
+            operationTypeTags={operationTypeTags}
+            marketTags={marketTags}
+            miscTags={miscTags}
+            description={description}
+          />
         </h1>
       </div>
     </div>

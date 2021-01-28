@@ -1,7 +1,7 @@
 
 .cardHeader {
-    width: 95%;
-    margin: 0% 2% 0% 2%;
+    margin-left: 2%;
+    padding-right: 3%;
 }
 
 .cardContainer {
@@ -9,15 +9,33 @@
     margin: 1% 1% 1% 1%;
 }
 
+.operationTags {
+    background-color: palegreen;
+    margin-right: 1%;
+    border-radius: 2%;
+}
+
+.miscTags {
+    margin-right: 1%;
+    border-radius: 2%;
+}
+
+.marketTags {
+    margin-top: 0.5%;
+    margin-left: 1%;
+    border-radius: 2%;
+}
+
 .collapsedContent {
     width: 95%;
-    margin: 0% 2% 0% 2%;
+    margin-right: 2%;
+    margin-left: 2%;
     font-size: small;
 }
 
 .expandedContent {
-    width: 95%;
-    margin: 0% 2% 0% 2%;
+    width: 93%;
+    margin-right: 2%;
+    margin-left: 2%;
     font-size: small;
-    background-color:mistyrose;
 }

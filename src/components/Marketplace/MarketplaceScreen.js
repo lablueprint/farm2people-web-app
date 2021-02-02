@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Airtable from 'airtable';
 import {
   AppBar, IconButton, InputBase, Tab, Tabs, Toolbar,
 } from '@material-ui/core';
@@ -18,20 +19,37 @@ const marketTags = [
   { key: 2, label: 'Kings' },
 ];
 
-const miscTags = [
-  { key: 0, label: 'Delivery' },
-  { key: 1, label: 'PACA Certified' },
-];
-
 const description = 'Hello I am a farm I sell many farm items like apples pigs and yummy farm food.';
 
+// Airtable set-up
+const airtableConfig = {
+  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
+};
+
+const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+
 export default function MarketplaceScreen() {
+  const [farmListings, setFarmListings] = useState(null);
+  // Get records from Airtable whenever DOM mounts and updates/changes
+  useEffect(() => {
+    base('Farms').select({ view: 'Grid view' }).all()
+      .then((records) => {
+        // records array contains every record in Main View
+        console.log('records');
+        records.map((record) => console.log(record));
+        console.log(farmListings);
+        setFarmListings(records);
+      });
+  }, [farmListings]);
+
   // 3 tab states: 0 (purchase buy), 1 (aggregate buy), 2 (distressed buy)
   const [currentTab, setCurrentTab] = useState(0);
+
   return (
     <div>
       <h1> Marketplace Screen :) </h1>
-      {/* Search bar element */ }
+      {/* Search bar element */}
       <div className="searchBarContainer">
         <AppBar position="static">
           <Toolbar>
@@ -71,11 +89,43 @@ export default function MarketplaceScreen() {
         </AppBar>
         <h1>
           {currentTab}
+          {/* Map each array of farmListing info to render a FarmCard
+            farmListings.map((listing) => (
+              <FarmCard
+                farmName={listing.fields['farm name'] || 'No farm name'}
+                address={listing.fields.address || 'No address'}
+                zipCode={listing.fields['zip code'] || -1}
+                description={listing.fields.description}
+                operationTypeTags={listing.fields['operation type']}
+                marketTags={listing.fields.market}
+                isPACA={listing.fields['PACA (Perishable Agricultural Commodities Act)']
+                  || false}
+                isColdChain={listing.fields['cold chain capabilities'] || false}
+                isDelivery={listing.fields['able to deliver'] || false}
+              />
+            ))
+          } */ }
           <FarmCard
+            farmName="farm Name"
+            address="123 drive"
+            zipCode={12345}
             operationTypeTags={operationTypeTags}
             marketTags={marketTags}
-            miscTags={miscTags}
             description={description}
+            isPACA
+            isColdChain={false}
+            isDelivery
+          />
+          <FarmCard
+            farmName="farm Name"
+            address="123 drive"
+            zipCode={12345}
+            operationTypeTags={operationTypeTags}
+            marketTags={marketTags}
+            description={description}
+            isPACA
+            isColdChain={false}
+            isDelivery={false}
           />
         </h1>
       </div>

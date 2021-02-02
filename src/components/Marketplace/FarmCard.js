@@ -11,8 +11,21 @@ import PropTypes from 'prop-types';
 export default function FarmCard(props) {
   const [expandCard, setExpandCard] = useState(false);
   const {
-    operationTypeTags, marketTags, miscTags, description,
+    farmName, address, zipCode, description, operationTypeTags, marketTags, isPACA, isColdChain,
+    isDelivery,
   } = props;
+
+  // Set capabilityTags (PACA, cold chain, delivery)
+  const capabilityTags = [];
+  if (isPACA === true) {
+    capabilityTags.push('PACA Certified');
+  }
+  if (isColdChain === true) {
+    capabilityTags.push('Cold Chain Capabilities');
+  }
+  if (isDelivery === true) {
+    capabilityTags.push('Delivery');
+  }
 
   return (
     <Card className="cardContainer" variant="outlined">
@@ -25,8 +38,8 @@ export default function FarmCard(props) {
         className="cardHeader"
       >
         <CardHeader
-          title="Farm Name"
-          subheader="Los Angeles, California | 90111"
+          title={farmName}
+          subheader={`${address} | ${zipCode}`}
         />
         <IconButton onClick={() => setExpandCard(!expandCard)}>
           {!expandCard && <ExpandMoreIcon />}
@@ -50,11 +63,11 @@ export default function FarmCard(props) {
           <p>
             {description}
           </p>
-          {miscTags.map((tag) => (
+          {capabilityTags.map((tag) => (
             <Chip
-              label={tag.label}
-              className="miscTags"
-              root="miscTags"
+              label={tag}
+              className="capabilityTags"
+              root="capabilityTags"
               size="small"
               variant="default"
               icon={<CheckCircleOutlineIcon />}
@@ -82,17 +95,19 @@ export default function FarmCard(props) {
 }
 
 FarmCard.propTypes = {
+  farmName: PropTypes.string.isRequired,
+  address: PropTypes.string.isRequired,
+  zipCode: PropTypes.number.isRequired,
+  description: PropTypes.string.isRequired,
   operationTypeTags: PropTypes.arrayOf({
-    key: PropTypes.number.isRequired,
-    label: PropTypes.string.isRequired,
-  }).isRequired,
-  miscTags: PropTypes.arrayOf({
-    key: PropTypes.number.isRequired,
+    // key: PropTypes.number.isRequired,
     label: PropTypes.string.isRequired,
   }).isRequired,
   marketTags: PropTypes.arrayOf({
-    key: PropTypes.number.isRequired,
+    // key: PropTypes.number.isRequired,
     label: PropTypes.string.isRequired,
   }).isRequired,
-  description: PropTypes.string.isRequired,
+  isPACA: PropTypes.bool.isRequired,
+  isColdChain: PropTypes.bool.isRequired,
+  isDelivery: PropTypes.bool.isRequired,
 };

@@ -8,7 +8,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import './MarketplaceScreen.css';
 import FarmCard from './FarmCard';
 
-const operationTypeTags = [
+/* const operationTypeTags = [
   { key: 0, label: 'Women owned' },
   { key: 1, label: 'BIPOC owned' },
 ];
@@ -19,7 +19,7 @@ const marketTags = [
   { key: 2, label: 'Kings' },
 ];
 
-const description = 'Hello I am a farm I sell many farm items like apples pigs and yummy farm food.';
+const description = 'Hello I am a farm I sell farm items like apples pigs n yummy farm food.'; */
 
 // Airtable set-up
 const airtableConfig = {
@@ -30,19 +30,21 @@ const airtableConfig = {
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 export default function MarketplaceScreen() {
-  const [farmListings, setFarmListings] = useState(null);
+  const [farmListings, setFarmListings] = useState([]);
   // Get records from Airtable whenever DOM mounts and updates/changes
   useEffect(() => {
     base('Farms').select({ view: 'Grid view' }).all()
       .then((records) => {
         // records array contains every record in Main View
         console.log('records');
-        records.map((record) => console.log(record));
+        // records.map((record) => console.log(record));
         console.log(farmListings);
         setFarmListings(records);
       });
-  }, [farmListings]);
+  });
 
+  console.log('done w/ farmlisting');
+  farmListings.map((listing) => console.log(listing.fields['farm name']));
   // 3 tab states: 0 (purchase buy), 1 (aggregate buy), 2 (distressed buy)
   const [currentTab, setCurrentTab] = useState(0);
 
@@ -89,23 +91,23 @@ export default function MarketplaceScreen() {
         </AppBar>
         <h1>
           {currentTab}
-          {/* Map each array of farmListing info to render a FarmCard
+          {/* Map each array of farmListing info to render a FarmCard */
             farmListings.map((listing) => (
               <FarmCard
                 farmName={listing.fields['farm name'] || 'No farm name'}
                 address={listing.fields.address || 'No address'}
                 zipCode={listing.fields['zip code'] || -1}
-                description={listing.fields.description}
-                operationTypeTags={listing.fields['operation type']}
-                marketTags={listing.fields.market}
+                description={listing.fields.description || 'No description'}
+                operationTypeTags={listing.fields['operation type'] || []}
+                marketTags={listing.fields.market || ['None specified']}
                 isPACA={listing.fields['PACA (Perishable Agricultural Commodities Act)']
                   || false}
                 isColdChain={listing.fields['cold chain capabilities'] || false}
                 isDelivery={listing.fields['able to deliver'] || false}
               />
             ))
-          } */ }
-          <FarmCard
+          }
+          {/* <FarmCard
             farmName="farm Name"
             address="123 drive"
             zipCode={12345}
@@ -126,7 +128,7 @@ export default function MarketplaceScreen() {
             isPACA
             isColdChain={false}
             isDelivery={false}
-          />
+          /> */}
         </h1>
       </div>
     </div>

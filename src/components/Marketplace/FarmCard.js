@@ -49,7 +49,7 @@ export default function FarmCard(props) {
       <CardContent className="collapsedContent">
         {operationTypeTags.map((tag) => (
           <Chip
-            label={tag.label}
+            label={tag}
             className="operationTags"
             size="medium"
             variant="default"
@@ -81,7 +81,7 @@ export default function FarmCard(props) {
             <h1> Market: </h1>
             {marketTags.map((tag) => (
               <Chip
-                label={tag.label}
+                label={tag}
                 className="marketTags"
                 size="small"
                 variant="default"

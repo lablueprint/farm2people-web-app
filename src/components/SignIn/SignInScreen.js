@@ -3,15 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import React, { useMemo, useState } from 'react';
 import './SignIn.css';
-import Airlock from '@calblueprint/airlock';
-
-Airlock.configure({
-  endpointUrl: 'http://localhost:3000',
-  apiKey: 'airlock',
-});
-const BASE_ID = process.env.REACT_APP_AIRTABLE_BASE_ID;
-
-const base = Airlock.base(BASE_ID);
+import { loginUser, logoutUser } from '../../lib/airlock/airlock';
 
 export default function SignInScreen() {
   const [email, setEmail] = useState('');
@@ -23,12 +15,15 @@ export default function SignInScreen() {
     evt.preventDefault();
     setLoading(true);
     try {
-      const login = await base.login({ username: email, password });
-      const { body: { user } } = login;
-      setDisplayName(`Welcome ${user.fields.display_name}!`);
-
-      setErrorMsg('');
-      setTimeout(() => { setLoading(false); }, 1000);
+      const res = await loginUser(email, password);
+      if (!(res.match && res.found)) {
+        setErrorMsg('Incorrect username or password');
+        setLoading(false);
+      } else {
+        setDisplayName('Welcome!');
+        setErrorMsg('');
+        setTimeout(() => { setLoading(false); }, 1000);
+      }
     } catch (err) {
       setErrorMsg('Incorrect username or password');
       setLoading(false);
@@ -41,8 +36,8 @@ export default function SignInScreen() {
   const logOut = async (evt) => {
     evt.preventDefault();
     try {
-      const status = await base.logout();
-      if (!status.body.success) {
+      const status = await logoutUser();
+      if (!status) {
         setErrorMsg('Error logging out.');
       } else {
         setDisplayName('');

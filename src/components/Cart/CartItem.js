@@ -10,7 +10,9 @@ const airtableConfig = {
 
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
-export default function CartItem({ reservedListingID, units, listingID }) {
+export default function CartItem({
+  reservedListingID, pallets, listingID, updateSubtotal, removeListing,
+}) {
   const [listingDetails, setListingDetails] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -20,17 +22,20 @@ export default function CartItem({ reservedListingID, units, listingID }) {
       setListingDetails(record);
       setLoading(false);
     });
-  }, []);
+  });
 
   if (!loading && reservedListingID) {
     return (
       <CartItemDisplay
         id={reservedListingID}
         crop={listingDetails.fields.crop}
-        units={units}
+        pallets={pallets}
         unitsPerPallet={listingDetails.fields['units per pallet']}
         unitType={listingDetails.fields['unit type']}
         price={listingDetails.fields['standard price per unit']}
+        updateSubtotal={updateSubtotal}
+        removeListing={removeListing}
+        maxAvailable={listingDetails.fields['pallets available']}
       />
     );
   }
@@ -39,6 +44,8 @@ export default function CartItem({ reservedListingID, units, listingID }) {
 
 CartItem.propTypes = {
   reservedListingID: PropTypes.string.isRequired,
-  units: PropTypes.number.isRequired,
+  pallets: PropTypes.number.isRequired,
   listingID: PropTypes.arrayOf(PropTypes.string).isRequired,
+  updateSubtotal: PropTypes.func.isRequired,
+  removeListing: PropTypes.func.isRequired,
 };

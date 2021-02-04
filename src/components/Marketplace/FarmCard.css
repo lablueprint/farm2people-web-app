@@ -1,29 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans&display=swap');
 
 .cardHeader {
     margin-left: 2%;
     padding-right: 3%;
 }
 
+.generalText {
+    font-family: 'Work Sans';
+    font-style: 'normal';
+    font-weight: 400;
+}
+
 .cardContainer {
     border-radius: 3%;
     margin: 1% 1% 1% 1%;
-}
-
-.operationTags {
-    background-color: palegreen;
-    margin-right: 1%;
-    border-radius: 2%;
-}
-
-.capabilityTags {
-    margin-right: 1%;
-    border-radius: 2%;
-}
-
-.marketTags {
-    margin-top: 0.5%;
-    margin-left: 1%;
-    border-radius: 2%;
 }
 
 .collapsedContent {

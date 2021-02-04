@@ -1,15 +1,84 @@
 import React, { useState } from 'react';
 import './FarmCard.css';
 import {
-  Card, CardContent, CardHeader, Chip, Collapse, Grid, IconButton,
+  Card, CardContent, Chip, Collapse, Grid, IconButton,
 } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import PropTypes from 'prop-types';
 
+/* Custom styling for material-ui components */
+const useStyles = makeStyles({
+  cardContainer: { // Overall card container
+    background: 'lightblue', // change to white
+    borderWidth: '0px',
+    borderColor: '#53AA48',
+    margin: '5%',
+    borderRadius: '20px',
+    fontFamily: 'Work Sans',
+  },
+  expandedBorder: { // Border if card is expanded
+    borderTopWidth: '15px',
+  },
+  collapsedBorder: {
+    borderLeftWidth: '15px',
+  },
+  titleContainer: {
+    color: '#373737',
+    fontFamily: 'Work Sans',
+    marginTop: '3%',
+    marginLeft: '4%',
+    paddingRight: '7%',
+  },
+  titleText: {
+    fontSize: '22px',
+  },
+  subTitleText: {
+    fontSize: '18px',
+  },
+  operationTags: {
+    background: '#DBE2ED', // grey
+    color: '#373737', // black
+    borderRadius: '6px',
+    marginRight: '2%',
+    paddingLeft: '0.8%',
+    paddingRight: '0.8%',
+    fontFamily: 'Work Sans',
+  },
+  marketTags: {
+    background: '#DBE2ED',
+    color: '#373737',
+    borderRadius: '6px',
+    // marginTop: '0.5%',
+    marginLeft: '1%',
+    marginRight: '0.5%',
+    paddingLeft: '0.7%',
+    paddingRight: '0.7%',
+    fontFamily: 'Work Sans',
+  },
+  capabilityTags: {
+    background: '#FFFFFF',
+    color: '#373737',
+    marginRight: '1.3%',
+    borderRadius: '6px',
+    fontFamily: 'Work Sans',
+  },
+  descriptionContainer: {
+    marginBottom: '2%',
+  },
+  marketContainer: {
+    marginTop: '3%',
+  },
+  iconColour: {
+    color: '#53AA48', // green
+  },
+});
+
 export default function FarmCard(props) {
-  const [expandCard, setExpandCard] = useState(false);
+  const styles = useStyles();
+  const [isExpanded, setIsExpanded] = useState(false);
   const {
     farmName, address, zipCode, description, operationTypeTags, marketTags, isPACA, isColdChain,
     isDelivery,
@@ -28,29 +97,43 @@ export default function FarmCard(props) {
   }
 
   return (
-    <Card className="cardContainer" variant="outlined">
+    <Card
+      className={[
+        styles.cardContainer,
+        isExpanded ? styles.expandedBorder : styles.collapsedBorder,
+      ]}
+      variant="outlined"
+    >
       {/* Header/non-collapsed card contains farm name, expand/collapse icon, tags for op type */}
       <Grid
         container
         direction="row"
         justify="space-between"
         alignItems="center"
-        className="cardHeader"
+        // className="cardHeader"
+        className={styles.titleContainer}
       >
-        <CardHeader
-          title={farmName}
-          subheader={`${address} | ${zipCode}`}
-        />
-        <IconButton onClick={() => setExpandCard(!expandCard)}>
-          {!expandCard && <ExpandMoreIcon />}
-          {expandCard && <ExpandLessIcon />}
+        {/* Contains title (farm name) and subtitle (location) */}
+        <div className={styles.titleText}>
+          {farmName}
+        </div>
+        <div className={styles.subTitleText}>
+          {`${address} | ${zipCode}`}
+        </div>
+        <IconButton
+          className={styles.iconColour}
+          // On icon click, collapse or expand the card
+          onClick={() => setIsExpanded(!isExpanded)}
+        >
+          {!isExpanded && <ExpandMoreIcon />}
+          {isExpanded && <ExpandLessIcon />}
         </IconButton>
       </Grid>
       <CardContent className="collapsedContent">
         {operationTypeTags.map((tag) => (
           <Chip
             label={tag}
-            className="operationTags"
+            className={styles.operationTags}
             size="medium"
             variant="default"
             classes="tags"
@@ -58,31 +141,35 @@ export default function FarmCard(props) {
         ))}
       </CardContent>
       {/* If uncollapsed, shows description and additional tags */}
-      <Collapse in={expandCard} timout="auto" unmountOnExit>
+      <Collapse in={isExpanded} timout="auto" unmountOnExit>
         <CardContent className="expandedContent">
-          <p>
-            {description}
-          </p>
-          {capabilityTags.map((tag) => (
-            <Chip
-              label={tag}
-              className="capabilityTags"
-              root="capabilityTags"
-              size="small"
-              variant="default"
-              icon={<CheckCircleOutlineIcon />}
-            />
-          ))}
+          <div>
+            <div className={styles.descriptionContainer}>
+              {description}
+            </div>
+            {capabilityTags.map((tag) => (
+              <Chip
+                label={tag}
+                className={styles.capabilityTags}
+                size="small"
+                variant="default"
+                icon={<CheckCircleOutlineIcon className={styles.iconColour} />}
+              />
+            ))}
+          </div>
           <Grid /* Used to keep Market + market tags in 1 row */
             container
             direction="row"
             alignItems="center"
+            className={styles.marketContainer}
           >
-            <h1> Market: </h1>
+            <div>
+              Market:
+            </div>
             {marketTags.map((tag) => (
               <Chip
                 label={tag}
-                className="marketTags"
+                className={styles.marketTags}
                 size="small"
                 variant="default"
               />

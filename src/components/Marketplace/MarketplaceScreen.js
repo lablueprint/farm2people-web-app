@@ -36,20 +36,20 @@ export default function MarketplaceScreen() {
     base('Farms').select({ view: 'Grid view' }).all()
       .then((records) => {
         // records array contains every record in Main View
-        console.log('records');
+        // REMOVE console.log('records');
         // records.map((record) => console.log(record));
-        console.log(farmListings);
+        // REMOVE console.log(farmListings);
         setFarmListings(records);
       });
   });
 
-  console.log('done w/ farmlisting');
-  farmListings.map((listing) => console.log(listing.fields['farm name']));
+  // console.log('done w/ farmlisting');
+  // farmListings.map((listing) => console.log(listing.fields['farm name']));
   // 3 tab states: 0 (purchase buy), 1 (aggregate buy), 2 (distressed buy)
   const [currentTab, setCurrentTab] = useState(0);
 
   return (
-    <div>
+    <div className="screenContainer">
       <h1> Marketplace Screen :) </h1>
       {/* Search bar element */}
       <div className="searchBarContainer">
@@ -89,7 +89,7 @@ export default function MarketplaceScreen() {
             <Tab label="Distressed Buy" />
           </Tabs>
         </AppBar>
-        <h1>
+        <h1 className="screenContainer">
           {currentTab}
           {/* Map each array of farmListing info to render a FarmCard */
             farmListings.map((listing) => (
@@ -107,28 +107,6 @@ export default function MarketplaceScreen() {
               />
             ))
           }
-          {/* <FarmCard
-            farmName="farm Name"
-            address="123 drive"
-            zipCode={12345}
-            operationTypeTags={operationTypeTags}
-            marketTags={marketTags}
-            description={description}
-            isPACA
-            isColdChain={false}
-            isDelivery
-          />
-          <FarmCard
-            farmName="farm Name"
-            address="123 drive"
-            zipCode={12345}
-            operationTypeTags={operationTypeTags}
-            marketTags={marketTags}
-            description={description}
-            isPACA
-            isColdChain={false}
-            isDelivery={false}
-          /> */}
         </h1>
       </div>
     </div>

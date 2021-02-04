@@ -167,7 +167,7 @@ export default function CartItemDisplay({
           </Typography>
         </Grid>
         <Grid item xs={1} align="center">
-          <IconButton aria-label="delete" size="small" onClick={remove}>
+          <IconButton aria-label="delete" size="large" onClick={remove}>
             <Delete fontSize="inherit" className={classes.deleteButton} />
           </IconButton>
         </Grid>

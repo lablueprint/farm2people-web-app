@@ -100,7 +100,7 @@ export function MaxAvailableDialog({ alert, close, crop }) {
       </DialogContent>
       <DialogActions className={classes.alertActionAlign}>
         <Button variant="contained" className={classes.yesButton} onClick={() => close(true)}>
-          Ok!
+          Ok
         </Button>
       </DialogActions>
     </Dialog>

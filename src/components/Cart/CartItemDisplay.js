@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react';
 import Airtable from 'airtable';
 import {
-  Grid, Typography, IconButton, makeStyles,
+  Grid, Typography, IconButton, makeStyles, ButtonBase,
 } from '@material-ui/core';
 import { Remove, Add } from '@material-ui/icons';
 import Delete from '@material-ui/icons/DeleteOutlineOutlined';
@@ -18,8 +18,8 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 
 const useStyles = makeStyles({
   listingImage: {
-    height: '85px',
-    width: '85px',
+    height: '83px',
+    width: '83px',
     backgroundColor: 'white',
     border: '1px solid #E0E0E0',
     boxSizing: 'border-box',
@@ -29,8 +29,8 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontStyle: 'normal',
     fontWeight: 'bold',
-    fontSize: '22px',
-    lineHeight: '29px',
+    fontSize: '20px',
+    lineHeight: '24px',
     color: '#373737',
   },
   listingUnitDescription: {
@@ -53,6 +53,8 @@ const useStyles = makeStyles({
   },
   deleteButton: {
     color: '#FF765D',
+    fontSize: '30px',
+    marginLeft: '-10px',
   },
 });
 export default function CartItemDisplay({
@@ -122,7 +124,7 @@ export default function CartItemDisplay({
 
   return (
     <div>
-      <Grid container spacing={2} justify="flex-start" alignContent="center">
+      <Grid container spacing={2} justify="flex-start" alignItems="flex-start">
         <Grid item>
           <img src={image} alt="random produce" className={classes.listingImage} />
         </Grid>
@@ -167,9 +169,9 @@ export default function CartItemDisplay({
           </Typography>
         </Grid>
         <Grid item xs={1} align="center">
-          <IconButton aria-label="delete" size="large" onClick={remove}>
+          <ButtonBase aria-label="delete" onClick={remove}>
             <Delete fontSize="inherit" className={classes.deleteButton} />
-          </IconButton>
+          </ButtonBase>
         </Grid>
       </Grid>
       <RemoveConfirmationDialog alert={removeAlert} close={removeAlertClosed} />

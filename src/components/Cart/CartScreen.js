@@ -20,9 +20,9 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 const useStyles = makeStyles({
   cartHeader: {
     fontFamily: 'Work Sans',
-    fontWeight: 'bold',
-    fontSize: '45px',
-    lineHeight: '140%',
+    fontWeight: 'bolder',
+    fontSize: '50px',
+    lineHeight: '59px',
     color: '#373737',
   },
   container: {
@@ -42,7 +42,7 @@ const useStyles = makeStyles({
   farmLabel: {
     fontFamily: 'Work Sans',
     fontWeight: '500',
-    fontSize: '36px',
+    fontSize: '32px',
     lineHeight: '140%',
     color: '#373737',
     paddingTop: '20px',
@@ -58,7 +58,7 @@ const useStyles = makeStyles({
   },
   subtotalLabel: {
     fontFamily: 'Work Sans',
-    fontWeight: '500',
+    fontWeight: '600',
     fontSize: '20px',
     lineHeight: '140%',
     color: '#373737',
@@ -81,7 +81,7 @@ const useStyles = makeStyles({
   continueShoppingButton: {
     fontFamily: 'Work Sans',
     fontStyle: 'normal',
-    fontWeight: 'bold',
+    fontWeight: 'bolder',
     fontSize: '20px',
     lineHeight: '140%',
     color: '#373737',

@@ -33,22 +33,18 @@ export default function AddFarm() {
       output += 'Email format is invalid. \n';
     }
     // Valid zip codes have lengths in between 5-10 and are numbers
-    if (zipCode !== null) { // Eslint says no mixed operators
-      if (zipCode.length < 5 || zipCode.length > 10 || Number.isNaN(Number(zipCode))) {
-        if (output.length > 0) {
-          output += ' ';
-        }
-        output += 'Zipcode format is invalid. \n';
+    if (zipCode.length < 5 || zipCode.length > 10 || Number.isNaN(Number(zipCode))) {
+      if (output.length > 0) {
+        output += ' ';
       }
+      output += 'Zipcode format is invalid. \n';
     }
     // Valid phone numbers have 9 or more digits
-    if (phone !== null) {
-      if (phone.length < 9) {
-        if (output.length > 0) {
-          output += ' ';
-        }
-        output += 'Phone number format is invalid. \n';
+    if (phone.length < 9) {
+      if (output.length > 0) {
+        output += ' ';
       }
+      output += 'Phone number format is invalid. \n';
     }
     return output;
   }
@@ -100,7 +96,7 @@ export default function AddFarm() {
             {errorMsg}
           </Alert>
         )}
-      <form className="addFarmForm">
+      <form onSubmit={(event) => handleSubmit(event)} className="addFarmForm">
         <h1>Register Farm</h1>
         <div>
           <TextField
@@ -119,6 +115,7 @@ export default function AddFarm() {
             value={description || ''}
             multiline
             rowsMax={4}
+            required
             onChange={(event) => setDescription(event.target.value)}
           />
         </div>
@@ -135,6 +132,7 @@ export default function AddFarm() {
             id="outlined-basic"
             label="Enter your phone number"
             value={phone || ''}
+            required
             onChange={(event) => setPhone(event.target.value)}
           />
         </div>
@@ -143,6 +141,7 @@ export default function AddFarm() {
             id="outlined-basic"
             label="Enter your address"
             value={address || ''}
+            required
             onChange={(event) => setAddress(event.target.value)}
           />
         </div>
@@ -151,6 +150,7 @@ export default function AddFarm() {
             id="outlined-basic"
             label="Enter your zip code"
             value={zipCode || ''}
+            required
             onChange={(event) => setZipCode(event.target.value)}
           />
         </div>
@@ -160,7 +160,6 @@ export default function AddFarm() {
             value="submit"
             variant="contained"
             color="primary"
-            onClick={(event) => handleSubmit(event)}
           >
             Submit!
           </Button>

@@ -208,27 +208,27 @@ function TableHeader() {
   return (
     <Grid container spacing={0} justify="flex-start">
       <Grid item xs>
-        <Typography gutterBottom className={classes.columnLabels} style={{ 'text-decoration-color': '#53AA48' }}>
+        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#53AA48' }}>
           Item
         </Typography>
       </Grid>
       <Grid item xs={2} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ 'text-decoration-color': '#FF765D' }}>
+        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#FF765D' }}>
           Price
         </Typography>
       </Grid>
       <Grid item xs={2} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ 'text-decoration-color': '#FFB1D8' }}>
+        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#FFB1D8' }}>
           Quantity
         </Typography>
       </Grid>
       <Grid xs={2} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ 'text-decoration-color': '#2D5496' }}>
+        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#2D5496' }}>
           Total
         </Typography>
       </Grid>
       <Grid item xs={1} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ 'text-decoration-color': '#53AA48' }}>
+        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#53AA48' }}>
           Delete
         </Typography>
       </Grid>

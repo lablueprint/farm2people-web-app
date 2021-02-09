@@ -36,6 +36,7 @@ export default function CartItem({
         updateSubtotal={updateSubtotal}
         removeListing={removeListing}
         maxAvailable={listingDetails.fields['pallets available']}
+        usersInterested={listingDetails.fields['users interested']}
       />
     );
   }

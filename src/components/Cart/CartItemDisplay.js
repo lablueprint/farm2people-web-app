@@ -33,12 +33,12 @@ const useStyles = makeStyles({
     lineHeight: '24px',
     color: '#373737',
   },
-  listingUnitDescription: {
+  listingDescription: {
     fontFamily: 'Work Sans',
     fontStyle: 'normal',
     fontWeight: 'normal',
     fontSize: '15px',
-    lineHeight: '18px',
+    lineHeight: '20px',
   },
   listingNumbers: {
     fontFamily: 'Work Sans',
@@ -56,9 +56,15 @@ const useStyles = makeStyles({
     fontSize: '30px',
     marginLeft: '-10px',
   },
+  usersInterested: {
+    color: '#FF765D',
+    fontWeight: 'bold',
+  },
 });
+
 export default function CartItemDisplay({
-  id, crop, pallets, unitsPerPallet, unitType, price, maxAvailable, updateSubtotal, removeListing,
+  id, crop, pallets, unitsPerPallet, unitType, price, maxAvailable, usersInterested,
+  updateSubtotal, removeListing,
 }) {
   const image = 'https://ilovepathology.com/wp-content/uploads/2016/09/cauliflower_PNG12674-1024x887.png';
 
@@ -133,16 +139,31 @@ export default function CartItemDisplay({
             <Typography gutterBottom variant="subtitle1" className={classes.listingCrop}>
               {crop}
             </Typography>
-            <Typography gutterBottom variant="body2" className={classes.listingUnitDescription}>
-              {unitsPerPallet}
-              {' '}
-              units/pallet
-            </Typography>
-            <Typography variant="body2" className={classes.listingUnitDescription}>
-              <span style={{ fontWeight: 600 }}>Unit type:</span>
+            <Typography gutterBottom variant="body2" className={classes.listingDescription}>
+              <span style={{ fontWeight: 600 }}>
+                {' '}
+                {unitsPerPallet}
+                {' '}
+                units/pallet
+                {' '}
+              </span>
+              Unit type:
               {' '}
               {unitType}
             </Typography>
+            {usersInterested > 0
+              && (
+              <Typography className={classes.listingDescription}>
+                <span className={classes.usersInterested}>
+                  {usersInterested}
+                  {' '}
+                  users
+                </span>
+                {' '}
+                currently have this in their cart
+                {' '}
+              </Typography>
+              )}
           </Grid>
         </Grid>
         <Grid item xs={2} align="center">
@@ -190,4 +211,5 @@ CartItemDisplay.propTypes = {
   maxAvailable: PropTypes.number.isRequired,
   updateSubtotal: PropTypes.func.isRequired,
   removeListing: PropTypes.func.isRequired,
+  usersInterested: PropTypes.number.isRequired,
 };

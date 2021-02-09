@@ -8,6 +8,7 @@ import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import './MarketplaceScreen.css';
 import { makeStyles } from '@material-ui/core/styles';
 import FarmCard from './FarmCard';
+import ProduceCard from './ProduceCard';
 
 // Airtable set-up
 const airtableConfig = {
@@ -81,6 +82,7 @@ export default function MarketplaceScreen() {
         </AppBar>
         <h1 className={styles.tabBackground}>
           {currentTab}
+          <ProduceCard />
           {/* Map each array of farmListing info to render a FarmCard */
             farmListings.map((listing) => (
               <FarmCard

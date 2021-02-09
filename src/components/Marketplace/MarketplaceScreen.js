@@ -6,20 +6,8 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import './MarketplaceScreen.css';
+import { makeStyles } from '@material-ui/core/styles';
 import FarmCard from './FarmCard';
-
-/* const operationTypeTags = [
-  { key: 0, label: 'Women owned' },
-  { key: 1, label: 'BIPOC owned' },
-];
-
-const marketTags = [
-  { key: 0, label: 'NO MKRT' },
-  { key: 1, label: 'Kern' },
-  { key: 2, label: 'Kings' },
-];
-
-const description = 'Hello I am a farm I sell farm items like apples pigs n yummy farm food.'; */
 
 // Airtable set-up
 const airtableConfig = {
@@ -29,27 +17,29 @@ const airtableConfig = {
 
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
+// Custom styling
+const styles = makeStyles({
+  tabBackground: {
+    backgroundColor: 'grey',
+    color: 'green',
+  },
+});
+
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
   // Get records from Airtable whenever DOM mounts and updates/changes
   useEffect(() => {
     base('Farms').select({ view: 'Grid view' }).all()
       .then((records) => {
-        // records array contains every record in Main View
-        // REMOVE console.log('records');
-        // records.map((record) => console.log(record));
-        // REMOVE console.log(farmListings);
         setFarmListings(records);
       });
   });
 
-  // console.log('done w/ farmlisting');
-  // farmListings.map((listing) => console.log(listing.fields['farm name']));
   // 3 tab states: 0 (purchase buy), 1 (aggregate buy), 2 (distressed buy)
   const [currentTab, setCurrentTab] = useState(0);
 
   return (
-    <div className="screenContainer">
+    <div className={styles.tabBackground}>
       <h1> Marketplace Screen :) </h1>
       {/* Search bar element */}
       <div className="searchBarContainer">
@@ -89,7 +79,7 @@ export default function MarketplaceScreen() {
             <Tab label="Distressed Buy" />
           </Tabs>
         </AppBar>
-        <h1 className="screenContainer">
+        <h1 className={styles.tabBackground}>
           {currentTab}
           {/* Map each array of farmListing info to render a FarmCard */
             farmListings.map((listing) => (

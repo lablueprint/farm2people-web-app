@@ -1,10 +1,21 @@
 import React from 'react';
-import AddListing from './AddListing';
+import { makeStyles } from '@material-ui/core/styles';
+import ListingsView from './ListingsView';
+import AddListingButton from './AddListingButton';
 
+const useStyles = makeStyles({
+  button: {
+    display: 'flex',
+  },
+});
 export default function AddListingScreen() {
+  const classes = useStyles();
   return (
     <>
-      <AddListing />
+      <div className={classes.button}>
+        <AddListingButton />
+      </div>
+      <ListingsView />
     </>
   );
 }

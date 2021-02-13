@@ -1,14 +1,22 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
-import './AddListing.css';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  inputField: {
+    width: '100%',
+    height: '100%',
+  },
+});
 
 export default function ListingInputField({
-  id, label, type, val, onChange,
+  id, name, label, type, val, onChange, multiline,
 }) {
+  const classes = useStyles();
   function getInputProps() {
     let InputProps = {};
-    let InputLabelProps = {};
     if (type === 'number' && label === 'units per pallet') {
       InputProps = {
         inputProps: {
@@ -22,42 +30,63 @@ export default function ListingInputField({
           min: 0,
         },
       };
-    } else if (type === 'date') {
-      InputLabelProps = {
-        shrink: true,
-      };
     }
-    return [InputProps, InputLabelProps];
+    return InputProps;
   }
-  const [inputProps, inputLabelProps] = getInputProps({});
-
+  const inputProps = getInputProps({});
+  if (multiline) {
+    return (
+      <>
+        <Typography variant="h6" component="h6">{label}</Typography>
+        <TextField
+          required
+          multiline
+          rows={3}
+          id={id}
+          name={name}
+          type={type}
+          value={val}
+          InputProps={inputProps}
+          onChange={onChange}
+          className={classes.inputField}
+          variant="outlined"
+        />
+      </>
+    );
+  }
   return (
     <>
+      <Typography variant="h6" component="h6">{label}</Typography>
       <TextField
         required
         id={id}
-        label={label}
-        name={label}
+        name={name}
         type={type}
         value={val}
         InputProps={inputProps}
-        InputLabelProps={inputLabelProps}
         onChange={onChange}
-        className="input-field"
+        className={classes.inputField}
+        variant="outlined"
       />
     </>
   );
 }
 
 ListingInputField.defaultProps = {
-  id: 'standard-basic',
+  id: 'outlined-basic',
   type: '',
+  multiline: false,
 };
 
 ListingInputField.propTypes = {
   id: PropTypes.string,
   label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   type: PropTypes.string,
-  val: PropTypes.string.isRequired,
+  val: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
   onChange: PropTypes.func.isRequired,
+  multiline: PropTypes.bool,
 };

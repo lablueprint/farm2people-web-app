@@ -62,7 +62,7 @@ function CartDialog({
     <Dialog
       open={alert}
       onClose={() => close(false)}
-      aria-labelledby="Removal Confirmation"
+      aria-labelledby="Alert Dialog"
       className={classes.alertCard}
     >
       <DialogContent>

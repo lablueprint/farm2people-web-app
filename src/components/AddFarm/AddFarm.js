@@ -2,7 +2,6 @@ import {
   TextField, Button,
 } from '@material-ui/core';
 import React, { useState } from 'react';
-// eslint-disable-next-line import/no-unresolved
 import { Alert, AlertTitle } from '@material-ui/lab';
 import './AddFarm.css';
 

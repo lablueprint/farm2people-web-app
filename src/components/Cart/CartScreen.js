@@ -1,15 +1,18 @@
+/* Container for all Cart Screen display components */
+
 import React, { useEffect, useState } from 'react';
-// import PropTypes from 'prop-types';
 import Airtable from 'airtable';
 import {
   Card, CardContent, Grid, Typography, ButtonBase, Button, makeStyles,
 } from '@material-ui/core';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import CartItem from './CartItem';
+import CartCardHeader from './CartCardHeader';
 import './Cart.css';
-import Fruit3 from '../../Fruit3.svg';
-import Fruit4 from '../../Fruit4.svg';
+import Fruit3 from '../../assets/images/Fruit3.svg';
+import Fruit4 from '../../assets/images/Fruit4.svg';
 
+// airtable setup
 const airtableConfig = {
   apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
   baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
@@ -17,12 +20,12 @@ const airtableConfig = {
 
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
+// custom styling
 const useStyles = makeStyles({
   cartHeader: {
     fontFamily: 'Work Sans',
     fontWeight: 'bolder',
-    fontSize: '50px',
-    lineHeight: '59px',
+    fontSize: 50,
     color: '#373737',
   },
   container: {
@@ -48,14 +51,6 @@ const useStyles = makeStyles({
     paddingTop: '20px',
     paddingBottom: '15px',
   },
-  columnLabels: {
-    fontFamily: 'Work Sans',
-    fontWeight: 'bold',
-    fontSize: '20px',
-    lineHeight: ' 140%',
-    color: '#373737',
-    textDecoration: 'underline',
-  },
   subtotalLabel: {
     fontFamily: 'Work Sans',
     fontWeight: '600',
@@ -77,6 +72,7 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     margin: 'auto',
     paddingTop: '17px',
+    marginBottom: '5%',
   },
   continueShoppingButton: {
     fontFamily: 'Work Sans',
@@ -96,19 +92,19 @@ const useStyles = makeStyles({
     background: '#53AA48',
   },
   fruit3: {
-    position: 'sticky',
-    width: '150px',
+    position: 'absolute',
+    width: '140px',
     height: 'auto',
-    left: '95%',
-    bottom: '16%',
+    right: '1%',
+    bottom: '10%',
     zIndex: '-2',
   },
   fruit4: {
-    position: 'sticky',
-    width: '150px',
+    position: 'absolute',
+    width: '140px',
     height: 'auto',
-    left: '95%',
-    bottom: '3%',
+    right: '0%',
+    bottom: '-3%',
     zIndex: '-1',
   },
 });
@@ -116,33 +112,37 @@ const useStyles = makeStyles({
 function CartScreen() {
   const [cartListings, setCartListings] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
   const classes = useStyles();
 
+  // calls airtable on start to fetch listings in cart and calculate a subtotal
   useEffect(() => {
     setSubtotal(0);
     base('Reserved Listings').select({ view: 'Grid view' }).all().then((records) => {
       records.map((element) => base('Listings').find(element.fields['listing id'][0], (err, record) => {
-        const temp = element.fields.pallets * record.fields['standard price per unit'];
-        setSubtotal((prevTotal) => (prevTotal + temp));
+        const currCartItemPrice = element.fields.pallets * record.fields['standard price per unit'];
+        setSubtotal((prevTotal) => (prevTotal + currCartItemPrice));
       }));
-      setCartListings(records, () => {
-        console.log(cartListings);
-      });
+      setCartListings(records);
+      setLoading(false);
     });
   }, []);
 
+  // update subtotal function that is passed to each listing detail allowing adjustments
+  // (ex. on quantity change, or listing is removed)
   function updateSubtotal(change) {
     setSubtotal((prevTotal) => (prevTotal + change));
   }
 
+  // removes reservedListing from airtable and cartListings state
+  // is also passed to detail view that has the delete button
   function removeListing(id) {
     base('Reserved Listings').destroy([id],
-      (err, deletedRecords) => {
+      (err) => {
         if (err) {
           console.error(err);
-          return;
         }
-        console.log('Deleted', deletedRecords);
       });
 
     setCartListings(cartListings.filter((listing) => listing.id !== id));
@@ -157,35 +157,38 @@ function CartScreen() {
         <Typography className={classes.farmLabel}>
           Shopping from Farm
         </Typography>
-        <Card className={classes.cartCard}>
-          <CardContent>
-            <TableHeader />
-            { cartListings.map((cartListing) => (
-              <CartItem
-                key={cartListing.id}
-                reservedListingID={cartListing.id}
-                pallets={cartListing.fields.pallets}
-                listingID={cartListing.fields['listing id']}
-                updateSubtotal={updateSubtotal}
-                removeListing={removeListing}
-              />
-            ))}
-            <Grid container alignItems="center" justify="flex-end">
-              <Grid item xs />
-              <Grid item xs={3} md={2}>
-                <Typography gutterBottom className={classes.subtotalLabel} align="center">
-                  SUBTOTAL:
-                </Typography>
+
+        {!loading && (
+          <Card className={classes.cartCard}>
+            <CardContent>
+              <CartCardHeader />
+              { cartListings.map((cartListing) => (
+                <CartItem
+                  key={cartListing.id}
+                  reservedListingID={cartListing.id}
+                  pallets={cartListing.fields.pallets}
+                  listingID={cartListing.fields['listing id']}
+                  updateSubtotal={updateSubtotal}
+                  removeListing={removeListing}
+                />
+              ))}
+              <Grid container alignItems="center" justify="flex-end">
+                <Grid item xs />
+                <Grid item xs={3} md={2}>
+                  <Typography gutterBottom className={classes.subtotalLabel} align="center">
+                    SUBTOTAL:
+                  </Typography>
+                </Grid>
+                <Grid item xs={1}>
+                  <Typography gutterBottom className={classes.subtotal} align="center">
+                    $
+                    {parseFloat(subtotal).toFixed(2)}
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid item xs={1}>
-                <Typography gutterBottom className={classes.subtotal} align="center">
-                  $
-                  {parseFloat(subtotal).toFixed(2)}
-                </Typography>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
         <span className={classes.buttonContainer}>
           <ButtonBase>
             <ArrowBack style={{ color: '#53AA48' }} />
@@ -202,36 +205,3 @@ function CartScreen() {
 }
 
 export default CartScreen;
-
-function TableHeader() {
-  const classes = useStyles();
-  return (
-    <Grid container spacing={0} justify="flex-start">
-      <Grid item xs>
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#53AA48' }}>
-          Item
-        </Typography>
-      </Grid>
-      <Grid item xs={2} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#FF765D' }}>
-          Price
-        </Typography>
-      </Grid>
-      <Grid item xs={2} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#FFB1D8' }}>
-          Quantity
-        </Typography>
-      </Grid>
-      <Grid xs={2} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#2D5496' }}>
-          Total
-        </Typography>
-      </Grid>
-      <Grid item xs={1} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#53AA48' }}>
-          Delete
-        </Typography>
-      </Grid>
-    </Grid>
-  );
-}

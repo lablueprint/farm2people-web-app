@@ -1,3 +1,5 @@
+/* Dialogs for cart quantity change extremes */
+
 import { React } from 'react';
 import {
   Typography, Dialog, DialogContent, DialogActions, Button, makeStyles,
@@ -5,6 +7,7 @@ import {
 import PropTypes from 'prop-types';
 import './Cart.css';
 
+// custom styling
 const useStyles = makeStyles({
   alertCard: {
     maxWidth: '350px',
@@ -14,6 +17,9 @@ const useStyles = makeStyles({
     alignSelf: 'center',
     margin: 'auto',
     paddingBottom: '20px',
+  },
+  buttonSpace: {
+    marginRight: '20px',
   },
   yesButton: {
     fontFamily: 'Work Sans',
@@ -47,7 +53,9 @@ const useStyles = makeStyles({
   },
 });
 
-export function RemoveConfirmationDialog({ alert, close }) {
+function CartDialog({
+  alert, message, close, getResponse,
+}) {
   const classes = useStyles();
 
   return (
@@ -59,56 +67,36 @@ export function RemoveConfirmationDialog({ alert, close }) {
     >
       <DialogContent>
         <Typography gutterBottom className={classes.alertText}>
-          Are you sure that you want to delete this item entirely from your cart?
+          {message}
         </Typography>
       </DialogContent>
       <DialogActions className={classes.alertActionAlign}>
-        <Button variant="outlined" className={classes.noButton} onClick={() => close(false)}>
-          No
-        </Button>
-        <Button variant="contained" className={classes.yesButton} onClick={() => close(true)}>
-          Yes
-        </Button>
+        {getResponse
+          ? (
+            <div className={classes.buttonContainer}>
+              <Button variant="outlined" className={[classes.noButton, classes.buttonSpace]} onClick={() => close(false)}>
+                No
+              </Button>
+              <Button variant="contained" className={classes.yesButton} onClick={() => close(true)}>
+                Yes
+              </Button>
+            </div>
+          )
+          : (
+            <Button variant="contained" className={classes.yesButton} onClick={() => close(false)}>
+              Ok
+            </Button>
+          )}
       </DialogActions>
     </Dialog>
   );
 }
 
-RemoveConfirmationDialog.propTypes = {
+CartDialog.propTypes = {
   alert: PropTypes.bool.isRequired,
   close: PropTypes.func.isRequired,
+  message: PropTypes.func.isRequired,
+  getResponse: PropTypes.bool.isRequired,
 };
 
-export function MaxAvailableDialog({ alert, close, crop }) {
-  const classes = useStyles();
-
-  return (
-    <Dialog
-      open={alert}
-      onClose={close}
-      aria-labelledby="Max Available"
-      className={classes.alertCard}
-    >
-      <DialogContent>
-        <Typography gutterBottom className={classes.alertText}>
-          You have the maximum available
-          {' '}
-          {crop}
-          {' '}
-          in your cart!
-        </Typography>
-      </DialogContent>
-      <DialogActions className={classes.alertActionAlign}>
-        <Button variant="contained" className={classes.yesButton} onClick={() => close(true)}>
-          Ok
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-
-MaxAvailableDialog.propTypes = {
-  alert: PropTypes.bool.isRequired,
-  crop: PropTypes.string.isRequired,
-  close: PropTypes.func.isRequired,
-};
+export default CartDialog;

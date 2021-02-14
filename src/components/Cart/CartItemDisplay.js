@@ -1,3 +1,5 @@
+/* Grid Display for reserved listing details */
+
 import { React, useState, useEffect } from 'react';
 import Airtable from 'airtable';
 import {
@@ -7,8 +9,9 @@ import { Remove, Add } from '@material-ui/icons';
 import Delete from '@material-ui/icons/DeleteOutlineOutlined';
 import PropTypes from 'prop-types';
 import './Cart.css';
-import { RemoveConfirmationDialog, MaxAvailableDialog } from './CartDialogs';
+import CartDialog from './CartDialog';
 
+// airtable setup
 const airtableConfig = {
   apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
   baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
@@ -16,6 +19,7 @@ const airtableConfig = {
 
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
+// custom styling
 const useStyles = makeStyles({
   listingImage: {
     height: '83px',
@@ -66,14 +70,15 @@ export default function CartItemDisplay({
   id, crop, pallets, unitsPerPallet, unitType, price, maxAvailable, usersInterested,
   updateSubtotal, removeListing,
 }) {
+  // TODO: integrate photos stored in backend and render them in place of this
   const image = 'https://ilovepathology.com/wp-content/uploads/2016/09/cauliflower_PNG12674-1024x887.png';
 
   const [quantity, setQuantity] = useState(pallets);
   const [removeAlert, setRemoveAlert] = useState(false);
   const [maxAlert, setMaxAlert] = useState(false);
-
   const classes = useStyles();
 
+  // updates the airtable quantity whenever it is altered
   function updateQuantity() {
     base('Reserved Listings').update([
       {
@@ -87,45 +92,47 @@ export default function CartItemDisplay({
         console.error(err);
       }
     });
-    console.log('quantity changed');
   }
 
-  function remove() {
+  useEffect(updateQuantity, [id, quantity]);
+
+  // updates the subtotal and airtable when a listing is deleted
+  function removeCartListing() {
     updateSubtotal(-price * quantity);
     removeListing(id);
   }
 
+  // decreases quantity, updates subtotal, and sends an alert if too low
   function decreaseQuantity() {
     if (quantity <= 1) {
       setRemoveAlert(true);
-      console.log('alert!');
     } else {
       setQuantity(quantity - 1);
       updateSubtotal(-price);
     }
   }
 
+  // increases quantity, updates subtotal, and sends an alert if too high
   function increaseQuantity() {
     if (quantity >= maxAvailable) {
       setMaxAlert(true);
-      console.log('alert!');
     } else {
       setQuantity(quantity + 1);
       updateSubtotal(price);
     }
   }
 
-  useEffect(updateQuantity, [quantity]);
-
+  // closes alert and responds to user input on removeAlert close
   function removeAlertClosed(value) {
     setRemoveAlert(false);
     if (value === true) {
-      remove();
+      removeCartListing();
     }
   }
 
-  function maxAlertClosed() {
-    setMaxAlert(false);
+  // closes alert on maxAlert close
+  function maxAlertClosed(value) {
+    setMaxAlert(value);
   }
 
   return (
@@ -190,13 +197,23 @@ export default function CartItemDisplay({
           </Typography>
         </Grid>
         <Grid item xs={1} align="center">
-          <ButtonBase aria-label="delete" onClick={remove}>
+          <ButtonBase aria-label="delete" onClick={() => { setRemoveAlert(true); }}>
             <Delete fontSize="inherit" className={classes.deleteButton} />
           </ButtonBase>
         </Grid>
       </Grid>
-      <RemoveConfirmationDialog alert={removeAlert} close={removeAlertClosed} />
-      <MaxAvailableDialog alert={maxAlert} close={maxAlertClosed} crop={crop} />
+      <CartDialog
+        message="Are you sure that you want to delete this item entirely from your cart?"
+        alert={removeAlert}
+        close={removeAlertClosed}
+        getResponse
+      />
+      <CartDialog
+        message={`You have the maximum available ${crop} in your cart!`}
+        alert={maxAlert}
+        close={maxAlertClosed}
+        getResponse={false}
+      />
     </div>
   );
 }

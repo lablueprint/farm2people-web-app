@@ -7,11 +7,12 @@ const useStyles = makeStyles({
     minHeight: '100vh',
   },
 });
-export default function MarketplaceScreen() {
+
+export default function ProfileScreen() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <h1>Marketplace Screen</h1>
+      <h1>Profile Screen</h1>
     </div>
   );
 }

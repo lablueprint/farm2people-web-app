@@ -14,8 +14,11 @@ export default function Navbar() {
           <NavLink to="/" onClick={closeMobileMenu}>
             <img src={logo} alt="Logo" className="navbar-logo" />
           </NavLink>
-          {/* eslint-disable-next-line */}
-          <div className="menu-icon" onClick={handleClick}>
+          <div
+            className="menu-icon"
+            onClick={handleClick}
+            aria-hidden="true"
+          >
             <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
           </div>
           <ul className={click ? 'nav-menu active' : 'nav-menu'}>

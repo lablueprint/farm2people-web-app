@@ -125,7 +125,7 @@ function Footer() {
           farm2people@mail.org
         </li>
         <li className={classes.footerItem}>
-          farm2peole.org
+          farm2people.org
         </li>
       </ul>
     </div>

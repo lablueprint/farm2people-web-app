@@ -16,9 +16,12 @@ export default function CartItem({
   const [listingDetails, setListingDetails] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // TODO: style error message display
+  const [errorMessage, setErrorMessage] = useState();
+
   useEffect(() => {
     base('Listings').find(listingID[0], (err, record) => {
-      if (err) { console.error(err); return; }
+      if (err) { setErrorMessage(err); return; }
       setListingDetails(record);
       setLoading(false);
     });
@@ -26,18 +29,21 @@ export default function CartItem({
 
   if (!loading && reservedListingID) {
     return (
-      <CartItemDisplay
-        id={reservedListingID}
-        crop={listingDetails.fields.crop}
-        pallets={pallets}
-        unitsPerPallet={listingDetails.fields['units per pallet']}
-        unitType={listingDetails.fields['unit type']}
-        price={listingDetails.fields['standard price per unit']}
-        updateSubtotal={updateSubtotal}
-        removeListing={removeListing}
-        maxAvailable={listingDetails.fields['pallets available']}
-        usersInterested={listingDetails.fields['users interested']}
-      />
+      <>
+        {errorMessage && <p>{errorMessage}</p>}
+        <CartItemDisplay
+          id={reservedListingID}
+          crop={listingDetails.fields.crop}
+          pallets={pallets}
+          unitsPerPallet={listingDetails.fields['units per pallet']}
+          unitType={listingDetails.fields['unit type']}
+          price={listingDetails.fields['standard price per unit']}
+          updateSubtotal={updateSubtotal}
+          removeListing={removeListing}
+          maxAvailable={listingDetails.fields['pallets available']}
+          usersInterested={listingDetails.fields['users interested']}
+        />
+      </>
     );
   }
   return null;

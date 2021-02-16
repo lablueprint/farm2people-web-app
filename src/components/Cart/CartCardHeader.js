@@ -4,7 +4,6 @@ import {
 } from '@material-ui/core';
 import './Cart.css';
 
-// custom styling
 const useStyles = makeStyles({
   columnLabels: {
     fontFamily: 'Work Sans',
@@ -14,6 +13,18 @@ const useStyles = makeStyles({
     color: '#373737',
     textDecoration: 'underline',
   },
+  greenUnderline: {
+    textDecorationColor: '#53AA48',
+  },
+  orangeUnderline: {
+    textDecorationColor: '#FF765D',
+  },
+  pinkUnderline: {
+    textDecorationColor: '#FFB1D8',
+  },
+  blueUnderline: {
+    textDecorationColor: '#2D5496',
+  },
 });
 
 // returns the headers for the cart grid, separated for readability
@@ -22,27 +33,27 @@ function CartCardHeader() {
   return (
     <Grid container spacing={0} justify="flex-start">
       <Grid item xs>
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#53AA48' }}>
+        <Typography gutterBottom className={[classes.columnLabels, classes.greenUnderline]}>
           Item
         </Typography>
       </Grid>
       <Grid item xs={2} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#FF765D' }}>
+        <Typography gutterBottom className={[classes.columnLabels, classes.orangeUnderline]}>
           Price
         </Typography>
       </Grid>
       <Grid item xs={2} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#FFB1D8' }}>
+        <Typography gutterBottom className={[classes.columnLabels, classes.pinkUnderline]}>
           Quantity
         </Typography>
       </Grid>
       <Grid xs={2} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#2D5496' }}>
+        <Typography gutterBottom className={[classes.columnLabels, classes.blueUnderline]}>
           Total
         </Typography>
       </Grid>
       <Grid item xs={1} align="center">
-        <Typography gutterBottom className={classes.columnLabels} style={{ textDecorationColor: '#53AA48' }}>
+        <Typography gutterBottom className={[classes.columnLabels, classes.greenUnderline]}>
           Delete
         </Typography>
       </Grid>

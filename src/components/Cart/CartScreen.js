@@ -104,7 +104,7 @@ const useStyles = makeStyles({
     width: '140px',
     height: 'auto',
     right: '0%',
-    bottom: '-3%',
+    bottom: '-2%',
     zIndex: '-1',
   },
 });
@@ -113,6 +113,8 @@ function CartScreen() {
   const [cartListings, setCartListings] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  // TODO: style error message display
+  const [errorMessage, setErrorMessage] = useState();
 
   const classes = useStyles();
 
@@ -126,7 +128,10 @@ function CartScreen() {
       }));
       setCartListings(records);
       setLoading(false);
-    });
+    })
+      .catch((error) => {
+        setErrorMessage(error.message);
+      });
   }, []);
 
   // update subtotal function that is passed to each listing detail allowing adjustments
@@ -196,6 +201,7 @@ function CartScreen() {
           </ButtonBase>
           <Button variant="contained" className={classes.checkoutButton}>Checkout</Button>
         </span>
+        {errorMessage && <p>{errorMessage}</p>}
       </div>
       <img src={Fruit3} alt="" className={classes.fruit3} />
       <img src={Fruit4} alt="" className={classes.fruit4} />

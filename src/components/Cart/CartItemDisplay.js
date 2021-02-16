@@ -21,6 +21,7 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 
 // custom styling
 const useStyles = makeStyles({
+  // TODO: Look into breakpoints/media queries for adaptive styling
   listingImage: {
     height: '83px',
     width: '83px',
@@ -64,6 +65,9 @@ const useStyles = makeStyles({
     color: '#FF765D',
     fontWeight: 'bold',
   },
+  boldText: {
+    fontWeight: 600,
+  },
 });
 
 export default function CartItemDisplay({
@@ -78,6 +82,9 @@ export default function CartItemDisplay({
   const [maxAlert, setMaxAlert] = useState(false);
   const classes = useStyles();
 
+  // TODO: style error message display
+  const [errorMessage, setErrorMessage] = useState();
+
   // updates the airtable quantity whenever it is altered
   function updateQuantity() {
     base('Reserved Listings').update([
@@ -89,7 +96,7 @@ export default function CartItemDisplay({
       },
     ], (err) => {
       if (err) {
-        console.error(err);
+        setErrorMessage(err);
       }
     });
   }
@@ -136,8 +143,9 @@ export default function CartItemDisplay({
   }
 
   return (
-    <div>
+    <>
       <Grid container spacing={2} justify="flex-start" alignItems="flex-start">
+        {errorMessage && <p>{errorMessage}</p>}
         <Grid item>
           <img src={image} alt="random produce" className={classes.listingImage} />
         </Grid>
@@ -147,7 +155,7 @@ export default function CartItemDisplay({
               {crop}
             </Typography>
             <Typography gutterBottom variant="body2" className={classes.listingDescription}>
-              <span style={{ fontWeight: 600 }}>
+              <span className={classes.boldText}>
                 {' '}
                 {unitsPerPallet}
                 {' '}
@@ -183,7 +191,7 @@ export default function CartItemDisplay({
           <IconButton aria-label="decrease" size="small" onClick={decreaseQuantity}>
             <Remove fontSize="inherit" className={classes.quantityButtons} />
           </IconButton>
-          <Typography gutterBottom variant="subtitle1" className={classes.listingNumbers} style={{ fontWeight: 600 }}>
+          <Typography gutterBottom variant="subtitle1" className={[classes.listingNumbers, classes.boldText]}>
             {quantity}
           </Typography>
           <IconButton aria-label="increase" size="small" onClick={increaseQuantity}>
@@ -214,7 +222,7 @@ export default function CartItemDisplay({
         close={maxAlertClosed}
         getResponse={false}
       />
-    </div>
+    </>
   );
 }
 

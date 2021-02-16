@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Navbar from './components/Navigation';
+import { Navbar, Footer } from './components/Navigation';
 import HomeScreen from './components/Home';
 import MarketplaceScreen from './components/Marketplace';
 import ContactScreen from './components/Contact';
@@ -21,6 +21,7 @@ export default function App() {
           <Route path="/profile" exact component={ProfileScreen} />
           <Route path="/cart" exact component={CartScreen} />
         </Switch>
+        <Footer />
       </Router>
     </div>
   );

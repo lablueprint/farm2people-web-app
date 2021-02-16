@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import Airtable from 'airtable';
+import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Navbar from './components/Navigation';
 import HomeScreen from './components/Home';
@@ -10,22 +9,7 @@ import AccountScreen from './components/Account';
 import SignInScreen from './components/SignIn';
 import SignUpForm from './components/SignUp';
 
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
-
 function App() {
-  useEffect(() => {
-    base('Farms')
-      .select({ view: 'Grid view' })
-      .eachPage((records, fetchNextPage) => {
-        console.log(records);
-        fetchNextPage();
-      });
-  }, []);
   return (
     <div className="App">
       <Router>

@@ -1,8 +1,10 @@
-import base from '../airtable/airtable';
+// import { useState } from 'react';
+import { base } from '../airtable/airtable';
 import {
   refreshUserData,
   clearUserData,
 } from '../redux/userData';
+
 // import { toAirtableFormat } from '../airtable/airtable';
 const AUTHENTICATION_ERR_STRING = 'AUTHENTICATION_REQUIRED';
 
@@ -32,10 +34,13 @@ const signupUser = async (email, password, fullname, role) => {
 const loginUser = async (email, password) => {
   try {
     const res = await base.login({ username: email, password });
+    console.log(res);
+    // console.log('in airlock func');
+    refreshUserData(res.body);
     if (!res.body.success) {
       return { match: false, found: false };
     }
-    refreshUserData(res.body.user.id);
+
     return { match: true, found: true };
 
   } catch (err) {

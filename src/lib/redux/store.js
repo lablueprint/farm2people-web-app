@@ -1,17 +1,17 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import { createBrowserHistory } from 'history';
-import { connectRouter, routerMiddleware } from 'connected-react-router';
+import { routerMiddleware } from 'connected-react-router';
 
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
 import userDataReducer from './userDataSlice';
 
 const history = createBrowserHistory();
 
-const reducers = combineReducers({
-  router: connectRouter(history),
-  userData: userDataReducer,
-});
+// const reducers = combineReducers({
+//   router: connectRouter(history),
+//   userData: userDataReducer,
+// });
 
 // Redux persist saves and refreshes the redux store from local storage
 const persistConfig = {
@@ -19,7 +19,7 @@ const persistConfig = {
   storage,
 };
 
-const persistedReducer = persistReducer(persistConfig, reducers);
+const persistedReducer = persistReducer(persistConfig, userDataReducer);
 
 // Set up store with the appropriate reducers
 const store = configureStore({

@@ -7,7 +7,7 @@ import greenLogo from '../../assets/images/F2P-green-logo.svg';
 const useStyles = makeStyles({
   root: {
     display: 'flex',
-    lineHeight: 1.5,
+    lineHeight: 1.75,
     flexWrap: 'wrap',
     marginTop: '1rem',
     padding: '1rem',
@@ -52,7 +52,7 @@ const useStyles = makeStyles({
     textDecoration: 'underline',
     textDecorationColor: '#484848',
     textDecorationThickness: '2px',
-    textUnderlineOffset: '3px',
+    textUnderlineOffset: '1.5px',
   },
 
 });

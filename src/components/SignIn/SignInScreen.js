@@ -4,8 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import React, { useMemo, useState, useEffect } from 'react';
 import './SignIn.css';
 import { loginUser, logoutUser } from '../../lib/airlock/airlock';
-// eslint-disable-next-line
-import { base, getUserName } from '../../lib/airtable/airtable';
+import { base } from '../../lib/airtable/airtable';
 import { store } from '../../lib/redux/store';
 
 export default function SignInScreen() {
@@ -18,16 +17,18 @@ export default function SignInScreen() {
     evt.preventDefault();
     setLoading(true);
     try {
-      console.log(store.getState().userData);
       const res = await loginUser(email, password);
-      console.log(store.getState());
-      console.log(store.getState().userData);
+      base('Farms')
+        .select({ view: 'Grid view' })
+        .eachPage((records, fetchNextPage) => {
+          console.log(records);
+          fetchNextPage();
+        });
       if (!(res.match && res.found)) {
         setErrorMsg('Incorrect username or password');
         setLoading(false);
       } else {
         setDisplayName(`Welcome ${store.getState().userData.user.fields.display_name}`);
-        console.log(`Welcome ${store.getState().userData.user.fields.display_name}`);
         setErrorMsg('');
         setTimeout(() => { setLoading(false); }, 1000);
       }
@@ -58,8 +59,13 @@ export default function SignInScreen() {
     [email, password]);
 
   useEffect(() => {
-    setDisplayName(`Welcome ${store.getState().userData.user.fields.display_name}`);
+    if (store.getState().authenticated) {
+      setDisplayName(`Welcome ${store.getState().userData.user.fields.display_name}`);
+    } else {
+      setDisplayName('');
+    }
   }, [setDisplayName]);
+
   return (
     <form className="root">
       <div>

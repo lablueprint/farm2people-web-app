@@ -2,16 +2,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice } from '@reduxjs/toolkit';
 
-// This is a slice created using the Redux Toolkits.
-// It sets up both the reducers and actions for a particular slice of the redux store
-//
-// The user data slice stores all authentication and user information
-
 const initialState = {
   authenticated: false,
   isLoading: false,
-  authKey: null,
-  owner: null,
   userData: null,
 };
 

@@ -29,7 +29,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "generate-schema": "generate-airtable-schema"
   },
   "eslintConfig": {
     "extends": [
@@ -50,11 +51,17 @@
     ]
   },
   "devDependencies": {
+    "airtable-schema-generator": "^1.5.1",
+    "dotenv": "^8.2.0",
     "eslint": "^7.14.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0"
+  },
+  "airtable-schema-generator": {
+    "mode": "Auto",
+    "output": "./src/lib/"
   }
 }

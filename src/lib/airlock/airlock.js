@@ -24,9 +24,9 @@ const signupUser = async (email, password, fullname, role) => {
     return user.id;
   } catch (err) {
     console.log("Error in signupuser func")
-    // if (err) {
-    //   setErrorMsg(err);
-    // }
+    if (err) {
+      console.log(err);
+    }
   }
   return null;
 };
@@ -35,12 +35,10 @@ const loginUser = async (email, password) => {
   try {
     const res = await base.login({ username: email, password });
     console.log(res);
-    // console.log('in airlock func');
     refreshUserData(res.body);
     if (!res.body.success) {
       return { match: false, found: false };
     }
-
     return { match: true, found: true };
 
   } catch (err) {

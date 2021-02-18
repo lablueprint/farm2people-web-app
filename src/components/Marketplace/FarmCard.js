@@ -43,14 +43,20 @@ const useStyles = makeStyles({
     paddingRight: '8%',
   },
   titleContainer: {
-    width: '55%',
+    width: '93%',
   },
   titleText: {
-    fontSize: '22px',
+    fontSize: '63%',
+    textDecoration: 'underline',
+    textDecorationColor: '#373737',
+  },
+  addressContainer: {
+    width: '40%',
   },
   subTitleText: {
-    fontSize: '18px',
+    fontSize: '50%',
     marginTop: '3px',
+    marginLeft: '6%',
   },
   operationTags: {
     background: '#DBE2ED',
@@ -61,7 +67,7 @@ const useStyles = makeStyles({
     paddingLeft: '0.8%',
     paddingRight: '0.8%',
     fontFamily: 'Work Sans',
-    fontSize: '18px',
+    fontSize: '45%',
   },
   marketTags: {
     background: '#DBE2ED',
@@ -120,17 +126,25 @@ export default function FarmCard(props) {
           <div className={classes.titleText}>
             {farmName}
           </div>
-          <div className={classes.subTitleText}>
-            {address}
-          </div>
-          { // Only show zipcode if it exists
-          (zipCode !== -1)
-          && (
-          <div className={classes.subTitleText}>
-            {zipCode}
-          </div>
-          )
-          }
+          <Grid
+            container
+            direction="row"
+            justify="flex-end"
+            alignItems="start"
+            className={classes.addressContainer}
+          >
+            <div className={classes.subTitleText}>
+              {address}
+            </div>
+            { // Only show zipcode if it exists
+              (zipCode !== -1)
+              && (
+                <div className={classes.subTitleText}>
+                  {zipCode}
+                </div>
+              )
+            }
+          </Grid>
         </Grid>
         <IconButton
           className={classes.iconColour}

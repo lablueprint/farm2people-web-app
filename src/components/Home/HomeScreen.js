@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import AddFarm from '../AddFarm';
+// import AddFarm from '../AddFarm';
+import Checkout from '../Checkout/Checkout';
 
 const useStyles = makeStyles({
   root: {
@@ -13,8 +14,7 @@ export default function HomeScreen() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <h1>Home Screen</h1>
-      <AddFarm />
+      <Checkout />
     </div>
   );
 }

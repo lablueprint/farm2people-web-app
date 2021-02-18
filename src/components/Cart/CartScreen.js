@@ -27,6 +27,7 @@ const useStyles = makeStyles({
     fontWeight: 'bolder',
     fontSize: 50,
     color: '#373737',
+    paddingTop: '2%',
   },
   container: {
     width: '78%',
@@ -146,7 +147,7 @@ function CartScreen() {
     base('Reserved Listings').destroy([id],
       (err) => {
         if (err) {
-          console.error(err);
+          setErrorMessage(err);
         }
       });
 
@@ -211,4 +212,3 @@ function CartScreen() {
 }
 
 export default CartScreen;
-

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './FarmCard.css';
 import {
   Card, CardContent, Chip, Collapse, Grid, IconButton,
 } from '@material-ui/core';
@@ -8,11 +7,12 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
 import PropTypes from 'prop-types';
+import './Font.css';
 
 /* Custom styling for material-ui components */
 const useStyles = makeStyles({
   cardContainer: { // Overall card container
-    background: 'white', // change to lightblue for testing
+    background: 'lightblue', // change to lightblue for testing
     borderWidth: '0px',
     borderColor: '#53AA48',
     margin: '5%',

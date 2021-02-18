@@ -28,16 +28,35 @@ const styles = makeStyles({
 
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
+  const [produceListings, setProduceListings] = useState([]);
+  // 3 tab states: 0 (purchase buy), 1 (aggregate buy), 2 (distressed buy)
+  const [currentTab, setCurrentTab] = useState(0);
+
   // Get records from Airtable whenever DOM mounts and updates/changes
   useEffect(() => {
     base('Farms').select({ view: 'Grid view' }).all()
-      .then((records) => {
-        setFarmListings(records);
+      .then((farmRecords) => {
+        setFarmListings(farmRecords);
       });
-  });
+    base('Listings').select({ view: 'Grid view' }).all()
+      .then((produceRecords) => {
+        setProduceListings(produceRecords);
+      });
+    console.log(produceListings);
+    /* eslint-disable-next-line */
+  }, []);
 
-  // 3 tab states: 0 (purchase buy), 1 (aggregate buy), 2 (distressed buy)
-  const [currentTab, setCurrentTab] = useState(0);
+  // Uses farmID to get farmName for produce listing
+  /* function getFarmName(farmID) {
+    base('Farms').find(farmID).then((record) => {
+      console.log(record);
+      console.log(record['farm name']);
+    });
+  } */
+
+  console.log('print produce listing');
+  // console.log(produceListings[0]);
+  // getFarmName(produceListings[0].fields.id[0]);
 
   return (
     <div className={styles.tabBackground}>
@@ -82,22 +101,31 @@ export default function MarketplaceScreen() {
         </AppBar>
         <h1 className={styles.tabBackground}>
           {currentTab}
-          <ProduceCard />
-          {/* Map each array of farmListing info to render a FarmCard */
-            farmListings.map((listing) => (
-              <FarmCard
-                farmName={listing.fields['farm name'] || 'No farm name'}
-                address={listing.fields.address || 'No address'}
-                zipCode={listing.fields['zip code'] || -1}
-                description={listing.fields.description || 'No description'}
-                operationTypeTags={listing.fields['operation type'] || []}
-                marketTags={listing.fields.market || ['None specified']}
-                isPACA={listing.fields['PACA (Perishable Agricultural Commodities Act)']
-                  || false}
-                isColdChain={listing.fields['cold chain capabilities'] || false}
-                isDelivery={listing.fields['able to deliver'] || false}
+          {(currentTab === 0
+            && (produceListings.map((produceListing) => (
+              <ProduceCard
+                cropName={produceListing.fields.crop || 'No crop name'}
+                farmName="Ryans Rarm"
+                unitPrice={produceListing.fields['standard price per unit'] || 'No price'}
+                unitType={produceListing.fields['unit type'] || 'unit'}
               />
-            ))
+            ))))}
+          {/* Map each array of farmListing info to render a FarmCard */
+            currentTab === 1
+            && (farmListings.map((farmListing) => (
+              <FarmCard
+                farmName={farmListing.fields['farm name'] || 'No farm name'}
+                address={farmListing.fields.address || 'No address'}
+                zipCode={farmListing.fields['zip code'] || -1}
+                description={farmListing.fields.description || 'No description'}
+                operationTypeTags={farmListing.fields['operation type'] || []}
+                marketTags={farmListing.fields.market || ['None specified']}
+                isPACA={farmListing.fields['PACA (Perishable Agricultural Commodities Act)']
+                  || false}
+                isColdChain={farmListing.fields['cold chain capabilities'] || false}
+                isDelivery={farmListing.fields['able to deliver'] || false}
+              />
+            )))
           }
         </h1>
       </div>

@@ -37,7 +37,7 @@ export default function CartItem({
           pallets={pallets}
           unitsPerPallet={listingDetails.fields['units per pallet']}
           unitType={listingDetails.fields['unit type']}
-          price={listingDetails.fields['standard price per unit']}
+          price={listingDetails.fields['standard price per pallet']}
           updateSubtotal={updateSubtotal}
           removeListing={removeListing}
           maxAvailable={listingDetails.fields['pallets available']}

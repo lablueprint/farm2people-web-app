@@ -34,19 +34,19 @@ export default function AddListing({
   id, listing, edit, closeDialog,
 }) {
   const classes = useStyles();
-  const [listingRecord, setListingRecord] = useState(listing);
+  const [ListingRecord, setListingRecord] = useState(listing);
 
   function createOrEditRecord(e) {
     e.preventDefault();
     if (edit) {
       const record = {
         id,
-        fields: listingRecord,
+        fields: ListingRecord,
       };
       base('Listings').update([record]).then(closeDialog());
     } else {
       const record = {
-        fields: listingRecord,
+        fields: ListingRecord,
       };
       base('Listings').create([record]).then(closeDialog());
     }
@@ -57,12 +57,12 @@ export default function AddListing({
     if (type === 'number') {
       value = +value;
     }
-    setListingRecord({ ...listingRecord, [name]: value });
+    setListingRecord({ ...ListingRecord, [name]: value });
   }
   function onChangeCheckbox(e) {
-    setListingRecord({ ...listingRecord, [e.target.name]: e.target.checked });
+    setListingRecord({ ...ListingRecord, [e.target.name]: e.target.checked });
   }
-  // TODO: Dynamically load these options from Airtable
+
   const UnitTypes = [
     {
       value: 'box',
@@ -102,7 +102,7 @@ export default function AddListing({
   ];
   return (
     <form id="listing-form" onSubmit={createOrEditRecord}>
-      <Grid spacing={3} container>
+      <Grid spacing={3} container className="listing-form">
         <Grid item xs={12}>
           <Typography variant="h5" component="h5" className={classes.infoDivider}>Basic Information</Typography>
         </Grid>
@@ -111,7 +111,7 @@ export default function AddListing({
             label="Product Name"
             name="crop"
             onChange={onChangeField}
-            val={listingRecord.crop}
+            val={ListingRecord.crop}
           />
         </Grid>
         <Grid item xs={12}>
@@ -119,7 +119,7 @@ export default function AddListing({
             label="Product Description"
             name="description"
             onChange={onChangeField}
-            val={listingRecord.description}
+            val={ListingRecord.description}
             multiline
           />
         </Grid>
@@ -135,7 +135,7 @@ export default function AddListing({
               name="unit type"
               onChange={onChangeField}
               defaultValue=""
-              value={listingRecord['unit type']}
+              value={ListingRecord['unit type']}
               required
             >
               {UnitTypes.map((name) => (
@@ -154,7 +154,7 @@ export default function AddListing({
             name="units per pallet"
             type="number"
             onChange={onChangeField}
-            val={listingRecord['units per pallet']}
+            val={ListingRecord['units per pallet']}
           />
         </Grid>
         <Grid item xs={4}>
@@ -164,30 +164,18 @@ export default function AddListing({
             name="lbs per unit"
             type="number"
             onChange={onChangeField}
-            val={listingRecord['lbs per unit']}
+            val={ListingRecord['lbs per unit']}
           />
         </Grid>
-        <Grid item container xs={12}>
+        <Grid item xs={12}>
           <Typography variant="h5" component="h5" className={classes.infoDivider}>Prices</Typography>
-        </Grid>
-        <Grid item xs={6}>
           <ListingInputField
             id="standard-number"
-            label="Standard Price per Pallet"
-            name="standard price per pallet"
+            label="Standard Price per Unit"
+            name="standard price per unit"
             type="number"
             onChange={onChangeField}
-            val={listingRecord['standard price per pallet']}
-          />
-        </Grid>
-        <Grid item xs={6}>
-          <ListingInputField
-            id="standard-number"
-            label="Restricted Price per Pallet"
-            name="restricted price per pallet"
-            type="number"
-            onChange={onChangeField}
-            val={listingRecord['restricted price per pallet']}
+            val={ListingRecord['standard price per unit']}
           />
         </Grid>
         <Grid item xs={12}>
@@ -200,7 +188,7 @@ export default function AddListing({
             name="expiration date"
             type="date"
             onChange={onChangeField}
-            val={listingRecord['expiration date']}
+            val={ListingRecord['expiration date']}
           />
         </Grid>
         <Grid item xs={6}>
@@ -210,7 +198,7 @@ export default function AddListing({
             name="first available date"
             type="date"
             onChange={onChangeField}
-            val={listingRecord['first available date']}
+            val={ListingRecord['first available date']}
           />
         </Grid>
         <Grid item xs={6}>
@@ -220,7 +208,7 @@ export default function AddListing({
             name="available until"
             type="date"
             onChange={onChangeField}
-            val={listingRecord['available until']}
+            val={ListingRecord['available until']}
           />
         </Grid>
         <Grid item xs={6}>
@@ -235,7 +223,7 @@ export default function AddListing({
               name="growing season"
               onChange={onChangeField}
               defaultValue=""
-              value={listingRecord['growing season']}
+              value={ListingRecord['growing season']}
               required
             >
               {Seasons.map((name) => (
@@ -254,7 +242,7 @@ export default function AddListing({
             name="pallets available"
             type="number"
             onChange={onChangeField}
-            val={listingRecord['pallets available']}
+            val={ListingRecord['pallets available']}
           />
         </Grid>
 
@@ -265,7 +253,7 @@ export default function AddListing({
           <FormControlLabel
             control={(
               <Checkbox
-                checked={listingRecord.distressed}
+                checked={ListingRecord.distressed}
                 onChange={onChangeCheckbox}
                 name="distressed"
                 color="primary"
@@ -287,8 +275,7 @@ AddListing.defaultProps = {
     'unit type': '',
     'units per pallet': 0,
     'lbs per unit': 0.0,
-    'standard price per pallet': 0.0,
-    'restricted price per pallet': 0.0,
+    'standard price per unit': 0.0,
     'expiration date': '',
     'first available date': '',
     'date entered': today,
@@ -310,7 +297,7 @@ AddListing.propTypes = {
     'unit type': PropTypes.string,
     'units per pallet': PropTypes.number,
     'lbs per unit': PropTypes.number,
-    'standard price per pallet': PropTypes.number,
+    'standard price per unit': PropTypes.number,
     'expiration date': PropTypes.string,
     'first available date': PropTypes.string,
     'date entered': PropTypes.string,

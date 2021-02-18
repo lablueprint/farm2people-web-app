@@ -15,7 +15,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import AddListing from './AddListing';
-import placeholder from '../../assets/images/bananas-sample.png';
 
 const useStyles = makeStyles({
   listingCard: {
@@ -44,12 +43,13 @@ const useStyles = makeStyles({
     backgroundColor: 'Gray',
   },
 });
-export default function ListingManagerCard({
-  id, getListing, onSelect, selected,
+export default function ListingCard({
+  id, getListing, onSelect, selected, // record,crop, unitsInStock, price, unitsPending,
 }) {
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
   const listing = getListing(id);
+  // const [editRecord, setEditRecord] = useState(listing);
   const handleClickOpen = () => {
     setEditActive(true);
   };
@@ -63,7 +63,7 @@ export default function ListingManagerCard({
         <CardActionArea>
           <CardMedia
             className={classes.listingCardPicture}
-            image={placeholder}
+            image="/bananas-sample.png"
             title="banana-placeholder"
             component="img"
           />
@@ -74,14 +74,14 @@ export default function ListingManagerCard({
             <Typography variant="body2" color="textSecondary" component="p">
               { listing['pallets available'] || 0 }
               {' '}
-              pallet(s) in stock    |    $
-              { listing['standard price per pallet'] || 0 }
-              /pallet
+              unit(s) in stock    |    $
+              { listing['standard price per unit'] || 0 }
+              /unit
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
               { listing['pallets pending'] || 0}
               {' '}
-              pallets pending
+              units pending
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -119,11 +119,11 @@ export default function ListingManagerCard({
   );
 }
 
-ListingManagerCard.defaultProps = {
+ListingCard.defaultProps = {
   selected: false,
 };
 
-ListingManagerCard.propTypes = {
+ListingCard.propTypes = {
   id: PropTypes.string.isRequired,
   onSelect: PropTypes.func.isRequired,
   selected: PropTypes.bool,

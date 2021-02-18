@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
-import ListingManagerCard from './ListingManagerCard';
+import ListingCard from './ListingCard';
 
 const Airtable = require('airtable');
 
@@ -10,13 +10,18 @@ const airtableConfig = {
 };
 const base = new Airtable({ apiKey: airtableConfig.apiKey })
   .base(airtableConfig.baseKey);
+// const selectedCardStates = {};
 let initialCardSelect = {};
 export default function ListingsView() {
   const [cardListings, setCardListings] = useState([]);
   const [selectedCards, setSelectedCards] = useState({});
   function updateSelectedCards(key, value) {
     setSelectedCards({ ...selectedCards, [key]: value });
+    console.log(selectedCards);
   }
+  // function setupListingStates(listing) {
+  //   selectedCardStates[listing.id] = false;
+  // }
   useEffect(() => {
     base('Listings')
       .select({ view: 'Grid view' })
@@ -28,6 +33,7 @@ export default function ListingsView() {
         setSelectedCards(initialCardSelect);
       });
   }, []);
+  console.log(cardListings);
   function getListing(id) {
     return cardListings.find((listing) => listing.id === id).fields;
   }
@@ -37,7 +43,7 @@ export default function ListingsView() {
         {
         cardListings.map((listing) => (
           <Grid item xs={3}>
-            <ListingManagerCard
+            <ListingCard
               id={listing.id}
               getListing={getListing}
               onSelect={updateSelectedCards}

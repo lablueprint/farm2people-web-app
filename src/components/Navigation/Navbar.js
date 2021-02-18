@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import './Navbar.css';
-import logo from '../../assets/images/F2P-logo.svg';
 
-export default function Navbar() {
+function Navbar() {
   const [click, setClick] = useState(false);
   const handleClick = () => setClick(!click);
   const closeMobileMenu = () => setClick(false);
@@ -11,67 +10,60 @@ export default function Navbar() {
     <>
       <nav className="navbar">
         <div className="navbar-container">
-          <NavLink to="/" onClick={closeMobileMenu}>
-            <img src={logo} alt="Logo" className="navbar-logo" />
-          </NavLink>
-          <div
-            className="menu-icon"
-            onClick={handleClick}
-            aria-hidden="true"
-          >
+          <Link to="/" className="navbar-logo" onClick={closeMobileMenu}>
+            Farm2People
+            <i className="fas fa-tractor" />
+          </Link>
+          {/* eslint-disable-next-line */}
+          <div className="menu-icon" onClick={handleClick}>
             <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
           </div>
           <ul className={click ? 'nav-menu active' : 'nav-menu'}>
             <li className="nav-item">
-              <NavLink
-                to="/marketplace"
-                activeClassName="nav-links-active"
-                className="nav-links"
-                onClick={closeMobileMenu}
-              >
+              <Link to="/marketplace" className="nav-links" onClick={closeMobileMenu}>
                 Marketplace
-              </NavLink>
+              </Link>
             </li>
             <li className="nav-item">
-              <NavLink
-                to="/contact"
-                activeClassName="nav-links-active"
-                className="nav-links"
-                onClick={closeMobileMenu}
-              >
-                Contact
-              </NavLink>
+              <Link to="/quotes" className="nav-links" onClick={closeMobileMenu}>
+                Quotes
+              </Link>
             </li>
             <li className="nav-item">
-              <NavLink
+              <Link
                 to="/notifications"
-                activeClassName="nav-links-active"
                 className="nav-links"
                 onClick={closeMobileMenu}
               >
                 Notifications
-              </NavLink>
+              </Link>
             </li>
             <li className="nav-item">
-              <NavLink
-                to="/profile"
-                activeClassName="nav-links-active"
+              <Link
+                to="/account"
                 className="nav-links"
                 onClick={closeMobileMenu}
               >
-                My Profile
-              </NavLink>
+                Account
+              </Link>
             </li>
             <li className="nav-item">
-              <NavLink
-                to="/cart"
-                activeClassName="nav-links-active"
+              <Link
+                to="/sign-in"
                 className="nav-links"
                 onClick={closeMobileMenu}
               >
-                Cart&nbsp;
-                <i className="fas fa-shopping-cart" />
-              </NavLink>
+                Sign In
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link
+                to="/sign-up"
+                className="nav-links"
+                onClick={closeMobileMenu}
+              >
+                Sign Up
+              </Link>
             </li>
           </ul>
         </div>
@@ -79,3 +71,5 @@ export default function Navbar() {
     </>
   );
 }
+
+export default Navbar;

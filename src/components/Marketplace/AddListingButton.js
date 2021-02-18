@@ -4,14 +4,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import AddListing from './AddListing';
-
-const useStyles = makeStyles({
-  button: {
-    float: 'right',
-  },
-});
 
 const theme = createMuiTheme({
   palette: {
@@ -22,7 +16,6 @@ const theme = createMuiTheme({
 });
 
 export default function AddListingButton() {
-  const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
   const handleClickOpen = () => {
     setEditActive(true);
@@ -34,7 +27,7 @@ export default function AddListingButton() {
   return (
     <>
       <ThemeProvider theme={theme}>
-        <Button variant="contained" size="medium" color="primary" onClick={handleClickOpen} className={classes.button}>
+        <Button variant="contained" size="medium" color="primary" onClick={handleClickOpen}>
           Add Listing
         </Button>
       </ThemeProvider>
@@ -48,7 +41,7 @@ export default function AddListingButton() {
             Cancel
           </Button>
           <Button form="listing-form" type="submit" color="primary">
-            Submit
+            Submit Changes
           </Button>
         </DialogActions>
       </Dialog>

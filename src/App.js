@@ -1,28 +1,47 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import Airtable from 'airtable';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { Navbar, Footer } from './components/Navigation';
+import Navbar from './components/Navigation';
 import HomeScreen from './components/Home';
-import InventoryManagerScreen from './components/Marketplace';
-import ContactScreen from './components/Contact';
+import AddListingScreen from './components/Marketplace';
+import QuotesScreen from './components/Quotes';
 import NotificationsScreen from './components/Notifications';
-import ProfileScreen from './components/Profile';
-import { CartScreen } from './components/Cart';
+import AccountScreen from './components/Account';
+import SignInScreen from './components/SignIn';
+import SignUpForm from './components/SignUp';
 
-export default function App() {
+const airtableConfig = {
+  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
+};
+
+const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+
+function App() {
+  useEffect(() => {
+    base('Farms')
+      .select({ view: 'Grid view' })
+      .eachPage((records, fetchNextPage) => {
+        console.log(records);
+        fetchNextPage();
+      });
+  }, []);
   return (
     <div className="App">
       <Router>
         <Navbar />
         <Switch>
           <Route path="/" exact component={HomeScreen} />
-          <Route path="/marketplace" exact component={InventoryManagerScreen} />
-          <Route path="/contact" exact component={ContactScreen} />
+          <Route path="/marketplace" exact component={AddListingScreen} />
+          <Route path="/quotes" exact component={QuotesScreen} />
+          <Route path="/account" exact component={AccountScreen} />
           <Route path="/notifications" exact component={NotificationsScreen} />
-          <Route path="/profile" exact component={ProfileScreen} />
-          <Route path="/cart" exact component={CartScreen} />
+          <Route path="/sign-in" exact component={SignInScreen} />
+          <Route path="/sign-up" exact component={SignUpForm} />
         </Switch>
-        <Footer />
       </Router>
     </div>
   );
 }
+
+export default App;

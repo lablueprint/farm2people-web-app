@@ -1,3 +1,3 @@
-import AddListingScreen from './AddListingScreen';
+import InventoryManagerScreen from './InventoryManagerScreen';
 
-export default AddListingScreen;
+export default InventoryManagerScreen;

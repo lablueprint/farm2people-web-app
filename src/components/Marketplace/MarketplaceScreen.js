@@ -89,11 +89,7 @@ export default function MarketplaceScreen() {
                 zipCode={listing.fields['zip code'] || -1}
                 description={listing.fields.description || 'No description'}
                 operationTypeTags={listing.fields['operation type'] || []}
-                marketTags={listing.fields.market || ['None specified']}
-                isPACA={listing.fields['PACA (Perishable Agricultural Commodities Act)']
-                  || false}
-                isColdChain={listing.fields['cold chain capabilities'] || false}
-                isDelivery={listing.fields['able to deliver'] || false}
+                farmingPracticeTags={listing.fields['farming practice type'] || []}
               />
             ))
           }

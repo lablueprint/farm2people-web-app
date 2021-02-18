@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './FarmCard.css';
 import {
-  Card, CardContent, Chip, Collapse, Grid, IconButton,
+  Button, Card, CardContent, Chip, Collapse, Grid, IconButton,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -33,7 +33,7 @@ const useStyles = makeStyles({
     width: '93%',
     marginRight: '2%',
     marginLeft: '2%',
-    fontSize: '16px',
+    fontSize: '45%',
   },
   headerContainer: {
     color: '#373737',
@@ -58,6 +58,9 @@ const useStyles = makeStyles({
     marginTop: '3px',
     marginLeft: '6%',
   },
+  operationTagsContainer: {
+    width: '50%',
+  },
   operationTags: {
     background: '#DBE2ED',
     color: '#373737',
@@ -68,6 +71,25 @@ const useStyles = makeStyles({
     paddingRight: '0.8%',
     fontFamily: 'Work Sans',
     fontSize: '45%',
+  },
+  farmingTagsContainer: {
+    fontSize: '45%',
+    paddingLeft: '0.5%',
+    paddingRight: '0.5%',
+    width: '50%',
+  },
+  farmingTags: {
+    fontSize: '90%',
+    fontFamily: 'Work Sans',
+    background: '#EBD7D0',
+    borderRadius: '6px',
+    marginLeft: '4%',
+    marginTop: '0.6%',
+    marginBottom: '0.6%',
+  },
+  marketContainer: {
+    marginTop: '3%',
+    fontFamily: 'Work Sans',
   },
   marketTags: {
     background: '#DBE2ED',
@@ -80,15 +102,34 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '16px',
   },
+  produceTypesContainer: {
+    marginTop: '1%',
+    width: '70%',
+  },
+  produceTypesTags: {
+    background: '#DBE2ED',
+    color: '#373737',
+    borderRadius: '6px',
+    marginTop: '1.5%',
+    marginRight: '1.5%',
+    paddingLeft: '0.7%',
+    paddingRight: '0.7%',
+    fontFamily: 'Work Sans',
+    fontSize: '85%',
+  },
   descriptionContainer: {
     marginTop: '-1.5%',
     marginBottom: '2%',
   },
-  marketContainer: {
-    marginTop: '3%',
-  },
   iconColour: {
     color: '#53AA48',
+  },
+  shopButton: {
+    backgroundColor: '#53AA48',
+    color: '#FFFFFF',
+    marginTop: '2%',
+    marginRight: '1.5%',
+    borderRadius: '6px',
   },
 });
 
@@ -96,7 +137,7 @@ export default function FarmCard(props) {
   const classes = useStyles();
   const [isExpanded, setIsExpanded] = useState(false);
   const {
-    farmName, address, zipCode, description, operationTypeTags, marketTags,
+    farmName, address, zipCode, description, operationTypeTags, farmingPracticeTags,
   } = props;
 
   return (
@@ -156,15 +197,46 @@ export default function FarmCard(props) {
         </IconButton>
       </Grid>
       <CardContent className={classes.collapsedContent}>
-        {operationTypeTags.map((tag) => (
-          <Chip
-            label={tag}
-            className={classes.operationTags}
-            size="medium"
-            variant="default"
-            classes="tags"
-          />
-        ))}
+        <Grid
+          container
+          direction="row"
+          justify="space-between"
+          alignItems="center"
+        >
+          <div className={classes.operationTagsContainer}>
+            {operationTypeTags.map((tag) => (
+              <Chip
+                label={tag}
+                className={classes.operationTags}
+                size="medium"
+                variant="default"
+                classes="tags"
+              />
+            ))}
+          </div>
+          { /* Show farming practice tags if expanded */
+          isExpanded
+          && farmingPracticeTags.length >= 1 && (
+          <Grid
+            container
+            direction="row"
+            justify="flex-end"
+            alignItems="center"
+            className={classes.farmingTagsContainer}
+          >
+            <div> Farming Practice: </div>
+            {farmingPracticeTags.map((tag) => (
+              <Chip
+                label={tag}
+                className={classes.farmingTags}
+                size="small"
+                variant="default"
+              />
+            ))}
+          </Grid>
+          )
+        }
+        </Grid>
       </CardContent>
       {/* If uncollapsed, shows description and additional tags */}
       <Collapse in={isExpanded} timout="auto" unmountOnExit>
@@ -174,23 +246,34 @@ export default function FarmCard(props) {
               {description}
             </div>
           </div>
-          <Grid /* Used to keep Market + market tags in 1 row */
+          <Grid /* Used to keep produce types + shop button in 1 row */
             container
             direction="row"
-            alignItems="center"
-            className={classes.marketContainer}
+            justify="space-between"
+            alignItems="flex-start"
           >
-            <div>
-              Market:
+            {farmingPracticeTags.length >= 1 && (
+            <div className={classes.produceTypesContainer}>
+              <div>
+                Produce Types Sold:
+              </div>
+              {farmingPracticeTags.map((tag) => (
+                <Chip
+                  label={tag}
+                  className={classes.produceTypesTags}
+                  size="small"
+                  variant="default"
+                />
+              ))}
             </div>
-            {marketTags.map((tag) => (
-              <Chip
-                label={tag}
-                className={classes.marketTags}
-                size="small"
-                variant="default"
-              />
-            ))}
+            )}
+            <Button
+              className={classes.shopButton}
+              variant="container"
+              disableElevation
+            >
+              SHOP THIS FARM
+            </Button>
           </Grid>
         </CardContent>
       </Collapse>
@@ -206,7 +289,7 @@ FarmCard.propTypes = {
   operationTypeTags: PropTypes.arrayOf({
     label: PropTypes.string.isRequired,
   }).isRequired,
-  marketTags: PropTypes.arrayOf({
+  farmingPracticeTags: PropTypes.arrayOf({
     label: PropTypes.string.isRequired,
   }).isRequired,
 };

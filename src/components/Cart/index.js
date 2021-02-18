@@ -1,3 +1,4 @@
 import CartScreen from './CartScreen';
+import CartItem from './CartItem';
 
-export default CartScreen;
+export { CartItem, CartScreen };

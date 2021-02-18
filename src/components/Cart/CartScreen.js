@@ -29,6 +29,8 @@ const useStyles = makeStyles({
     color: '#373737',
   },
   container: {
+    position: 'relative',
+    minHeight: '100vh',
     width: '78%',
     alignSelf: 'center',
     margin: 'auto',
@@ -211,4 +213,3 @@ function CartScreen() {
 }
 
 export default CartScreen;
-

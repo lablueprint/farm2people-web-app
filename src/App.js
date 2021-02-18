@@ -6,7 +6,7 @@ import MarketplaceScreen from './components/Marketplace';
 import ContactScreen from './components/Contact';
 import NotificationsScreen from './components/Notifications';
 import ProfileScreen from './components/Profile';
-import CartScreen from './components/Cart';
+import { CartScreen } from './components/Cart';
 
 export default function App() {
   return (

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './FarmCard.css';
 import {
-  Button, Card, CardContent, Chip, Collapse, Grid, IconButton,
+  Button, Card, CardContent, Chip, Collapse, Grid, IconButton, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 /* Custom styling for material-ui components */
 const useStyles = makeStyles({
   cardContainer: { // Overall card container
-    background: 'lightblue', // change to lightblue for testing, #FFFFFF for actual
+    background: '#FFFFFF',
     borderWidth: '0px',
     borderColor: '#53AA48',
     margin: '5%',
@@ -54,6 +54,7 @@ const useStyles = makeStyles({
     width: '40%',
   },
   subTitleText: {
+    fontFamily: 'Work Sans',
     fontSize: '50%',
     marginTop: '3px',
     marginLeft: '6%',
@@ -65,27 +66,34 @@ const useStyles = makeStyles({
     background: '#DBE2ED',
     color: '#373737',
     borderRadius: '6px',
-    marginTop: '-3%',
+    marginTop: '-5%',
     marginRight: '2%',
     paddingLeft: '0.8%',
     paddingRight: '0.8%',
     fontFamily: 'Work Sans',
     fontSize: '45%',
+    fontWeight: 'lighter',
   },
   farmingTagsContainer: {
+    fontFamily: 'Work Sans',
     fontSize: '45%',
     paddingLeft: '0.5%',
     paddingRight: '0.5%',
     width: '50%',
+    marginTop: '1%',
+  },
+  farmingText: {
+    fontFamily: 'Work Sans',
   },
   farmingTags: {
     fontSize: '90%',
     fontFamily: 'Work Sans',
     background: '#EBD7D0',
     borderRadius: '6px',
-    marginLeft: '4%',
-    marginTop: '0.6%',
-    marginBottom: '0.6%',
+    marginLeft: '3%',
+    marginTop: '0.8%',
+    marginBottom: '0.8%',
+    fontWeight: 'lighter',
   },
   marketContainer: {
     marginTop: '3%',
@@ -116,8 +124,10 @@ const useStyles = makeStyles({
     paddingRight: '0.7%',
     fontFamily: 'Work Sans',
     fontSize: '85%',
+    fontWeight: 'lighter',
   },
   descriptionContainer: {
+    fontFamily: 'Work Sans',
     marginTop: '-1.5%',
     marginBottom: '2%',
   },
@@ -130,6 +140,8 @@ const useStyles = makeStyles({
     marginTop: '2%',
     marginRight: '1.5%',
     borderRadius: '6px',
+    fontFamily: 'Work Sans',
+    fontWeight: 'lighter',
   },
 });
 
@@ -174,15 +186,15 @@ export default function FarmCard(props) {
             alignItems="start"
             className={classes.addressContainer}
           >
-            <div className={classes.subTitleText}>
+            <Typography className={classes.subTitleText}>
               {address}
-            </div>
+            </Typography>
             { // Only show zipcode if it exists
               (zipCode !== -1)
               && (
-                <div className={classes.subTitleText}>
+                <Typography className={classes.subTitleText}>
                   {zipCode}
-                </div>
+                </Typography>
               )
             }
           </Grid>
@@ -224,7 +236,11 @@ export default function FarmCard(props) {
             alignItems="center"
             className={classes.farmingTagsContainer}
           >
-            <div> Farming Practice: </div>
+            <Typography
+              className={classes.farmingText}
+            >
+              Farming Practice:
+            </Typography>
             {farmingPracticeTags.map((tag) => (
               <Chip
                 label={tag}
@@ -242,9 +258,9 @@ export default function FarmCard(props) {
       <Collapse in={isExpanded} timout="auto" unmountOnExit>
         <CardContent className={classes.expandedContent}>
           <div>
-            <div className={classes.descriptionContainer}>
+            <Typography className={classes.descriptionContainer}>
               {description}
-            </div>
+            </Typography>
           </div>
           <Grid /* Used to keep produce types + shop button in 1 row */
             container

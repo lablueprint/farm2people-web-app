@@ -268,7 +268,8 @@ export default function FarmCard(props) {
             justify="space-between"
             alignItems="flex-start"
           >
-            {farmingPracticeTags.length >= 1 && (
+            { // TODO: replace w/ actual produce types and update icons
+            farmingPracticeTags.length >= 1 && (
             <div className={classes.produceTypesContainer}>
               <div>
                 Produce Types Sold:
@@ -282,7 +283,8 @@ export default function FarmCard(props) {
                 />
               ))}
             </div>
-            )}
+            )
+}
             <Button
               className={classes.shopButton}
               variant="container"

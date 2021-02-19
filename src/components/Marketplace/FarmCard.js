@@ -46,7 +46,7 @@ const useStyles = makeStyles({
     width: '93%',
   },
   titleText: {
-    fontSize: '63%',
+    fontSize: '22px',
     textDecoration: 'underline',
     textDecorationColor: '#373737',
   },
@@ -55,12 +55,13 @@ const useStyles = makeStyles({
   },
   subTitleText: {
     fontFamily: 'Work Sans',
-    fontSize: '50%',
+    fontSize: '18px',
     marginTop: '3px',
     marginLeft: '6%',
   },
   operationTagsContainer: {
     width: '50%',
+    fontSize: '15px',
   },
   operationTags: {
     background: '#DBE2ED',
@@ -71,16 +72,15 @@ const useStyles = makeStyles({
     paddingLeft: '0.8%',
     paddingRight: '0.8%',
     fontFamily: 'Work Sans',
-    fontSize: '45%',
+    fontSize: '90%',
     fontWeight: 'lighter',
   },
   farmingTagsContainer: {
     fontFamily: 'Work Sans',
-    fontSize: '45%',
+    fontSize: '15px',
     paddingLeft: '0.5%',
     paddingRight: '0.5%',
     width: '50%',
-    marginTop: '1%',
   },
   farmingText: {
     fontFamily: 'Work Sans',
@@ -95,24 +95,11 @@ const useStyles = makeStyles({
     marginBottom: '0.8%',
     fontWeight: 'lighter',
   },
-  marketContainer: {
-    marginTop: '3%',
-    fontFamily: 'Work Sans',
-  },
-  marketTags: {
-    background: '#DBE2ED',
-    color: '#373737',
-    borderRadius: '6px',
-    marginLeft: '1%',
-    marginRight: '0.5%',
-    paddingLeft: '0.7%',
-    paddingRight: '0.7%',
-    fontFamily: 'Work Sans',
-    fontSize: '16px',
-  },
   produceTypesContainer: {
     marginTop: '1%',
     width: '70%',
+    fontSize: '15px',
+    fontWeight: 'bold',
   },
   produceTypesTags: {
     background: '#DBE2ED',
@@ -123,7 +110,7 @@ const useStyles = makeStyles({
     paddingLeft: '0.7%',
     paddingRight: '0.7%',
     fontFamily: 'Work Sans',
-    fontSize: '85%',
+    fontSize: '90%',
     fontWeight: 'lighter',
   },
   descriptionContainer: {
@@ -227,31 +214,31 @@ export default function FarmCard(props) {
             ))}
           </div>
           { /* Show farming practice tags if expanded */
-          isExpanded
-          && farmingPracticeTags.length >= 1 && (
-          <Grid
-            container
-            direction="row"
-            justify="flex-end"
-            alignItems="center"
-            className={classes.farmingTagsContainer}
-          >
-            <Typography
-              className={classes.farmingText}
-            >
-              Farming Practice:
-            </Typography>
-            {farmingPracticeTags.map((tag) => (
-              <Chip
-                label={tag}
-                className={classes.farmingTags}
-                size="small"
-                variant="default"
-              />
-            ))}
-          </Grid>
-          )
-        }
+            isExpanded
+            && farmingPracticeTags.length >= 1 && (
+              <Grid
+                container
+                direction="row"
+                justify="flex-end"
+                alignItems="center"
+                className={classes.farmingTagsContainer}
+              >
+                <Typography
+                  className={classes.farmingText}
+                >
+                  Farming Practice:
+                </Typography>
+                {farmingPracticeTags.map((tag) => (
+                  <Chip
+                    label={tag}
+                    className={classes.farmingTags}
+                    size="small"
+                    variant="default"
+                  />
+                ))}
+              </Grid>
+            )
+          }
         </Grid>
       </CardContent>
       {/* If uncollapsed, shows description and additional tags */}
@@ -269,22 +256,22 @@ export default function FarmCard(props) {
             alignItems="flex-start"
           >
             { // TODO: replace w/ actual produce types and update icons
-            farmingPracticeTags.length >= 1 && (
-            <div className={classes.produceTypesContainer}>
-              <div>
-                Produce Types Sold:
-              </div>
-              {farmingPracticeTags.map((tag) => (
-                <Chip
-                  label={tag}
-                  className={classes.produceTypesTags}
-                  size="small"
-                  variant="default"
-                />
-              ))}
-            </div>
-            )
-}
+              farmingPracticeTags.length >= 1 && (
+                <div className={classes.produceTypesContainer}>
+                  <div>
+                    Produce Types Sold:
+                  </div>
+                  {farmingPracticeTags.map((tag) => (
+                    <Chip
+                      label={tag}
+                      className={classes.produceTypesTags}
+                      size="small"
+                      variant="default"
+                    />
+                  ))}
+                </div>
+              )
+            }
             <Button
               className={classes.shopButton}
               variant="container"

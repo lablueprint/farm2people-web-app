@@ -3,7 +3,7 @@ import Airtable from 'airtable';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Navbar from './components/Navigation';
 import HomeScreen from './components/Home';
-import AddListingScreen from './components/Marketplace';
+import InventoryManagerScreen from './components/Marketplace';
 import QuotesScreen from './components/Quotes';
 import NotificationsScreen from './components/Notifications';
 import AccountScreen from './components/Account';
@@ -32,7 +32,7 @@ function App() {
         <Navbar />
         <Switch>
           <Route path="/" exact component={HomeScreen} />
-          <Route path="/marketplace" exact component={AddListingScreen} />
+          <Route path="/marketplace" exact component={InventoryManagerScreen} />
           <Route path="/quotes" exact component={QuotesScreen} />
           <Route path="/account" exact component={AccountScreen} />
           <Route path="/notifications" exact component={NotificationsScreen} />

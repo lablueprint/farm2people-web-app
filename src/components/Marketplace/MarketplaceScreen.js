@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Airtable from 'airtable';
 import './MarketplaceScreen.css';
+import { makeStyles } from '@material-ui/core/styles';
 import FarmCard from './FarmCard';
+
+const useStyles = makeStyles({
+  root: {
+    position: 'relative',
+    minHeight: '100vh',
+  },
+});
 
 // Airtable set-up
 const airtableConfig = {
@@ -13,6 +21,7 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
+  const classes = useStyles();
   // Get records from Airtable whenever DOM mounts and updates/changes
   useEffect(() => {
     base('Farms').select({ view: 'Grid view' }).all()
@@ -22,8 +31,7 @@ export default function MarketplaceScreen() {
   });
 
   return (
-    <div>
-      <h1> Market Screen </h1>
+    <div className={classes.root}>
       {/* Map each array of farmListing info to render a FarmCard */
         farmListings.map((listing) => (
           <FarmCard

@@ -8,6 +8,13 @@ const useStyles = makeStyles({
   },
 });
 
+const useStyles = makeStyles({
+  root: {
+    position: 'relative',
+    minHeight: '100vh',
+  },
+});
+
 export default function HomeScreen() {
   const classes = useStyles();
   return (

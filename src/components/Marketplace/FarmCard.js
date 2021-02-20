@@ -19,7 +19,9 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
   },
   collapsedBorder: {
+    border: '1px solid #C4C4C4',
     borderLeftWidth: '15px',
+    borderLeftColor: '#53AA48',
   },
   collapsedContent: {
     width: '95%',
@@ -27,6 +29,7 @@ const useStyles = makeStyles({
     marginLeft: '2%',
   },
   expandedBorder: { // Border if card is expanded
+    filter: 'drop-shadow(0px 0px 20px rgba(0, 0, 0, 0.12))',
     borderTopWidth: '20px',
   },
   expandedContent: {

@@ -1,31 +1,31 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import Navbar from './components/Navigation';
-import HomeScreen from './components/Home';
-import MarketplaceScreen from './components/Marketplace';
-import QuotesScreen from './components/Quotes';
+import { Navbar, Footer } from './components/Navigation';
+import { InventoryManagerScreen, MarketplaceScreen } from './components/Marketplace';
+import ContactScreen from './components/Contact';
 import NotificationsScreen from './components/Notifications';
-import AccountScreen from './components/Account';
-import SignInScreen from './components/SignIn';
+import CartScreen from './components/Cart';
+import AddFarm from './components/AddFarm';
 import SignUpForm from './components/SignUp';
+import SignInForm from './components/SignIn';
 
-function App() {
+export default function App() {
   return (
     <div className="App">
       <Router>
         <Navbar />
         <Switch>
-          <Route path="/" exact component={HomeScreen} />
+          <Route path="/" exact component={InventoryManagerScreen} />
           <Route path="/marketplace" exact component={MarketplaceScreen} />
-          <Route path="/quotes" exact component={QuotesScreen} />
-          <Route path="/account" exact component={AccountScreen} />
+          <Route path="/contact" exact component={ContactScreen} />
           <Route path="/notifications" exact component={NotificationsScreen} />
-          <Route path="/sign-in" exact component={SignInScreen} />
-          <Route path="/sign-up" exact component={SignUpForm} />
+          <Route path="/profile" exact component={AddFarm} />
+          <Route path="/cart" exact component={CartScreen} />
+          <Route path="/signup" exact component={SignUpForm} />
+          <Route path="/signin" exact component={SignInForm} />
         </Switch>
+        <Footer />
       </Router>
     </div>
   );
 }
-
-export default App;

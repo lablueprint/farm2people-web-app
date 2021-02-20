@@ -1,0 +1,12 @@
+1. Figure out what to persist in redux. 
+  a) You can't persist the owner table, because 
+    we don't want to bring over the whole table like pplpower does. We might want to persist
+    the base.user object since that seems to be what is keeping a user logged in.
+  b) https://levelup.gitconnected.com/persisting-your-react-application-state-with-redux-and-typescript-51e4e66c4e53
+  c) https://www.freecodecamp.org/news/how-to-persist-a-logged-in-user-in-react/
+  
+Log Feb 10, 2020
+1. 
+  a) Since airtable already handles persistance, all we need to do, is figure out a way
+    to store the user's token and the user object (to use for subsequent airtable api calls).
+  b) To do this, simply use localstorage and redux store

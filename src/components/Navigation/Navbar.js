@@ -73,6 +73,26 @@ export default function Navbar() {
                 <i className="fas fa-shopping-cart" />
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink
+                to="/signup"
+                activeClassName="nav-links-active"
+                className="nav-links"
+                onClick={closeMobileMenu}
+              >
+                Sign Up
+              </NavLink>
+            </li>
+            <li className="nav-item">
+              <NavLink
+                to="/signin"
+                activeClassName="nav-links-active"
+                className="nav-links"
+                onClick={closeMobileMenu}
+              >
+                Sign In
+              </NavLink>
+            </li>
           </ul>
         </div>
       </nav>

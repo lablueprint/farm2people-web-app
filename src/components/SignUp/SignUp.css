@@ -1,6 +1,8 @@
 .root {
   margin-left: 40%;
-  margin-top: 5%
+  margin-top: 5%;
+  position: relative;
+  min-height: 100vh;
 }
 .text-fields {
   width: 40%;

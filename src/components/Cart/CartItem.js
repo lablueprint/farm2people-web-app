@@ -25,7 +25,7 @@ export default function CartItem({
       setListingDetails(record);
       setLoading(false);
     });
-  });
+  }, []);
 
   if (!loading && reservedListingID) {
     return (

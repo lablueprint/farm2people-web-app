@@ -26,7 +26,7 @@ export default function InventoryManagerScreen() {
         <Grid container spacing={0} className={classes.dashboard}>
           <Grid item xs={1} />
           <Grid container item spacing={3} xs={9} alignItems="center" justify="center">
-            <Grid item xs={3}>
+            <Grid item xs={12}>
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
               </Typography>

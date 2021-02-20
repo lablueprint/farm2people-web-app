@@ -3,9 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import FormControl from '@material-ui/core/FormControl';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
 import PropTypes from 'prop-types';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ListingInputField from './ListingInputField';
@@ -58,9 +56,6 @@ export default function AddListing({
       value = +value;
     }
     setListingRecord({ ...listingRecord, [name]: value });
-  }
-  function onChangeCheckbox(e) {
-    setListingRecord({ ...listingRecord, [e.target.name]: e.target.checked });
   }
   // TODO: Dynamically load these options from Airtable
   const UnitTypes = [
@@ -257,23 +252,6 @@ export default function AddListing({
             val={listingRecord['pallets available']}
           />
         </Grid>
-
-        <Grid item xs={6}>
-          <Typography variant="h6" component="h6">
-            Distressed Status
-          </Typography>
-          <FormControlLabel
-            control={(
-              <Checkbox
-                checked={listingRecord.distressed}
-                onChange={onChangeCheckbox}
-                name="distressed"
-                color="primary"
-              />
-              )}
-            label="Distressed"
-          />
-        </Grid>
       </Grid>
     </form>
   );
@@ -297,7 +275,6 @@ AddListing.defaultProps = {
     'pallets available': 0,
     'pallets pending': 0,
     'pallets sold': 0,
-    distressed: false,
   },
   edit: false,
 };
@@ -319,7 +296,6 @@ AddListing.propTypes = {
     'pallets available': PropTypes.number,
     'pallets pending': PropTypes.number,
     'pallets sold': PropTypes.number,
-    distressed: PropTypes.bool,
   }),
   edit: PropTypes.bool,
   closeDialog: PropTypes.func.isRequired,

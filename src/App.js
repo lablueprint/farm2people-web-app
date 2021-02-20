@@ -7,7 +7,6 @@ import NotificationsScreen from './components/Notifications';
 import CartScreen from './components/Cart';
 import AddFarm from './components/AddFarm';
 
-
 export default function App() {
   return (
     <div className="App">

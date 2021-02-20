@@ -7,19 +7,11 @@ const useStyles = makeStyles({
     minHeight: '100vh',
   },
 });
-
-const useStyles = makeStyles({
-  root: {
-    position: 'relative',
-    minHeight: '100vh',
-  },
-});
-
-export default function HomeScreen() {
+export default function MarketplaceScreen() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <h1>Home Screen</h1>
+      <h1>Marketplace Screen</h1>
     </div>
   );
 }

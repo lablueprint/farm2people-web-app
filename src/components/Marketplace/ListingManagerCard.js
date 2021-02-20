@@ -15,7 +15,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import AddListing from './AddListing';
-import placeholder from '../../assets/images/placeholder.png';
+import OrangeCat from '../../assets/images/OrangeCat.jpeg';
 
 const useStyles = makeStyles({
   listingCard: {
@@ -63,7 +63,7 @@ export default function ListingManagerCard({
         <CardActionArea>
           <CardMedia
             className={classes.listingCardPicture}
-            image={placeholder}
+            image={OrangeCat}
             title="banana-placeholder"
             component="img"
           />

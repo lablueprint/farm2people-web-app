@@ -1,3 +1,4 @@
 import InventoryManagerScreen from './InventoryManagerScreen';
+import MarketplaceScreen from './MarketplaceScreen';
 
-export default InventoryManagerScreen;
+export { InventoryManagerScreen, MarketplaceScreen };

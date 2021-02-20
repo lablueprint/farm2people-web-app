@@ -22,15 +22,19 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 
 // custom styling
 const useStyles = makeStyles({
+  root: {
+    position: 'relative',
+    minHeight: '100vh',
+  },
   cartHeader: {
     fontFamily: 'Work Sans',
     fontWeight: 'bolder',
     fontSize: 50,
     color: '#373737',
+    paddingTop: '2%',
   },
   container: {
     position: 'relative',
-    minHeight: '100vh',
     width: '78%',
     alignSelf: 'center',
     margin: 'auto',
@@ -98,7 +102,7 @@ const useStyles = makeStyles({
     width: '140px',
     height: 'auto',
     right: '1%',
-    bottom: '10%',
+    bottom: '22%',
     zIndex: '-2',
   },
   fruit4: {
@@ -106,8 +110,11 @@ const useStyles = makeStyles({
     width: '140px',
     height: 'auto',
     right: '0%',
-    bottom: '-2%',
+    bottom: '10%',
     zIndex: '-1',
+  },
+  green: {
+    color: '#53AA48',
   },
 });
 
@@ -125,7 +132,7 @@ function CartScreen() {
     setSubtotal(0);
     base('Reserved Listings').select({ view: 'Grid view' }).all().then((records) => {
       records.map((element) => base('Listings').find(element.fields['listing id'][0], (err, record) => {
-        const currCartItemPrice = element.fields.pallets * record.fields['standard price per unit'];
+        const currCartItemPrice = element.fields.pallets * record.fields['standard price per pallet'];
         setSubtotal((prevTotal) => (prevTotal + currCartItemPrice));
       }));
       setCartListings(records);
@@ -148,7 +155,7 @@ function CartScreen() {
     base('Reserved Listings').destroy([id],
       (err) => {
         if (err) {
-          console.error(err);
+          setErrorMessage(err);
         }
       });
 
@@ -156,7 +163,7 @@ function CartScreen() {
   }
 
   return (
-    <div>
+    <div className={classes.root}>
       <div className={classes.container}>
         <Typography className={classes.cartHeader}>
           Cart
@@ -198,7 +205,7 @@ function CartScreen() {
         )}
         <span className={classes.buttonContainer}>
           <ButtonBase>
-            <ArrowBack style={{ color: '#53AA48' }} />
+            <ArrowBack className={classes.green} />
             <div className={classes.continueShoppingButton}>Continue shopping</div>
           </ButtonBase>
           <Button variant="contained" className={classes.checkoutButton}>Checkout</Button>

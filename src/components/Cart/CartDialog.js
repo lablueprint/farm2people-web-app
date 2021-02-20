@@ -95,7 +95,7 @@ function CartDialog({
 CartDialog.propTypes = {
   alert: PropTypes.bool.isRequired,
   close: PropTypes.func.isRequired,
-  message: PropTypes.func.isRequired,
+  message: PropTypes.string.isRequired,
   getResponse: PropTypes.bool.isRequired,
 };
 

@@ -75,7 +75,7 @@ export default function CartItemDisplay({
   updateSubtotal, removeListing,
 }) {
   // TODO: integrate photos stored in backend and render them in place of this
-  const image = 'https://ilovepathology.com/wp-content/uploads/2016/09/cauliflower_PNG12674-1024x887.png';
+  const image = 'https://i.ebayimg.com/images/i/350982650852-0-1/s-l1000.jpg';
 
   const [quantity, setQuantity] = useState(pallets);
   const [removeAlert, setRemoveAlert] = useState(false);

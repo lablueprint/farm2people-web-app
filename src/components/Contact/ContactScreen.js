@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import AddFarm from '../AddFarm';
 
 const useStyles = makeStyles({
   root: {
@@ -9,12 +8,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function HomeScreen() {
+export default function ContactScreen() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <h1>Home Screen</h1>
-      <AddFarm />
+      <h1>Contact Screen</h1>
     </div>
   );
 }

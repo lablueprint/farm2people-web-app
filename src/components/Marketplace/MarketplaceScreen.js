@@ -28,7 +28,7 @@ export default function MarketplaceScreen() {
       .then((records) => {
         setFarmListings(records);
       });
-  });
+  }, []);
 
   return (
     <div className={classes.root}>

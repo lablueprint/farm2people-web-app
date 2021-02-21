@@ -6,7 +6,7 @@ import ContactScreen from './components/Contact';
 import NotificationsScreen from './components/Notifications';
 import CartScreen from './components/Cart';
 import { Checkout, CheckoutSuccess } from './components/Checkout';
-import AddFarm from './components/AddFarm';
+import AddFarmScreen from './components/AddFarm';
 
 export default function App() {
   return (
@@ -18,7 +18,7 @@ export default function App() {
           <Route path="/marketplace" exact component={MarketplaceScreen} />
           <Route path="/contact" exact component={ContactScreen} />
           <Route path="/notifications" exact component={NotificationsScreen} />
-          <Route path="/profile" exact component={AddFarm} />
+          <Route path="/profile" exact component={AddFarmScreen} />
           <Route path="/cart" exact component={CartScreen} />
 
           <Route path="/cart/checkout" exact component={Checkout} />

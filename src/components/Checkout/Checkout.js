@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
-  Card, CardContent, Typography, TextField, makeStyles, Grid,
+  Card, CardContent, Typography, TextField, makeStyles, Grid, Button, ButtonBase,
 } from '@material-ui/core';
+import ArrowBack from '@material-ui/icons/ArrowBack';
 import CheckoutItemsDisplay from './CheckoutItemsDisplay';
 
 const useStyles = makeStyles({
@@ -59,6 +61,38 @@ const useStyles = makeStyles({
     color: '#373737',
     textDecoration: 'underline',
     textDecorationColor: '#53AA48',
+  },
+  backToCartButton: {
+    fontFamily: 'Work Sans',
+    fontStyle: 'normal',
+    fontWeight: 'bolder',
+    fontSize: '18px',
+    lineHeight: '140%',
+    color: '#373737',
+    justifyContent: 'center',
+  },
+  requestQuoteButton: {
+    fontFamily: 'Work Sans',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    fontSize: '20px',
+    lineHeight: '140%',
+    color: '#FFFFFF',
+    background: '#53AA48',
+  },
+  links: {
+    textDecoration: 'none',
+  },
+  green: {
+    color: '#53AA48',
+  },
+  buttonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: 'auto',
+    paddingTop: '17px',
+    marginBottom: '5%',
   },
 });
 
@@ -179,6 +213,20 @@ function Checkout() {
         </Grid>
         <Grid item xs={6} sm={6} md={5}>
           <CheckoutItemsDisplay />
+          <div className={classes.buttonContainer}>
+            <Link className={classes.links} to="/cart">
+              <ButtonBase>
+                <ArrowBack className={classes.green} />
+                <div className={classes.backToCartButton}>Back to Cart</div>
+              </ButtonBase>
+            </Link>
+
+            <Link className={classes.links} to="/cart/success">
+              <Button className={classes.requestQuoteButton}>
+                Request Quote
+              </Button>
+            </Link>
+          </div>
         </Grid>
       </Grid>
     </div>

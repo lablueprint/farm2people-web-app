@@ -6,6 +6,10 @@ import Asset1 from '../../assets/images/Asset1.svg';
 import PeaceLogo from '../../assets/images/PeaceLogo.svg';
 
 const useStyles = makeStyles({
+  root: {
+    position: 'relative',
+    minHeight: '100vh',
+  },
   container: {
     width: '40%',
     alignSelf: 'center',
@@ -56,14 +60,14 @@ const useStyles = makeStyles({
     width: '140px',
     height: 'auto',
     left: '10%',
-    bottom: '25%',
+    top: '35%',
   },
   peaceLogo: {
     position: 'absolute',
     width: '250px',
     height: 'auto',
-    top: '25%',
-    right: '10%',
+    top: '0%',
+    right: '8%',
   },
 });
 
@@ -71,7 +75,7 @@ function CheckoutSuccess({ farms = "Ryan's Ronderful Rarm" }) {
   const classes = useStyles();
 
   return (
-    <div>
+    <div className={classes.root}>
       <div className={classes.container}>
         <Typography style={{ fontWeight: 700 }} className={classes.confirmationText}>
           Yay!

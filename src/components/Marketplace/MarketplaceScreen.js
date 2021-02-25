@@ -37,17 +37,29 @@ export default function MarketplaceScreen() {
       });
   }, []);
 
+  console.log(produceListings);
+
   return (
     <div className={classes.root}>
+      {/* Map each array of produceListing info to render a ProduceCard */
+        produceListings.map((produce) => (
+          <ProduceCard
+            cropName={produce.fields.crop || 'No crop name'}
+            farmName={"Ryan's Rarm"}
+            unitPrice={produce.fields['standard price per pallet'] || -1}
+            unitType={produce.fields['unit type'] || 'pallet'}
+          />
+        ))
+      }
       {/* Map each array of farmListing info to render a FarmCard */
-        farmListings.map((listing) => (
+        farmListings.map((farm) => (
           <FarmCard
-            farmName={listing.fields['farm name'] || 'No farm name'}
-            address={listing.fields.address || 'No address'}
-            zipCode={listing.fields['zip code'] || -1}
-            description={listing.fields.description || 'No description'}
-            operationTypeTags={listing.fields['operation type'] || []}
-            farmingPracticeTags={listing.fields['farming practice type'] || []}
+            farmName={farm.fields['farm name'] || 'No farm name'}
+            address={farm.fields.address || 'No address'}
+            zipCode={farm.fields['zip code'] || -1}
+            description={farm.fields.description || 'No description'}
+            operationTypeTags={farm.fields['operation type'] || []}
+            farmingPracticeTags={farm.fields['farming practice type'] || []}
           />
         ))
       }

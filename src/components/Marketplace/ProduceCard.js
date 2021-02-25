@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Button, Card, CardActions, CardContent, CardMedia, IconButton, Typography,
+  Button, Card, CardActions, CardContent, CardMedia, Grid, IconButton, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
@@ -10,10 +10,10 @@ import './Font.css';
 
 const useStyles = makeStyles({
   cardContainer: {
-    width: '30%',
-    background: 'lightblue', // change to lightblue/white for testing
+    width: '15%',
+    background: 'white', // change to lightblue/white for testing
     borderWidth: '0px',
-    margin: '2%',
+    margin: '1.5%',
     borderRadius: '8px',
     fontFamily: 'Work Sans',
   },
@@ -27,29 +27,41 @@ const useStyles = makeStyles({
   },
   titleText: {
     fontFamily: 'Work Sans',
-    fontSize: '70%',
+    fontSize: '20px',
     marginBottom: '1.5%',
+    marginTop: '-4%',
+    fontWeight: 'bold',
   },
   farmText: {
     fontFamily: 'Work Sans',
-    fontSize: '42%',
+    fontSize: '14px',
     marginBottom: '1.5%',
   },
   priceText: {
     fontFamily: 'Work Sans',
-    fontSize: '55%',
-    fontWeight: 'bold',
+    fontSize: '18px',
+    fontWeight: 'bolder',
+    marginTop: '1%',
+    marginBottom: '-4%',
+  },
+  smallPriceText: {
+    fontFamily: 'Work Sans',
+    fontSize: '14px',
+    fontWeight: 'bolder',
+    marginTop: '1%',
+    marginBottom: '-3%',
   },
   cartButton: {
     width: '100%',
     borderRadius: '8px',
     backgroundColor: '#53AA48',
-    color: 'white', // text colour
+    color: 'white',
     fontFamily: 'Work Sans',
-    fontSize: '45%',
+    fontSize: '15px',
     fontWeight: 'bold',
     marginTop: '-3.5%',
     marginBottom: '0.2%',
+    textAlign: 'center',
   },
   cartIcon: {
     color: 'white',
@@ -76,9 +88,19 @@ export default function ProduceCard(props) {
         <Typography className={styles.farmText}>
           {farmName}
         </Typography>
-        <Typography className={styles.priceText}>
-          {`$${unitPrice}/${unitType}`}
-        </Typography>
+        <Grid
+          container
+          direction="row"
+          justify="flex-start"
+          alignItems="flex-end"
+        >
+          <Typography className={styles.priceText}>
+            {`$${unitPrice}/`}
+          </Typography>
+          <Typography className={styles.smallPriceText}>
+            {unitType}
+          </Typography>
+        </Grid>
       </CardContent>
       <CardActions>
         <Button className={styles.cartButton}>

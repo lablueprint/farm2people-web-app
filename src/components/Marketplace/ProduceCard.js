@@ -50,7 +50,7 @@ const useStyles = makeStyles({
     fontSize: '16px',
     fontWeight: 'bolder',
     marginTop: '1%',
-    marginBottom: '-5%',
+    marginBottom: '-4.5%',
   },
   smallPriceText: {
     fontFamily: 'Work Sans',
@@ -67,7 +67,7 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '14px',
     fontWeight: 'bold',
-    marginTop: '-3%',
+    marginTop: '-2%',
     marginBottom: '0.2%',
     paddingTop: '2.5%',
     paddingBottom: '2.5%',

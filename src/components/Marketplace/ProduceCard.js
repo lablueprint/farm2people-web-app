@@ -1,4 +1,5 @@
-import React from 'react';
+import Airtable from 'airtable';
+import React, { useEffect, useState } from 'react';
 import {
   Button, Card, CardActions, CardContent, CardMedia, Grid, IconButton, Typography,
 } from '@material-ui/core';
@@ -7,6 +8,14 @@ import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
 import cabbageDog from './cabbagedog.png';
 import './Font.css';
+
+// Airtable set-up
+const airtableConfig = {
+  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
+};
+
+const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 const useStyles = makeStyles({
   cardContainer: {
@@ -70,8 +79,21 @@ const useStyles = makeStyles({
 
 export default function ProduceCard(props) {
   const {
-    cropName, farmName, unitPrice, unitType,
+    cropName, farmID, unitPrice, unitType,
   } = props;
+  const [farmName, setFarmName] = useState('');
+
+  // Get farm name from Airtable if produce has farm id linked to it
+  useEffect(() => {
+    if (farmID === null) {
+      setFarmName('Unnamed farm');
+    } else {
+      const farmArr = farmID.toString().split(',');
+      base('Farms').find(farmArr[0]).then((farmObj) => {
+        setFarmName(farmObj.fields['farm name'] || 'Farm not found');
+      });
+    }
+  }, []);
 
   const styles = useStyles();
   return (
@@ -116,7 +138,7 @@ export default function ProduceCard(props) {
 
 ProduceCard.propTypes = {
   cropName: PropTypes.string.isRequired,
-  farmName: PropTypes.string.isRequired,
+  farmID: PropTypes.string.isRequired,
   unitPrice: PropTypes.number.isRequired,
   unitType: PropTypes.string.isRequired,
 };

@@ -1,7 +1,7 @@
 import Airtable from 'airtable';
 import React, { useEffect, useState } from 'react';
 import {
-  Button, Card, CardActions, CardContent, CardMedia, Grid, IconButton, Typography,
+  Card, CardActions, CardContent, CardMedia, Grid, IconButton, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
@@ -19,46 +19,45 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 
 const useStyles = makeStyles({
   cardContainer: {
-    width: '15%',
-    background: 'white', // change to lightblue/white for testing
+    width: '18%',
+    background: 'white',
     borderWidth: '0px',
     margin: '1.5%',
     borderRadius: '8px',
     fontFamily: 'Work Sans',
   },
   img: { // Height must be specified for image to appear
-    // height: 180,
-    width: '92%',
-    aspectRatio: 10 / 10,
+    width: '90%',
+    aspectRatio: 10 / 8.5,
     marginTop: '4%',
-    marginLeft: '4%',
-    marginRight: '4%',
+    marginLeft: '5%',
+    marginRight: '5%',
   },
   titleText: {
     fontFamily: 'Work Sans',
-    fontSize: '20px',
+    fontSize: '18px',
     marginBottom: '1.5%',
-    marginTop: '-4%',
+    marginTop: '-5%',
     fontWeight: 'bold',
   },
   farmText: {
     fontFamily: 'Work Sans',
-    fontSize: '14px',
+    fontSize: '13px',
     marginBottom: '1.5%',
   },
   priceText: {
     fontFamily: 'Work Sans',
-    fontSize: '18px',
+    fontSize: '16px',
     fontWeight: 'bolder',
     marginTop: '1%',
-    marginBottom: '-4%',
+    marginBottom: '-5%',
   },
   smallPriceText: {
     fontFamily: 'Work Sans',
-    fontSize: '14px',
+    fontSize: '12px',
     fontWeight: 'bolder',
     marginTop: '1%',
-    marginBottom: '-3%',
+    marginBottom: '-4%',
   },
   cartButton: {
     width: '100%',
@@ -66,14 +65,12 @@ const useStyles = makeStyles({
     backgroundColor: '#53AA48',
     color: 'white',
     fontFamily: 'Work Sans',
-    fontSize: '15px',
+    fontSize: '14px',
     fontWeight: 'bold',
-    marginTop: '-3.5%',
+    marginTop: '-3%',
     marginBottom: '0.2%',
-    textAlign: 'center',
-  },
-  cartIcon: {
-    color: 'white',
+    paddingTop: '2.5%',
+    paddingBottom: '2.5%',
   },
 });
 
@@ -125,12 +122,10 @@ export default function ProduceCard(props) {
         </Grid>
       </CardContent>
       <CardActions>
-        <Button className={styles.cartButton}>
-          <IconButton size="small" className={styles.cartIcon}>
-            <AddIcon />
-          </IconButton>
+        <IconButton className={styles.cartButton}>
+          <AddIcon />
           ADD TO CART
-        </Button>
+        </IconButton>
       </CardActions>
     </Card>
   );

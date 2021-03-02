@@ -2,9 +2,19 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Card, CardContent, Typography, TextField, makeStyles, Grid, Button, ButtonBase,
+  FormControlLabel, Checkbox,
 } from '@material-ui/core';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import CheckoutItemsDisplay from './CheckoutItemsDisplay';
+
+const Airtable = require('airtable');
+
+const airtableConfig = {
+  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
+};
+const base = new Airtable({ apiKey: airtableConfig.apiKey })
+  .base(airtableConfig.baseKey);
 
 const useStyles = makeStyles({
   // styles temp copied from Cart Screen just to make it easier to read
@@ -98,137 +108,235 @@ const useStyles = makeStyles({
 
 function Checkout() {
   const classes = useStyles();
+  const [editing, setEditing] = useState(false);
+
+  // switch out when profiles done?
   const [userDetails, setUserDetails] = useState({
-    firstName: '',
-    lastName: '',
-    phoneNumber: '',
+    name: '',
+    'last name': '',
+    phone: '',
     email: '',
-    address1: '',
-    address2: '',
+    'address line 1': '',
+    'address line 2': '',
     city: '',
     state: '',
-    zip: '',
+    country: '',
+    zipcode: '',
+    'payment options': [],
   });
 
+  const [selectors, setSelectors] = useState({
+    canCash: false,
+    canPaypal: false,
+    canCard: false,
+    canOther: false,
+    canPickup: false,
+    canDeliver: false,
+    canMeet: false,
+  });
+
+  // method to handle text field input
   const handleChange = (prop) => (event) => {
     setUserDetails({ ...userDetails, [prop]: event.target.value });
   };
 
+  // method to handle checkbox input (event.checked not value)
+  const handleCheck = (event) => {
+    setSelectors({ ...selectors, [event.target.name]: event.target.checked });
+  };
+
+  function updatePaymentMethods() {
+    const methods = [];
+
+    if (selectors.canCash) { methods.push('cash'); }
+    if (selectors.canPaypal) { methods.push('paypal'); }
+    if (selectors.canCard) { methods.push('card'); }
+
+    setUserDetails({ ...userDetails, 'payment options': methods });
+  }
+
+  function createQuote() {
+    updatePaymentMethods().then();
+    const record = {
+      fields: userDetails,
+    };
+
+    base('Quotes').create([record],
+      (err) => {
+        if (err) {
+          console.log(err);
+        }
+      });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    createQuote();
+  }
+
+  // TODO: error checking methods
+
   return (
     <div className={classes.container}>
       <Typography className={classes.title}> Checkout </Typography>
-      <Grid container spacing={3}>
-        <Grid item xs>
-          <form>
-            <Typography className={classes.sectionHeader}> User Details</Typography>
-            <Card className={classes.inputCards}>
-              <CardContent>
-                <Typography className={classes.stepNum}>
-                  01
-                  <span className={classes.stepSlash}>/</span>
-                  <span className={classes.stepLabel}>Name</span>
-                </Typography>
-                <span className={classes.fieldRowContainer}>
-                  <TextField
-                    label="First Name"
-                    value={userDetails.firstName}
-                    onChange={handleChange('firstName')}
+      <Button
+        onClick={() => (setEditing(!editing))}
+      >
+        Edit/Change Information
+      </Button>
+      <form onSubmit={(event) => handleSubmit(event)}>
+        <fieldset disabled={editing}>
+          <Grid container spacing={3}>
+            <Grid item xs>
+              <Typography className={classes.sectionHeader}> User Information</Typography>
+              <Card className={classes.inputCards}>
+                <CardContent>
+                  <Typography className={classes.stepNum}>
+                    01
+                    <span className={classes.stepSlash}>/</span>
+                    <span className={classes.stepLabel}>Name</span>
+                  </Typography>
+                  <span className={classes.fieldRowContainer}>
+                    <TextField
+                      label="First Name"
+                      value={userDetails.name}
+                      onChange={handleChange('name')}
+                    />
+                    <TextField
+                      label="Last Name"
+                      value={userDetails['last name']}
+                      onChange={handleChange('last name')}
+                    />
+                  </span>
+                  <Typography className={classes.stepNum}>
+                    02
+                    <span className={classes.stepSlash}>/</span>
+                    <span className={classes.stepLabel}>Contact Information</span>
+                  </Typography>
+                  <span className={classes.fieldRowContainer}>
+                    <TextField
+                      label="Phone Number"
+                      value={userDetails.phone}
+                      onChange={handleChange('phone')}
+                    />
+                    <TextField
+                      label="Email"
+                      value={userDetails.email}
+                      onChange={handleChange('email')}
+                    />
+                  </span>
+                  <Typography className={classes.stepNum}>
+                    03
+                    <span className={classes.stepSlash}>/</span>
+                    <span className={classes.stepLabel}>
+                      Which delivery options do you prefer?
+                    </span>
+                  </Typography>
+                  <FormControlLabel
+                    control={<Checkbox checked={selectors.canPickup} onChange={handleCheck} name="canPickup" />}
+                    label="Pick-up"
                   />
-                  <TextField
-                    label="Last Name"
-                    value={userDetails.lastName}
-                    onChange={handleChange('lastName')}
+                  <FormControlLabel
+                    control={<Checkbox checked={selectors.canDeliver} onChange={handleCheck} name="canDeliver" />}
+                    label="Delivery"
                   />
-                </span>
-                <Typography className={classes.stepNum}>
-                  02
-                  <span className={classes.stepSlash}>/</span>
-                  <span className={classes.stepLabel}>Contact Information</span>
-                </Typography>
-                <span className={classes.fieldRowContainer}>
-                  <TextField
-                    label="Phone Number"
-                    value={userDetails.phoneNumber}
-                    onChange={handleChange('phoneNumber')}
+                  <FormControlLabel
+                    control={<Checkbox checked={selectors.canMeet} onChange={handleCheck} name="canMeet" />}
+                    label="Location meet-up"
                   />
-                  <TextField
-                    label="Email"
-                    value={userDetails.email}
-                    onChange={handleChange('email')}
+                </CardContent>
+              </Card>
+              <Typography className={classes.sectionHeader}> Billing Information</Typography>
+              <Card className={classes.inputCards}>
+                <CardContent>
+                  <Typography className={classes.stepNum}>
+                    03
+                    <span className={classes.stepSlash}>/</span>
+                    <span className={classes.stepLabel}>
+                      Which payment methods are you comfortable with using?
+                    </span>
+                  </Typography>
+                  <FormControlLabel
+                    control={<Checkbox checked={selectors.canCash} onChange={handleCheck} name="canCash" />}
+                    label="Cash"
                   />
-                </span>
-              </CardContent>
-            </Card>
-            <Typography className={classes.sectionHeader}> Billing Information</Typography>
-            <Card className={classes.inputCards}>
-              <CardContent>
-                <Typography className={classes.stepNum}>
-                  04
-                  <span className={classes.stepSlash}>/</span>
-                  <span className={classes.stepLabel}>Billing Address</span>
-                </Typography>
-                <TextField
-                  label="Address Line 1"
-                  value={userDetails.address1}
-                  onChange={handleChange('address1')}
-                  fullWidth
-                  required
-                />
-                <TextField
-                  label="Address Line 2"
-                  value={userDetails.address2}
-                  onChange={handleChange('address2')}
-                  fullWidth
-                  required
-                />
-                <div className={classes.fieldRowContainer}>
+                  <FormControlLabel
+                    control={<Checkbox checked={selectors.canPaypal} onChange={handleCheck} name="canPaypal" />}
+                    label="Paypal"
+                  />
+                  <FormControlLabel
+                    control={<Checkbox checked={selectors.canCard} onChange={handleCheck} name="canCard" />}
+                    label="Debit/credit card"
+                  />
+                  <Typography className={classes.stepNum}>
+                    04
+                    <span className={classes.stepSlash}>/</span>
+                    <span className={classes.stepLabel}>Billing Address</span>
+                  </Typography>
                   <TextField
-                    label="City"
-                    value={userDetails.city}
-                    onChange={handleChange('city')}
+                    label="Address Line 1"
+                    value={userDetails['address line 1']}
+                    onChange={handleChange('address line 1')}
+                    fullWidth
                     required
                   />
                   <TextField
-                    label="State"
-                    value={userDetails.state}
-                    onChange={handleChange('state')}
-                  />
-                </div>
-                <div className={classes.fieldRowContainer}>
-                  <TextField
-                    label="Zip Code"
-                    value={userDetails.city}
-                    onChange={handleChange('zip')}
+                    label="Address Line 2"
+                    value={userDetails['address line 2']}
+                    onChange={handleChange('address line 2')}
+                    fullWidth
                     required
                   />
-                  <TextField
-                    label="United States"
-                    value={userDetails.state}
-                    onChange={handleChange('state')}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </form>
-        </Grid>
-        <Grid item xs={6} sm={6} md={5}>
-          <CheckoutItemsDisplay />
-          <div className={classes.buttonContainer}>
-            <Link className={classes.links} to="/cart">
-              <ButtonBase>
-                <ArrowBack className={classes.green} />
-                <div className={classes.backToCartButton}>Back to Cart</div>
-              </ButtonBase>
-            </Link>
-
-            <Link className={classes.links} to="/cart/success">
-              <Button className={classes.requestQuoteButton}>
-                Request Quote
-              </Button>
-            </Link>
-          </div>
-        </Grid>
-      </Grid>
+                  <div className={classes.fieldRowContainer}>
+                    <TextField
+                      label="City"
+                      value={userDetails.city}
+                      onChange={handleChange('city')}
+                      required
+                    />
+                    <TextField
+                      label="State"
+                      value={userDetails.state}
+                      onChange={handleChange('state')}
+                    />
+                  </div>
+                  <div className={classes.fieldRowContainer}>
+                    <TextField
+                      label="Zip Code"
+                      value={userDetails.zipcode}
+                      onChange={handleChange('zipcode')}
+                      required
+                    />
+                    <TextField
+                      label="Country"
+                      value={userDetails.country}
+                      onChange={handleChange('country')}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={6} sm={6} md={5}>
+              <CheckoutItemsDisplay />
+              <div className={classes.buttonContainer}>
+                <Link className={classes.links} to="/cart">
+                  <ButtonBase>
+                    <ArrowBack className={classes.green} />
+                    <div className={classes.backToCartButton}>Back to Cart</div>
+                  </ButtonBase>
+                </Link>
+                <Button
+                  className={classes.requestQuoteButton}
+                  type="submit"
+                  value="submit"
+                >
+                  Request Quote
+                </Button>
+              </div>
+            </Grid>
+          </Grid>
+        </fieldset>
+      </form>
     </div>
   );
 }

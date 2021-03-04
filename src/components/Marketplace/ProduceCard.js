@@ -6,8 +6,8 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
-import cabbageDog from './cabbagedog.png';
-import './Font.css';
+import cabbageDog from '../../assets/images/cabbagedog.png';
+import '../../assets/styles/fonts.css';
 
 // Airtable set-up
 const airtableConfig = {
@@ -37,7 +37,7 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '18px',
     marginBottom: '1.5%',
-    marginTop: '-5%',
+    marginTop: '-4.5%',
     fontWeight: 'bold',
   },
   farmText: {
@@ -92,19 +92,19 @@ export default function ProduceCard(props) {
     }
   }, []);
 
-  const styles = useStyles();
+  const classes = useStyles();
   return (
-    <Card className={styles.cardContainer} variant="outlined">
+    <Card className={classes.cardContainer} variant="outlined">
       <CardMedia
-        className={styles.img}
+        className={classes.img}
         image={cabbageDog} // Temporary dummy image
         title="Produce Image"
       />
       <CardContent>
-        <Typography className={styles.titleText}>
+        <Typography className={classes.titleText}>
           {cropName}
         </Typography>
-        <Typography className={styles.farmText}>
+        <Typography className={classes.farmText}>
           {farmName}
         </Typography>
         <Grid
@@ -113,16 +113,16 @@ export default function ProduceCard(props) {
           justify="flex-start"
           alignItems="flex-end"
         >
-          <Typography className={styles.priceText}>
+          <Typography className={classes.priceText}>
             {`$${unitPrice}/`}
           </Typography>
-          <Typography className={styles.smallPriceText}>
+          <Typography className={classes.smallPriceText}>
             {unitType}
           </Typography>
         </Grid>
       </CardContent>
       <CardActions>
-        <IconButton className={styles.cartButton}>
+        <IconButton className={classes.cartButton}>
           <AddIcon />
           ADD TO CART
         </IconButton>

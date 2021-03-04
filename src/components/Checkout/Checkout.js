@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Card, CardContent, Typography, TextField, makeStyles, Grid, Button, ButtonBase,
   FormControlLabel, Checkbox,
 } from '@material-ui/core';
 import ArrowBack from '@material-ui/icons/ArrowBack';
-import CheckoutItemsDisplay from './CheckoutItemsDisplay';
+import CheckoutItem from './CheckoutItem';
 
 const Airtable = require('airtable');
 
@@ -104,14 +104,56 @@ const useStyles = makeStyles({
     paddingTop: '17px',
     marginBottom: '5%',
   },
+  cost: {
+    fontFamily: 'Work Sans',
+    fontStyle: 'normal',
+    fontWeight: '500',
+    fontSize: '18px',
+    lineHeight: '22px',
+    color: '#373737',
+    paddingTop: 15,
+  },
+  costLabel: {
+    fontWeight: '700',
+  },
+  totalLabel: {
+    fontFamily: 'Work Sans',
+    fontWeight: '500',
+    fontSize: '20px',
+    lineHeight: '140%',
+    color: '#373737',
+    paddingTop: 15,
+  },
+  total: {
+    fontFamily: 'Work Sans',
+    fontWeight: 'bold',
+    fontSize: '25px',
+    lineHeight: '140%',
+    color: '#373737',
+    textDecoration: 'underline',
+    textDecorationColor: '#53AA48',
+  },
+  farmHeader: {
+    fontFamily: 'Work Sans',
+    fontStyle: 'normal',
+    fontWeight: 'bold',
+    fontSize: '17px',
+    lineHeight: '19px',
+    textDecorationLine: 'underline',
+    color: '#373737',
+    paddingTop: 15,
+    paddingBottom: 15,
+  },
 });
 
 function Checkout() {
   const classes = useStyles();
   const [editing, setEditing] = useState(false);
+  const [items, setItems] = useState([]);
+  const [subtotal, setSubtotal] = useState(0);
 
   // switch out when profiles done?
-  const [userDetails, setUserDetails] = useState({
+  const [profile, setProfile] = useState({
     name: '',
     'last name': '',
     phone: '',
@@ -121,8 +163,7 @@ function Checkout() {
     city: '',
     state: '',
     country: '',
-    zipcode: '',
-    'payment options': [],
+    zipcode: 0,
   });
 
   const [selectors, setSelectors] = useState({
@@ -135,9 +176,21 @@ function Checkout() {
     canMeet: false,
   });
 
+  useEffect(() => {
+    // fetch all the items in cart and set the subtotal
+    setSubtotal(0);
+    base('Reserved Listings').select({ view: 'Grid view' }).all().then((records) => {
+      records.map((element) => base('Listings').find(element.fields['listing id'][0], (err, record) => {
+        const currCartItemPrice = element.fields.pallets * record.fields['standard price per pallet'];
+        setSubtotal((prevTotal) => (prevTotal + currCartItemPrice));
+      }));
+      setItems(records);
+    });
+  }, []);
+
   // method to handle text field input
   const handleChange = (prop) => (event) => {
-    setUserDetails({ ...userDetails, [prop]: event.target.value });
+    setProfile({ ...profile, [prop]: event.target.value });
   };
 
   // method to handle checkbox input (event.checked not value)
@@ -145,6 +198,7 @@ function Checkout() {
     setSelectors({ ...selectors, [event.target.name]: event.target.checked });
   };
 
+  /* figure out how to deal with payment methods later
   function updatePaymentMethods() {
     const methods = [];
 
@@ -154,24 +208,36 @@ function Checkout() {
 
     setUserDetails({ ...userDetails, 'payment options': methods });
   }
-
-  function createQuote() {
-    updatePaymentMethods().then();
-    const record = {
-      fields: userDetails,
-    };
-
-    base('Quotes').create([record],
-      (err) => {
+  */
+  function createProfile() {
+    // TODO: link user to profile
+    base('Checkout Profiles').create([{ fields: profile }],
+      (err, records) => {
         if (err) {
           console.log(err);
+          return null;
         }
+        console.log(records);
+        return records;
       });
+  }
+
+  function createQuote() {
+    // updatePaymentMethods().then();
+
+    // first make the profile
+    const newProfile = createProfile();
+  }
+
+  function validate() {
+    return true;
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    createQuote();
+    if (validate()) {
+      createQuote();
+    }
   }
 
   // TODO: error checking methods
@@ -185,157 +251,200 @@ function Checkout() {
         Edit/Change Information
       </Button>
       <form onSubmit={(event) => handleSubmit(event)}>
-        <fieldset disabled={editing}>
-          <Grid container spacing={3}>
-            <Grid item xs>
-              <Typography className={classes.sectionHeader}> User Information</Typography>
-              <Card className={classes.inputCards}>
-                <CardContent>
-                  <Typography className={classes.stepNum}>
-                    01
-                    <span className={classes.stepSlash}>/</span>
-                    <span className={classes.stepLabel}>Name</span>
-                  </Typography>
-                  <span className={classes.fieldRowContainer}>
-                    <TextField
-                      label="First Name"
-                      value={userDetails.name}
-                      onChange={handleChange('name')}
-                    />
-                    <TextField
-                      label="Last Name"
-                      value={userDetails['last name']}
-                      onChange={handleChange('last name')}
-                    />
-                  </span>
-                  <Typography className={classes.stepNum}>
-                    02
-                    <span className={classes.stepSlash}>/</span>
-                    <span className={classes.stepLabel}>Contact Information</span>
-                  </Typography>
-                  <span className={classes.fieldRowContainer}>
-                    <TextField
-                      label="Phone Number"
-                      value={userDetails.phone}
-                      onChange={handleChange('phone')}
-                    />
-                    <TextField
-                      label="Email"
-                      value={userDetails.email}
-                      onChange={handleChange('email')}
-                    />
-                  </span>
-                  <Typography className={classes.stepNum}>
-                    03
-                    <span className={classes.stepSlash}>/</span>
-                    <span className={classes.stepLabel}>
-                      Which delivery options do you prefer?
-                    </span>
-                  </Typography>
-                  <FormControlLabel
-                    control={<Checkbox checked={selectors.canPickup} onChange={handleCheck} name="canPickup" />}
-                    label="Pick-up"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={selectors.canDeliver} onChange={handleCheck} name="canDeliver" />}
-                    label="Delivery"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={selectors.canMeet} onChange={handleCheck} name="canMeet" />}
-                    label="Location meet-up"
-                  />
-                </CardContent>
-              </Card>
-              <Typography className={classes.sectionHeader}> Billing Information</Typography>
-              <Card className={classes.inputCards}>
-                <CardContent>
-                  <Typography className={classes.stepNum}>
-                    03
-                    <span className={classes.stepSlash}>/</span>
-                    <span className={classes.stepLabel}>
-                      Which payment methods are you comfortable with using?
-                    </span>
-                  </Typography>
-                  <FormControlLabel
-                    control={<Checkbox checked={selectors.canCash} onChange={handleCheck} name="canCash" />}
-                    label="Cash"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={selectors.canPaypal} onChange={handleCheck} name="canPaypal" />}
-                    label="Paypal"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={selectors.canCard} onChange={handleCheck} name="canCard" />}
-                    label="Debit/credit card"
-                  />
-                  <Typography className={classes.stepNum}>
-                    04
-                    <span className={classes.stepSlash}>/</span>
-                    <span className={classes.stepLabel}>Billing Address</span>
-                  </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs>
+            <Typography className={classes.sectionHeader}> User Information</Typography>
+            <Card className={classes.inputCards}>
+              <CardContent>
+                <Typography className={classes.stepNum}>
+                  01
+                  <span className={classes.stepSlash}>/</span>
+                  <span className={classes.stepLabel}>Name</span>
+                </Typography>
+                <span className={classes.fieldRowContainer}>
                   <TextField
-                    label="Address Line 1"
-                    value={userDetails['address line 1']}
-                    onChange={handleChange('address line 1')}
-                    fullWidth
+                    label="First Name"
+                    value={profile.name}
+                    onChange={handleChange('name')}
                     required
                   />
                   <TextField
-                    label="Address Line 2"
-                    value={userDetails['address line 2']}
-                    onChange={handleChange('address line 2')}
-                    fullWidth
+                    label="Last Name"
+                    value={profile['last name']}
+                    onChange={handleChange('last name')}
                     required
                   />
-                  <div className={classes.fieldRowContainer}>
-                    <TextField
-                      label="City"
-                      value={userDetails.city}
-                      onChange={handleChange('city')}
-                      required
-                    />
-                    <TextField
-                      label="State"
-                      value={userDetails.state}
-                      onChange={handleChange('state')}
-                    />
-                  </div>
-                  <div className={classes.fieldRowContainer}>
-                    <TextField
-                      label="Zip Code"
-                      value={userDetails.zipcode}
-                      onChange={handleChange('zipcode')}
-                      required
-                    />
-                    <TextField
-                      label="Country"
-                      value={userDetails.country}
-                      onChange={handleChange('country')}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={6} sm={6} md={5}>
-              <CheckoutItemsDisplay />
-              <div className={classes.buttonContainer}>
-                <Link className={classes.links} to="/cart">
-                  <ButtonBase>
-                    <ArrowBack className={classes.green} />
-                    <div className={classes.backToCartButton}>Back to Cart</div>
-                  </ButtonBase>
-                </Link>
-                <Button
-                  className={classes.requestQuoteButton}
-                  type="submit"
-                  value="submit"
-                >
-                  Request Quote
-                </Button>
-              </div>
-            </Grid>
+                </span>
+                <Typography className={classes.stepNum}>
+                  02
+                  <span className={classes.stepSlash}>/</span>
+                  <span className={classes.stepLabel}>Contact Information</span>
+                </Typography>
+                <span className={classes.fieldRowContainer}>
+                  <TextField
+                    label="Phone Number"
+                    value={profile.phone}
+                    onChange={handleChange('phone')}
+                  />
+                  <TextField
+                    label="Email"
+                    value={profile.email}
+                    onChange={handleChange('email')}
+                  />
+                </span>
+                <Typography className={classes.stepNum}>
+                  03
+                  <span className={classes.stepSlash}>/</span>
+                  <span className={classes.stepLabel}>
+                    Which delivery options do you prefer?
+                  </span>
+                </Typography>
+                <FormControlLabel
+                  control={<Checkbox checked={selectors.canPickup} onChange={handleCheck} name="canPickup" />}
+                  label="Pick-up"
+                />
+                <FormControlLabel
+                  control={<Checkbox checked={selectors.canDeliver} onChange={handleCheck} name="canDeliver" />}
+                  label="Delivery"
+                />
+                <FormControlLabel
+                  control={<Checkbox checked={selectors.canMeet} onChange={handleCheck} name="canMeet" />}
+                  label="Location meet-up"
+                />
+              </CardContent>
+            </Card>
+            <Typography className={classes.sectionHeader}> Billing Information</Typography>
+            <Card className={classes.inputCards}>
+              <CardContent>
+                <Typography className={classes.stepNum}>
+                  03
+                  <span className={classes.stepSlash}>/</span>
+                  <span className={classes.stepLabel}>
+                    Which payment methods are you comfortable with using?
+                  </span>
+                </Typography>
+                <FormControlLabel
+                  control={<Checkbox checked={selectors.canCash} onChange={handleCheck} name="canCash" />}
+                  label="Cash"
+                />
+                <FormControlLabel
+                  control={<Checkbox checked={selectors.canPaypal} onChange={handleCheck} name="canPaypal" />}
+                  label="Paypal"
+                />
+                <FormControlLabel
+                  control={<Checkbox checked={selectors.canCard} onChange={handleCheck} name="canCard" />}
+                  label="Debit/credit card"
+                />
+                <Typography className={classes.stepNum}>
+                  04
+                  <span className={classes.stepSlash}>/</span>
+                  <span className={classes.stepLabel}>Billing Address</span>
+                </Typography>
+                <TextField
+                  label="Address Line 1"
+                  value={profile['address line 1']}
+                  onChange={handleChange('address line 1')}
+                  fullWidth
+                  required
+                />
+                <TextField
+                  label="Address Line 2"
+                  value={profile['address line 2']}
+                  onChange={handleChange('address line 2')}
+                  fullWidth
+                />
+                <div className={classes.fieldRowContainer}>
+                  <TextField
+                    label="City"
+                    value={profile.city}
+                    onChange={handleChange('city')}
+                    required
+                  />
+                  <TextField
+                    label="State"
+                    value={profile.state}
+                    onChange={handleChange('state')}
+                  />
+                </div>
+                <div className={classes.fieldRowContainer}>
+                  <TextField
+                    label="Zip Code"
+                    value={profile.zipcode}
+                    onChange={handleChange('zipcode')}
+                    required
+                  />
+                  <TextField
+                    label="Country"
+                    value={profile.country}
+                    onChange={handleChange('country')}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </Grid>
-        </fieldset>
+          <Grid item xs={6} sm={6} md={5}>
+            <Typography className={classes.sectionHeader}> Your Order</Typography>
+            <Card className={classes.inputCards}>
+              <CardContent>
+                <Typography className={classes.stepNum}>
+                  05
+                  <span className={classes.stepSlash}>/</span>
+                  <span className={classes.stepLabel}>Items</span>
+                </Typography>
+                <Typography className={classes.farmHeader}>
+                  Ryan
+                  {'\''}
+                  s Ronderful Rarm
+                </Typography>
+                {items.map((item) => (
+                  <CheckoutItem
+                    key={item.id}
+                    pallets={item.fields.pallets}
+                    listingID={item.fields['listing id']}
+                  />
+                ))}
+                <Typography className={classes.cost}>
+                  <span className={classes.costLabel}>Cart Subtotal: </span>
+                  $
+                  {parseFloat(subtotal).toFixed(2)}
+                </Typography>
+                <Typography className={classes.cost}>
+                  <span className={classes.costLabel}>Estimated Transportation Cost: </span>
+                  $
+                  {parseFloat(20).toFixed(2)}
+                </Typography>
+                <Typography className={classes.cost}>
+                  <span className={classes.costLabel}>Processing Fee: </span>
+                  $
+                  {parseFloat(5).toFixed(2)}
+                </Typography>
+                <Typography className={classes.totalLabel}>
+                  ESTIMATED TOTAL:
+                  {' '}
+                  <span className={classes.total}>
+                    $
+                    {parseFloat(subtotal).toFixed(2)}
+                  </span>
+                </Typography>
+              </CardContent>
+            </Card>
+            <div className={classes.buttonContainer}>
+              <Link className={classes.links} to="/cart">
+                <ButtonBase>
+                  <ArrowBack className={classes.green} />
+                  <div className={classes.backToCartButton}>Back to Cart</div>
+                </ButtonBase>
+              </Link>
+              <Button
+                className={classes.requestQuoteButton}
+                type="submit"
+                value="submit"
+              >
+                Request Quote
+              </Button>
+            </div>
+          </Grid>
+        </Grid>
       </form>
     </div>
   );

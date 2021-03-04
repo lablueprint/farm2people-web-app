@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './FarmCard.css';
+import '../../styles/fonts.css';
 import {
   Button, Card, CardContent, Chip, Collapse, Grid, IconButton, Typography,
 } from '@material-ui/core';

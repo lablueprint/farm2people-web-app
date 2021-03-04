@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import './Footer.css';
+import '../../styles/fonts.css';
 import greenLogo from '../../assets/images/F2P-green-logo.svg';
 
 const useStyles = makeStyles({

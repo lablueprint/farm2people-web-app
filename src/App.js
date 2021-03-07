@@ -6,8 +6,8 @@ import ContactScreen from './components/Contact';
 import NotificationsScreen from './components/Notifications';
 import CartScreen from './components/Cart';
 import AddFarm from './components/AddFarm';
-import SignUpForm from './components/SignUp';
-import SignInForm from './components/SignIn';
+import SignUpScreen from './components/SignUp';
+import SignInScreen from './components/SignIn';
 
 export default function App() {
   return (
@@ -21,8 +21,8 @@ export default function App() {
           <Route path="/notifications" exact component={NotificationsScreen} />
           <Route path="/profile" exact component={AddFarm} />
           <Route path="/cart" exact component={CartScreen} />
-          <Route path="/signup" exact component={SignUpForm} />
-          <Route path="/signin" exact component={SignInForm} />
+          <Route path="/signup" exact component={SignUpScreen} />
+          <Route path="/signin" exact component={SignInScreen} />
         </Switch>
         <Footer />
       </Router>

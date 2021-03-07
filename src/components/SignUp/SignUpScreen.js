@@ -15,7 +15,7 @@ const INITIAL_FORM_STATE = {
   confirmPassword: '',
 };
 
-export default function SignUpForm() {
+export default function SignUpScreen() {
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
   const [role, setRole] = React.useState('');
   const [loading, setLoading] = useState(false);
@@ -29,11 +29,9 @@ export default function SignUpForm() {
     setLoading(true);
     try {
       /* eslint-disable */
-      // TODO: Figure out if user, token variables need to persist
       const res = signupUser(formState.username, formState.password, formState.fullname, role);
 
     } catch (err) {
-      console.log("Error in signupuser func")
       if (err) {
         setErrorMsg(err);
       }
@@ -41,8 +39,7 @@ export default function SignUpForm() {
     }
     setFormState(INITIAL_FORM_STATE);
     setRole('');
-    // TODO: Replace arbitrary time with calling setLoading(false) only when it finished signing up
-    setTimeout(() => { setLoading(false); }, 1000);
+    setLoading(false);
   }, [formState.username, formState.fullname, formState.password, role]);
 
   const onChange = useCallback((event) => {

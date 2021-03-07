@@ -5,9 +5,9 @@ import { InventoryManagerScreen, MarketplaceScreen } from './components/Marketpl
 import ContactScreen from './components/Contact';
 import NotificationsScreen from './components/Notifications';
 import CartScreen from './components/Cart';
-import AddFarm from './components/AddFarm';
 import SignUpScreen from './components/SignUp';
 import SignInScreen from './components/SignIn';
+import AddFarmScreen from './components/AddFarm';
 
 export default function App() {
   return (
@@ -19,7 +19,7 @@ export default function App() {
           <Route path="/marketplace" exact component={MarketplaceScreen} />
           <Route path="/contact" exact component={ContactScreen} />
           <Route path="/notifications" exact component={NotificationsScreen} />
-          <Route path="/profile" exact component={AddFarm} />
+          <Route path="/profile" exact component={AddFarmScreen} />
           <Route path="/cart" exact component={CartScreen} />
           <Route path="/signup" exact component={SignUpScreen} />
           <Route path="/signin" exact component={SignInScreen} />

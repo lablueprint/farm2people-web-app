@@ -41,7 +41,7 @@ export default function MarketplaceScreen() {
       {/* Map each array of produceListing info to render a ProduceCard */
         produceListings.map((produce) => (
           <ProduceCard
-            // key={TODO, no unique identifiers in table}
+            key={produce.id}
             cropName={produce.fields.crop || 'No crop name'}
             farmID={produce.fields['farm id'] || null}
             unitPrice={produce.fields['standard price per pallet'] || -1}
@@ -52,7 +52,7 @@ export default function MarketplaceScreen() {
       {/* Map each array of farmListing info to render a FarmCard */
         farmListings.map((farm) => (
           <FarmCard
-            // key={TODO, no unique identifiers in table}
+            key={farm.id}
             farmName={farm.fields['farm name'] || 'No farm name'}
             address={farm.fields.address || 'No address'}
             zipCode={farm.fields['zip code'] || -1}

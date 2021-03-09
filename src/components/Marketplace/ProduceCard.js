@@ -37,7 +37,7 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '18px',
     marginBottom: '1.5%',
-    marginTop: '-4.5%',
+    marginTop: '-4%',
     fontWeight: 'bold',
   },
   farmText: {
@@ -45,19 +45,21 @@ const useStyles = makeStyles({
     fontSize: '13px',
     marginBottom: '1.5%',
   },
+  priceTextPadding: {
+    marginBottom: '-4%',
+  },
   priceText: {
     fontFamily: 'Work Sans',
     fontSize: '16px',
     fontWeight: 'bolder',
     marginTop: '1%',
-    marginBottom: '-4.5%',
   },
   smallPriceText: {
     fontFamily: 'Work Sans',
     fontSize: '12px',
     fontWeight: 'bolder',
     marginTop: '1%',
-    marginBottom: '-4%',
+    marginBottom: '1%',
   },
   cartButton: {
     width: '100%',
@@ -112,6 +114,7 @@ export default function ProduceCard(props) {
           direction="row"
           justify="flex-start"
           alignItems="flex-end"
+          className={classes.priceTextPadding}
         >
           <Typography className={classes.priceText}>
             {`$${unitPrice}/`}

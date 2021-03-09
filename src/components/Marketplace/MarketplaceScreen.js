@@ -1,47 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Airtable from 'airtable';
 import './MarketplaceScreen.css';
-import {
-  AppBar, Grid, Tab, Tabs, Typography,
-} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
+import TabHeader from './TabHeader';
 import '../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
   root: {
     position: 'relative',
     minHeight: '100vh',
-  },
-  tabContainer: {
-    backgroundColor: '#FFFFFF',
-    paddingLeft: '2.5%',
-    paddingRight: '2%',
-  },
-  indicator: {
-    display: 'flex',
-    '& > span': {
-      maxWidth: '4px',
-      width: '4px',
-      backgroundColor: '#53AA48',
-    },
-    backgroundColor: '#53AA48',
-    height: '4px',
-  },
-  tabTitleText: {
-    fontFamily: 'Work Sans',
-    fontSize: '24px',
-    fontWeight: 'bolder',
-    color: '#373737',
-  },
-  tabText: {
-    textTransform: 'none',
-    fontFamily: 'Work Sans',
-    fontSize: '17px',
-    fontWeight: 'bold',
-    color: '#373737',
   },
 });
 
@@ -53,49 +23,10 @@ const airtableConfig = {
 
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
-/* Contains title/search text + tab bar, w/ two tabs for all produce + farms */
-function TabHeader({ tabValue, setTabValue }) {
-  const classes = useStyles();
-
-  const handleChange = (event, newValue) => {
-    setTabValue(newValue);
-  };
-
-  return (
-    <AppBar position="static" className={classes.tabContainer}>
-      <Grid
-        container
-        direction="row"
-        justify="space-between"
-        alignItems="center"
-      >
-        <Typography className={classes.tabTitleText}>
-          {tabValue === 'all' ? 'ALL PRODUCE' : 'ALL FARMS'}
-        </Typography>
-        <Tabs
-          value={tabValue}
-          onChange={handleChange}
-          classes={{ indicator: classes.indicator }}
-        >
-          <Tab
-            value="all"
-            label="Shop All"
-            className={classes.tabText}
-          />
-          <Tab
-            value="farm"
-            label="Shop by Farm"
-            className={classes.tabText}
-          />
-        </Tabs>
-      </Grid>
-    </AppBar>
-  );
-}
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
   const [produceListings, setProduceListings] = useState([]);
-  const [tabValue, setTabValue] = useState();
+  const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
 
   const classes = useStyles();
   // Get records from Airtable whenever DOM mounts and updates/changes

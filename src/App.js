@@ -8,6 +8,7 @@ import CartScreen from './components/Cart';
 import AddFarm from './components/AddFarm';
 import SignUpScreen from './components/SignUp';
 import SignInScreen from './components/SignIn';
+import Onboarding from './components/Onboarding';
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
           <Route path="/cart" exact component={CartScreen} />
           <Route path="/signup" exact component={SignUpScreen} />
           <Route path="/signin" exact component={SignInScreen} />
+          <Route path="/onboarding" exact component={Onboarding} />
         </Switch>
         <Footer />
       </Router>

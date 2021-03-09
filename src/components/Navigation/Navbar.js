@@ -93,6 +93,16 @@ export default function Navbar() {
                 Sign In
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink
+                to="/onboarding"
+                activeClassName="nav-links-active"
+                className="nav-links"
+                onClick={closeMobileMenu}
+              >
+                Onboarding
+              </NavLink>
+            </li>
           </ul>
         </div>
       </nav>

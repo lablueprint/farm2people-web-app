@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Card, CardContent, Typography, TextField, makeStyles, Grid, Button, ButtonBase,
-  FormControlLabel, Checkbox,
+  FormControlLabel, Checkbox, Select, MenuItem,
 } from '@material-ui/core';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import CheckoutItem from './CheckoutItem';
@@ -148,12 +148,14 @@ const useStyles = makeStyles({
 
 function Checkout() {
   const classes = useStyles();
-  const [editing, setEditing] = useState(false);
-  const [items, setItems] = useState([]);
-  const [subtotal, setSubtotal] = useState(0);
+  const [editing, setEditing] = useState(false); // bool if editing
+  const [items, setItems] = useState([]); // items in cart
+  const [subtotal, setSubtotal] = useState(0); // subtotal of cart
+  const [pastProfiles, setPastProfiles] = useState([]); // array of all profiles related to user
+  const [selectedProfile, setSelectedProfile] = useState(''); // id of selected profile
 
-  // switch out when profiles done?
-  const [profile, setProfile] = useState({
+  // empty profile for new profile creation
+  const emptyProfile = {
     name: '',
     'last name': '',
     phone: '',
@@ -164,7 +166,10 @@ function Checkout() {
     state: '',
     country: '',
     zipcode: 0,
-  });
+  };
+
+  // current profile being used
+  const [profile, setProfile] = useState(emptyProfile);
 
   const [selectors, setSelectors] = useState({
     canCash: false,
@@ -176,6 +181,7 @@ function Checkout() {
     canMeet: false,
   });
 
+  // TODO: only fetch records related to user
   useEffect(() => {
     // fetch all the items in cart and set the subtotal
     setSubtotal(0);
@@ -185,6 +191,12 @@ function Checkout() {
         setSubtotal((prevTotal) => (prevTotal + currCartItemPrice));
       }));
       setItems(records);
+    });
+
+    // fetch all the checkout profiles
+    base('Checkout Profiles').select({ view: 'Grid view' }).all().then((records) => {
+      setPastProfiles(records);
+      console.log(records);
     });
   }, []);
 
@@ -198,6 +210,16 @@ function Checkout() {
     setSelectors({ ...selectors, [event.target.name]: event.target.checked });
   };
 
+  // preloads data to form when requested
+  const handlePreload = (event) => {
+    setSelectedProfile(event.target.value);
+    if (event.target.value === '') {
+      setProfile(emptyProfile);
+    } else {
+      pastProfiles.map((p) => (p.id === event.target.value) && (setProfile(p.fields)));
+    }
+  };
+
   /* figure out how to deal with payment methods later
   function updatePaymentMethods() {
     const methods = [];
@@ -209,47 +231,92 @@ function Checkout() {
     setUserDetails({ ...userDetails, 'payment options': methods });
   }
   */
-  function createProfile() {
+
+  // creates a new profile and then creates a quote if needed
+  function createProfile(callback) {
     // TODO: link user to profile
     base('Checkout Profiles').create([{ fields: profile }],
       (err, records) => {
         if (err) {
           console.log(err);
-          return null;
+        } else {
+          callback(records[0].id);
         }
-        console.log(records);
-        return records;
       });
   }
 
-  function createQuote() {
+  // create a quote with the passed checkoutProfile id
+  async function createQuote(checkoutProfile) {
+    // TODO: save checkout and pickup methods in the quote
     // updatePaymentMethods().then();
-
-    // first make the profile
-    const newProfile = createProfile();
+    if (checkoutProfile != null) {
+      base('Quotes').create([
+        {
+          fields: {
+            // TODO: add buyer id
+            'reserved listings': items.map((item) => (item.id)),
+            'initial cost': subtotal,
+            status: 'In Progress',
+            'checkout profile': [checkoutProfile],
+          },
+        },
+      ],
+      (err, records) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log(records);
+      });
+    }
   }
 
+  // TODO: validate fields before creating profile
   function validate() {
     return true;
   }
 
+  // handles the submitting the form
   function handleSubmit(e) {
     e.preventDefault();
     if (validate()) {
-      createQuote();
+      if (selectedProfile !== '') {
+        createQuote(selectedProfile);
+      } else {
+        createProfile(createQuote);
+      }
     }
   }
 
   // TODO: error checking methods
-
+  // TODO format form w/ grids + finish styling
   return (
     <div className={classes.container}>
       <Typography className={classes.title}> Checkout </Typography>
-      <Button
-        onClick={() => (setEditing(!editing))}
+
+      <Select
+        value={selectedProfile}
+        onChange={handlePreload}
+        displayEmpty
       >
-        Edit/Change Information
-      </Button>
+        <MenuItem value="">Preload User and Billing Information</MenuItem>
+        {pastProfiles.map((p) => (
+          <MenuItem key={p.id} value={p.id}>
+            {p.fields.name}
+            {' '}
+            {p.fields['last name']}
+            {', '}
+            {p.fields['address line 1']}
+          </MenuItem>
+        ))}
+      </Select>
+      { (selectedProfile !== '')
+        && (
+        <Button
+          onClick={() => (setEditing(!editing))}
+        >
+          Edit/Change Information
+        </Button>
+        )}
       <form onSubmit={(event) => handleSubmit(event)}>
         <Grid container spacing={3}>
           <Grid item xs>
@@ -267,12 +334,14 @@ function Checkout() {
                     value={profile.name}
                     onChange={handleChange('name')}
                     required
+                    disabled={selectedProfile !== ''}
                   />
                   <TextField
                     label="Last Name"
                     value={profile['last name']}
                     onChange={handleChange('last name')}
                     required
+                    disabled={selectedProfile !== ''}
                   />
                 </span>
                 <Typography className={classes.stepNum}>
@@ -285,11 +354,13 @@ function Checkout() {
                     label="Phone Number"
                     value={profile.phone}
                     onChange={handleChange('phone')}
+                    disabled={selectedProfile !== ''}
                   />
                   <TextField
                     label="Email"
                     value={profile.email}
                     onChange={handleChange('email')}
+                    disabled={selectedProfile !== ''}
                   />
                 </span>
                 <Typography className={classes.stepNum}>
@@ -346,12 +417,14 @@ function Checkout() {
                   onChange={handleChange('address line 1')}
                   fullWidth
                   required
+                  disabled={selectedProfile !== ''}
                 />
                 <TextField
                   label="Address Line 2"
                   value={profile['address line 2']}
                   onChange={handleChange('address line 2')}
                   fullWidth
+                  disabled={selectedProfile !== ''}
                 />
                 <div className={classes.fieldRowContainer}>
                   <TextField
@@ -359,11 +432,13 @@ function Checkout() {
                     value={profile.city}
                     onChange={handleChange('city')}
                     required
+                    disabled={selectedProfile !== ''}
                   />
                   <TextField
                     label="State"
                     value={profile.state}
                     onChange={handleChange('state')}
+                    disabled={selectedProfile !== ''}
                   />
                 </div>
                 <div className={classes.fieldRowContainer}>
@@ -372,11 +447,13 @@ function Checkout() {
                     value={profile.zipcode}
                     onChange={handleChange('zipcode')}
                     required
+                    disabled={selectedProfile !== ''}
                   />
                   <TextField
                     label="Country"
                     value={profile.country}
                     onChange={handleChange('country')}
+                    disabled={selectedProfile !== ''}
                   />
                 </div>
               </CardContent>

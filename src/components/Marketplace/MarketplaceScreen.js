@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import Airtable from 'airtable';
 import './MarketplaceScreen.css';
 import { makeStyles } from '@material-ui/core/styles';
-import PropTypes from 'prop-types';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
-import TabHeader from './TabHeader';
+import MarketplaceHeader from './MarketplaceHeader';
 import '../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
@@ -27,6 +26,7 @@ export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
   const [produceListings, setProduceListings] = useState([]);
   const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
+  const [numResults, setNumResults] = useState(10); // # of results to display
 
   const classes = useStyles();
   // Get records from Airtable whenever DOM mounts and updates/changes
@@ -41,11 +41,17 @@ export default function MarketplaceScreen() {
       });
   }, []);
 
+  // Get total number of results depending on if produce or farm
+  const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
+
   return (
     <div className={classes.root}>
-      <TabHeader
+      <MarketplaceHeader
         tabValue={tabValue}
         setTabValue={setTabValue}
+        totalResults={totalResults}
+        numResults={numResults}
+        setNumResults={setNumResults}
       />
       {/* Map each array of produceListing info to render a ProduceCard */
         tabValue === 'all' && produceListings.map((produce) => (
@@ -74,8 +80,3 @@ export default function MarketplaceScreen() {
     </div>
   );
 }
-
-TabHeader.propTypes = {
-  tabValue: PropTypes.number.isRequired,
-  setTabValue: PropTypes.func.isRequired,
-};

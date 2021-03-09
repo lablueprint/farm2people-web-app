@@ -21,6 +21,9 @@ const useStyles = makeStyles({
     marginBottom: '1%',
   },
   // View results styling
+  viewContainer: {
+    width: '20%',
+  },
   viewText: {
     fontFamily: 'Work Sans',
     fontSize: '14px',
@@ -41,6 +44,18 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '15px',
     color: '#373737',
+  },
+  // Search styling
+  searchText: {
+    fontFamily: 'Work Sans',
+    fontSize: '13px',
+    color: '#373737',
+  },
+  locationText: {
+    fontFamily: 'Work Sans',
+    fontSize: '15px',
+    color: '#373737',
+    fontWeight: 'bold',
   },
   // TabHeader styling
   tabContainer: {
@@ -116,54 +131,84 @@ function TabHeader({ tabValue, setTabValue }) {
   );
 }
 
+/* Contains view results text + selection menu for # of results */
+function ViewResults({ numResults, setNumResults, totalResults }) {
+  const classes = useStyles();
+  const resultOptions = [5, 10, 25, 50, 100];
+  const handleChange = (event) => {
+    setNumResults(event.target.value);
+  };
+
+  return (
+    <Grid
+      container
+      direction="row"
+    >
+      <Typography className={classes.viewText}>
+        View
+      </Typography>
+      <TextField
+        select
+        variant="outlined"
+        size="small"
+        value={numResults}
+        onChange={handleChange}
+        className={classes.resultOptionMenu}
+      >
+        {resultOptions.map((option) => (
+          <MenuItem
+            key={option}
+            value={option}
+          >
+            <Typography className={classes.resultOptionText}>
+              {option}
+            </Typography>
+          </MenuItem>
+        ))}
+      </TextField>
+      <Typography className={classes.resultText}>
+        {totalResults === 0 && '0 results'}
+        {totalResults > 0 && `1-${numResults} of ${totalResults} results`}
+      </Typography>
+    </Grid>
+  );
+}
 /* Marketplace header: title, view results, search bar, and tab selector */
 export default function MarketplaceHeader({
   tabValue, setTabValue, totalResults, numResults, setNumResults,
 }) {
   const classes = useStyles();
-  const resultOptions = [5, 10, 25, 50, 100];
-
-  const handleChange = (event) => {
-    setNumResults(event.target.value);
-  };
 
   return (
     <div className={classes.headerContainer}>
       <Typography align="center" className={classes.marketplaceTitleText}>
         Marketplace
       </Typography>
-      {/* View results text + limit selection menu */}
       <Grid
         container
         direction="row"
       >
-        <Typography className={classes.viewText}>
-          View
-        </Typography>
-        <TextField
-          select
-          variant="outlined"
-          size="small"
-          value={numResults}
-          onChange={handleChange}
-          className={classes.resultOptionMenu}
+        {/* View results text + limit selection menu */}
+        <ViewResults
+          numResults={numResults}
+          setNumResults={setNumResults}
+          totalResults={totalResults}
+          className={classes.viewContainer}
+        />
+        {/* Searching near text + icon */}
+        <Grid
+          container
+          direction="row"
         >
-          {resultOptions.map((option) => (
-            <MenuItem
-              key={option}
-              value={option}
-            >
-              <Typography className={classes.resultOptionText}>
-                {option}
-              </Typography>
-            </MenuItem>
-          ))}
-        </TextField>
-        <Typography className={classes.resultText}>
-          {totalResults === 0 && '0 results'}
-          {totalResults > 0 && `1-${numResults} of ${totalResults} results`}
-        </Typography>
+          <Typography className={classes.searchText}>
+            Searching ndear
+          </Typography>
+          <Typography className={classes.locationText}>
+            Real location, CA
+          </Typography>
+        </Grid>
       </Grid>
+      {/* Tab title text + 2 tab selectors */}
       <TabHeader
         tabValue={tabValue}
         setTabValue={setTabValue}
@@ -175,6 +220,12 @@ export default function MarketplaceHeader({
 TabHeader.propTypes = {
   tabValue: PropTypes.string.isRequired,
   setTabValue: PropTypes.func.isRequired,
+};
+
+ViewResults.propTypes = {
+  numResults: PropTypes.number.isRequired,
+  setNumResults: PropTypes.func.isRequired,
+  totalResults: PropTypes.number.isRequired,
 };
 
 MarketplaceHeader.propTypes = {

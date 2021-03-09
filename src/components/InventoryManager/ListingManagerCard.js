@@ -5,21 +5,17 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import PropTypes from 'prop-types';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
 import AddListing from './AddListing';
 import OrangeCat from '../../assets/images/OrangeCat.jpeg';
 
 const useStyles = makeStyles({
   listingCard: {
-    maxWidth: '70%',
+    maxWidth: '75%',
   },
   listingCardPicture: {
     height: '100%',
@@ -45,12 +41,13 @@ const useStyles = makeStyles({
   },
 });
 export default function ListingManagerCard({
-  id, getListing, onSelect, selected,
+  id, listing, onSelect, selected, editRecord,
 }) {
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
-  const listing = getListing(id);
   const handleClickOpen = () => {
+    console.log(id);
+    console.log(listing);
     setEditActive(true);
   };
 
@@ -64,7 +61,7 @@ export default function ListingManagerCard({
           <CardMedia
             className={classes.listingCardPicture}
             image={OrangeCat}
-            title="banana-placeholder"
+            title="orange-cat"
             component="img"
           />
           <CardContent className={classes.listingCardContent}>
@@ -90,20 +87,14 @@ export default function ListingManagerCard({
             Edit
           </Button>
           <Divider className={classes.divider} orientation="vertical" flexItem />
-          <Dialog open={editActive} onClose={handleClose} fullWidth maxWidth="md">
-            <DialogTitle id="form-dialog-title">Edit Listing</DialogTitle>
-            <DialogContent>
-              <AddListing id={id} listing={listing} edit closeDialog={handleClose} />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                Cancel
-              </Button>
-              <Button form="listing-form" type="submit" color="primary">
-                Submit Changes
-              </Button>
-            </DialogActions>
-          </Dialog>
+          <AddListing
+            id={id}
+            listing={listing}
+            edit
+            closeDialog={handleClose}
+            isOpen={editActive}
+            modifyListings={editRecord}
+          />
           <Checkbox
             checked={selected || false}
             onChange={() => {
@@ -125,7 +116,23 @@ ListingManagerCard.defaultProps = {
 
 ListingManagerCard.propTypes = {
   id: PropTypes.string.isRequired,
+  listing: PropTypes.shape({
+    crop: PropTypes.string,
+    description: PropTypes.string,
+    'unit type': PropTypes.string,
+    'units per pallet': PropTypes.number,
+    'lbs per unit': PropTypes.number,
+    'standard price per pallet': PropTypes.number,
+    'expiration date': PropTypes.string,
+    'first available date': PropTypes.string,
+    'date entered': PropTypes.string,
+    'available until': PropTypes.string,
+    'growing season': PropTypes.string,
+    'pallets available': PropTypes.number,
+    'pallets pending': PropTypes.number,
+    'pallets sold': PropTypes.number,
+  }).isRequired,
   onSelect: PropTypes.func.isRequired,
   selected: PropTypes.bool,
-  getListing: PropTypes.func.isRequired,
+  editRecord: PropTypes.func.isRequired,
 };

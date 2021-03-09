@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { green } from '@material-ui/core/colors';
 import AddIcon from '@material-ui/icons/Add';
+import PropTypes from 'prop-types';
 import AddListing from './AddListing';
 
 const useStyles = makeStyles({
@@ -23,7 +20,9 @@ const useStyles = makeStyles({
   },
 });
 
-export default function AddListingButton() {
+export default function AddListingButton({
+  createRecord,
+}) {
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
   const handleClickOpen = () => {
@@ -41,20 +40,11 @@ export default function AddListingButton() {
           Add Listing
         </Typography>
       </Button>
-      <Dialog open={editActive} onClose={handleClose} fullWidth maxWidth="md">
-        <DialogTitle id="form-dialog-title">Add Listing</DialogTitle>
-        <DialogContent>
-          <AddListing closeDialog={handleClose} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button form="listing-form" type="submit" color="primary">
-            Submit
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <AddListing closeDialog={handleClose} isOpen={editActive} modifyListings={createRecord} />
     </>
   );
 }
+
+AddListingButton.propTypes = {
+  createRecord: PropTypes.func.isRequired,
+};

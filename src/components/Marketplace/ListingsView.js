@@ -33,7 +33,7 @@ export default function ListingsView() {
   }
   return (
     <>
-      <Grid container spacing={2} justify="left" align="left">
+      <Grid container spacing={2} justify="left" align="center">
         {
         cardListings.map((listing) => (
           <Grid item xs={3}>

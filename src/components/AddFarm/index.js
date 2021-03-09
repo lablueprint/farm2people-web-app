@@ -1,3 +1,3 @@
-import AddFarmScreen from './AddFarmScreen';
+import AddFarm from './AddFarm';
 
-export default AddFarmScreen;
+export default AddFarm;

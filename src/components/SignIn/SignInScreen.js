@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import React, { useMemo, useState, useEffect } from 'react';
 import './SignIn.css';
 import { loginUser, logoutUser } from '../../lib/airlock/airlock';
+import { base } from '../../lib/airtable/airtable';
 import { store } from '../../lib/redux/store';
 
 export default function SignInScreen() {
@@ -17,12 +18,19 @@ export default function SignInScreen() {
     setLoading(true);
     try {
       const res = await loginUser(email, password);
+      base('Farms')
+        .select({ view: 'Grid view' })
+        .eachPage((records, fetchNextPage) => {
+          console.log(records);
+          fetchNextPage();
+        });
       if (!(res.match && res.found)) {
         setErrorMsg('Incorrect username or password');
         setLoading(false);
       } else {
         setDisplayName(`Welcome ${store.getState().userData.user.fields.display_name}`);
         setErrorMsg('');
+        setTimeout(() => { setLoading(false); }, 1000);
       }
     } catch (err) {
       setErrorMsg('Incorrect username or password');
@@ -30,7 +38,7 @@ export default function SignInScreen() {
     }
     setEmail('');
     setPassword('');
-    setLoading(false);
+    // TODO: Replace arbitrary time with calling setLoading(false) only when it finished signing up
   };
 
   const logOut = async (evt) => {

@@ -4,20 +4,22 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import { createMuiTheme, ThemeProvider, makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import { green } from '@material-ui/core/colors';
+import AddIcon from '@material-ui/icons/Add';
 import AddListing from './AddListing';
 
 const useStyles = makeStyles({
   button: {
     float: 'right',
+    backgroundColor: green[500],
+    '&:hover': {
+      backgroundColor: green[700],
+    },
   },
-});
-
-const theme = createMuiTheme({
-  palette: {
-    primary: { 500: '#212121' },
-    light: '#484848',
-    dark: '#000000',
+  text: {
+    fontFamily: 'Work Sans',
   },
 });
 
@@ -33,11 +35,12 @@ export default function AddListingButton() {
   };
   return (
     <>
-      <ThemeProvider theme={theme}>
-        <Button variant="contained" size="medium" color="primary" onClick={handleClickOpen} className={classes.button}>
+      <Button variant="contained" size="medium" color="primary" onClick={handleClickOpen} className={classes.button} classes={{ label: classes.text }}>
+        <AddIcon />
+        <Typography variant="button" display="block" className={classes.text}>
           Add Listing
-        </Button>
-      </ThemeProvider>
+        </Typography>
+      </Button>
       <Dialog open={editActive} onClose={handleClose} fullWidth maxWidth="md">
         <DialogTitle id="form-dialog-title">Add Listing</DialogTitle>
         <DialogContent>

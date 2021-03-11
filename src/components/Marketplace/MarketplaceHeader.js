@@ -8,18 +8,20 @@ import PropTypes from 'prop-types';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import SearchIcon from '@material-ui/icons/Search';
 import '../../assets/styles/fonts.css';
+import Fruit1 from '../../assets/images/Fruit1.svg';
+import Fruit2 from '../../assets/images/Fruit2.svg';
 
 const useStyles = makeStyles({
   headerContainer: {
-    paddingLeft: '2.5%',
-    paddingRight: '2%',
+    paddingLeft: '3%',
+    paddingRight: '4%',
   },
   marketplaceTitleText: {
     fontFamily: 'Work Sans',
     fontSize: '35px',
     fontWeight: 'bold',
     color: '#373737',
-    marginTop: '2%',
+    marginTop: '2.5%',
     marginBottom: '2%',
   },
   // View results styling
@@ -94,6 +96,7 @@ const useStyles = makeStyles({
   tabContainer: {
     backgroundColor: '#FFFFFF',
     marginTop: '1.5%',
+    paddingRight: '1%',
   },
   indicator: {
     display: 'flex',
@@ -118,6 +121,23 @@ const useStyles = makeStyles({
     fontSize: '16px',
     fontWeight: 'bold',
     color: '#373737',
+  },
+  // Fruit images
+  fruit1: {
+    position: 'absolute',
+    width: '112px',
+    height: 'auto',
+    right: '60px',
+    top: '-20px',
+    zIndex: '-2',
+  },
+  fruit2: {
+    position: 'absolute',
+    width: '92px',
+    height: 'auto',
+    right: '2px',
+    top: '10px',
+    zIndex: '-1',
   },
 });
 
@@ -266,9 +286,16 @@ export default function MarketplaceHeader({
         </Grid>
       </Grid>
       {/* Tab title text + 2 tab selectors */}
-      <TabHeader
-        tabValue={tabValue}
-        setTabValue={setTabValue}
+      <TabHeader tabValue={tabValue} setTabValue={setTabValue} />
+      <img
+        src={Fruit1}
+        alt="fruit1"
+        className={classes.fruit1}
+      />
+      <img
+        src={Fruit2}
+        alt="fruit2"
+        className={classes.fruit2}
       />
     </div>
   );

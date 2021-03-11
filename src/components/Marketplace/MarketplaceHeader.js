@@ -5,6 +5,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import '../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
@@ -22,23 +23,24 @@ const useStyles = makeStyles({
   },
   // View results styling
   viewContainer: {
-    width: '20%',
+    marginTop: '1%',
+    width: '25%',
   },
   viewText: {
     fontFamily: 'Work Sans',
     fontSize: '14px',
     fontWeight: 'bold',
     color: '#373737',
-    marginRight: '1%',
+    marginRight: '3%',
   },
   resultText: {
     fontFamily: 'Work Sans',
     fontSize: '14px',
     color: '#373737',
-    marginLeft: '1%',
+    marginLeft: '3%',
   },
   resultOptionMenu: {
-    marginTop: '-0.8%',
+    marginTop: '-3.5%',
   },
   resultOptionText: {
     fontFamily: 'Work Sans',
@@ -46,16 +48,24 @@ const useStyles = makeStyles({
     color: '#373737',
   },
   // Search styling
+  searchContainer: {
+    width: '20%',
+  },
   searchText: {
     fontFamily: 'Work Sans',
-    fontSize: '13px',
+    fontSize: '12.5px',
     color: '#373737',
   },
   locationText: {
     fontFamily: 'Work Sans',
-    fontSize: '15px',
+    fontSize: '15.5px',
     color: '#373737',
     fontWeight: 'bold',
+  },
+  searchIcon: {
+    color: '#FF765D',
+    marginTop: '6.5%',
+    marginRight: '1%',
   },
   // TabHeader styling
   tabContainer: {
@@ -77,7 +87,7 @@ const useStyles = makeStyles({
     fontSize: '24px',
     fontWeight: 'bolder',
     color: '#373737',
-    marginBottom: '-0.5%',
+    marginBottom: '-1%',
   },
   tabText: {
     textTransform: 'none',
@@ -143,6 +153,7 @@ function ViewResults({ numResults, setNumResults, totalResults }) {
     <Grid
       container
       direction="row"
+      className={classes.viewContainer}
     >
       <Typography className={classes.viewText}>
         View
@@ -187,25 +198,29 @@ export default function MarketplaceHeader({
       <Grid
         container
         direction="row"
+        justify="space-between"
       >
         {/* View results text + limit selection menu */}
         <ViewResults
           numResults={numResults}
           setNumResults={setNumResults}
           totalResults={totalResults}
-          className={classes.viewContainer}
         />
         {/* Searching near text + icon */}
         <Grid
           container
           direction="row"
+          className={classes.searchContainer}
         >
-          <Typography className={classes.searchText}>
-            Searching ndear
-          </Typography>
-          <Typography className={classes.locationText}>
-            Real location, CA
-          </Typography>
+          <LocationOnOutlinedIcon className={classes.searchIcon} />
+          <div>
+            <Typography className={classes.searchText}>
+              Searching near
+            </Typography>
+            <Typography className={classes.locationText}>
+              Real location, CA
+            </Typography>
+          </div>
         </Grid>
       </Grid>
       {/* Tab title text + 2 tab selectors */}

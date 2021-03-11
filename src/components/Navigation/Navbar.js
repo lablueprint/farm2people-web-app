@@ -74,6 +74,14 @@ export default function Navbar() {
                 <i className="fas fa-shopping-cart" />
               </NavLink>
             </li>
+            <li className="nav-item">
+              <div
+                className="nav-links"
+                /* TODO: Incorporate onClick prop that logs user out */
+              >
+                Sign Out
+              </div>
+            </li>
           </ul>
         </div>
       </nav>

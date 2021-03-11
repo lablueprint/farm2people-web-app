@@ -323,7 +323,7 @@ function Step1({
   }
   return [
     <div>
-      <p className={styles.subtitleText}>
+      <p className={styles.paper}>
         Are you a...
       </p>
     </div>,
@@ -382,7 +382,7 @@ function Step2({
     return null;
   }
   return [
-    <div className={styles.subtitleText}>
+    <div className={styles.paper}>
       <p>
         Create your account
       </p>
@@ -550,24 +550,48 @@ Step2.propTypes = {
 };
 
 function Step3({
-  currentStep, handleChange,
+  currentStep, handleChange, value,
 }) {
   if (currentStep !== 3) {
     return null;
   }
   return [
-    <div className="form-group">
-      Password
-      <input
-        className="form-control"
-        id="password"
-        name="password"
-        type="password"
-        placeholder="Enter password"
-        onChange={handleChange}
-      />
+    <div>
+      {value === 0 ? (
+        <p className={styles.paper}>
+          Buyer Account Created!
+        </p>
+      ) : (
+        <>
+          <p className={styles.paper}>
+            Account Created!
+          </p>
+          <p className={styles.paper}>
+            { value === 2 ? 'Please await authentication from Farm2People.'
+              : 'Farm2People will be in touch with you shortly.'}
+          </p>
+        </>
+      )}
     </div>,
-    <button type="button" className="btn btn-success btn-block">Sign up</button>,
+    <Grid
+      container
+      spacing={2}
+      alignItems="center"
+    >
+      <Grid item xs={12}>
+        <Box mt={5}>
+          <Button
+            type="button"
+            fullWidth
+            color="primary"
+            variant="contained"
+            style={{ backgroundColor: '#53AA48' }}
+          >
+            {value === 0 ? 'Back To Sign In' : 'Done'}
+          </Button>
+        </Box>
+      </Grid>
+    </Grid>,
   ];
 }
 

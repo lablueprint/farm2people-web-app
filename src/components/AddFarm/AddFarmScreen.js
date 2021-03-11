@@ -3,15 +3,22 @@ import {
 } from '@material-ui/core';
 import React, { useState } from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
-import './AddFarm.css';
+import './AddFarmScreen.css';
+import { makeStyles } from '@material-ui/core/styles';
 
+const useStyles = makeStyles({
+  root: {
+    position: 'relative',
+    minHeight: '100vh',
+  },
+});
 // Airtable set-up here
 const Airtable = require('airtable');
 
 const base = new Airtable({ apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY })
   .base(process.env.REACT_APP_AIRTABLE_BASE_KEY);
 
-export default function AddFarm() {
+export default function AddFarmScreen() {
   const [farmName, setFarmName] = useState(null);
   const [description, setDescription] = useState(null);
   const [email, setEmail] = useState(null);
@@ -20,6 +27,7 @@ export default function AddFarm() {
   const [zipCode, setZipCode] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
   const [showAlert, setAlert] = useState(false);
+  const classes = useStyles();
 
   /* Checks if form fields have valid input: email, phone number (check length), zip code */
   function checkFormInput(event) {
@@ -87,7 +95,7 @@ export default function AddFarm() {
   }
 
   return (
-    <div>
+    <div className={classes.root}>
       {(showAlert && errorMsg)
         && (
           <Alert severity="error" className="errorAlert" onClose={() => setAlert(false)}>

@@ -46,6 +46,7 @@ export default function MarketplaceScreen() {
 
   return (
     <div className={classes.root}>
+      {/* Entire marketplace header, contains tabs, view, and search */}
       <MarketplaceHeader
         tabValue={tabValue}
         setTabValue={setTabValue}

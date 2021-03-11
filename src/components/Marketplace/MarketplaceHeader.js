@@ -6,6 +6,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
+import SearchIcon from '@material-ui/icons/Search';
 import '../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
@@ -18,8 +19,8 @@ const useStyles = makeStyles({
     fontSize: '35px',
     fontWeight: 'bold',
     color: '#373737',
-    marginTop: '1.5%',
-    marginBottom: '1%',
+    marginTop: '2%',
+    marginBottom: '2%',
   },
   // View results styling
   viewContainer: {
@@ -47,9 +48,9 @@ const useStyles = makeStyles({
     fontSize: '15px',
     color: '#373737',
   },
-  // Search styling
+  // Search text styling
   searchContainer: {
-    width: '20%',
+    width: '50%',
   },
   searchText: {
     fontFamily: 'Work Sans',
@@ -62,10 +63,32 @@ const useStyles = makeStyles({
     color: '#373737',
     fontWeight: 'bold',
   },
-  searchIcon: {
+  locationIcon: {
     color: '#FF765D',
-    marginTop: '6.5%',
+    marginTop: '2.5%',
     marginRight: '1%',
+  },
+  // Search bar styling
+  searchBarContainer: {
+    marginTop: '0.5%',
+    width: '68%',
+    marginLeft: '3.5%',
+  },
+  inputText: {
+    fontFamily: 'Work Sans',
+    fontSize: '15.5px',
+    color: '#373737',
+    backgroundColor: '#F1F2F2',
+    '&::placeholder': { // Styling for placeholder text only
+      fontFamily: 'Work Sans',
+      fontSize: '15.5px',
+      color: '#747474',
+      fontStyle: 'italic',
+    },
+  },
+  searchIcon: {
+    color: '#717171',
+    backgroundColor: '#F1F2F2',
   },
   // TabHeader styling
   tabContainer: {
@@ -145,6 +168,7 @@ function TabHeader({ tabValue, setTabValue }) {
 function ViewResults({ numResults, setNumResults, totalResults }) {
   const classes = useStyles();
   const resultOptions = [5, 10, 25, 50, 100];
+  // TODO: update to limit # of results shown based on numResults
   const handleChange = (event) => {
     setNumResults(event.target.value);
   };
@@ -184,6 +208,7 @@ function ViewResults({ numResults, setNumResults, totalResults }) {
     </Grid>
   );
 }
+
 /* Marketplace header: title, view results, search bar, and tab selector */
 export default function MarketplaceHeader({
   tabValue, setTabValue, totalResults, numResults, setNumResults,
@@ -206,21 +231,38 @@ export default function MarketplaceHeader({
           setNumResults={setNumResults}
           totalResults={totalResults}
         />
-        {/* Searching near text + icon */}
+        {/* Searching near text + icon, search bar */}
         <Grid
           container
           direction="row"
           className={classes.searchContainer}
         >
-          <LocationOnOutlinedIcon className={classes.searchIcon} />
+          <LocationOnOutlinedIcon className={classes.locationIcon} />
           <div>
             <Typography className={classes.searchText}>
               Searching near
             </Typography>
             <Typography className={classes.locationText}>
+              {/* TODO: Get location of user */ }
               Real location, CA
             </Typography>
           </div>
+          <TextField
+            placeholder="Search for produce, farms, etc."
+            fullWidth
+            variant="outlined"
+            InputProps={{
+              disableUnderline: true,
+              classes: {
+                input: classes.inputText,
+                adornedEnd: classes.searchIcon,
+              },
+              endAdornment: <SearchIcon />,
+            }}
+            className={classes.searchBarContainer}
+            size="small"
+            // TODO: onChange fx to actually implement search
+          />
         </Grid>
       </Grid>
       {/* Tab title text + 2 tab selectors */}

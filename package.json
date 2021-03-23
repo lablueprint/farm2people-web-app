@@ -14,7 +14,6 @@
     "airlock-server": "^0.3.1",
     "airtable": "^0.10.1",
     "connected-react-router": "^6.8.0",
-    "cross-env": "^7.0.3",
     "font-awesome": "^4.7.0",
     "history": "^4.10.1",
     "prop-types": "^15.7.2",
@@ -55,6 +54,7 @@
   },
   "devDependencies": {
     "airtable-schema-generator": "^1.5.1",
+    "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
     "eslint": "^7.14.0",
     "eslint-config-airbnb": "^18.2.1",

@@ -1,5 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import SignInScreen from '../SignIn';
 
 const useStyles = makeStyles({
   root: {
@@ -7,11 +8,12 @@ const useStyles = makeStyles({
     minHeight: '100vh',
   },
 });
+
 export default function NotificationsScreen() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <h1>Notification Screen</h1>
+      <SignInScreen />
     </div>
   );
 }

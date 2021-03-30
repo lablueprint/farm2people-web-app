@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import './Navbar.css';
+import '../../styles/fonts.css';
 import logo from '../../assets/images/F2P-logo.svg';
 
 export default function Navbar() {
@@ -72,6 +73,14 @@ export default function Navbar() {
                 Cart&nbsp;
                 <i className="fas fa-shopping-cart" />
               </NavLink>
+            </li>
+            <li className="nav-item">
+              <div
+                className="nav-links"
+                /* TODO: Incorporate onClick prop that logs user out */
+              >
+                Sign Out
+              </div>
             </li>
           </ul>
         </div>

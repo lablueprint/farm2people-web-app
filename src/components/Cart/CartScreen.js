@@ -9,9 +9,9 @@ import {
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import CartItem from './CartItem';
 import CartCardHeader from './CartCardHeader';
-import './Cart.css';
 import Fruit3 from '../../assets/images/Fruit3.svg';
 import Fruit4 from '../../assets/images/Fruit4.svg';
+import '../../styles/fonts.css';
 
 // airtable setup
 const airtableConfig = {

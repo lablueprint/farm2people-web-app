@@ -9,6 +9,7 @@ import Typography from '@material-ui/core/Typography';
 import { green } from '@material-ui/core/colors';
 import AddIcon from '@material-ui/icons/Add';
 import AddListing from './AddListing';
+import '../../styles/fonts.css';
 
 const useStyles = makeStyles({
   button: {

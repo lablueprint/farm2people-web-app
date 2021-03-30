@@ -5,7 +5,7 @@ import {
   Typography, Dialog, DialogContent, DialogActions, Button, makeStyles,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
-import './Cart.css';
+import '../../styles/fonts.css';
 
 // custom styling
 const useStyles = makeStyles({

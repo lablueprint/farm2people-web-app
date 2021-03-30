@@ -7,11 +7,12 @@ const useStyles = makeStyles({
     minHeight: '100vh',
   },
 });
+
 export default function NotificationsScreen() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <h1>Notification Screen</h1>
+      <h1>Notifications Screen</h1>
     </div>
   );
 }

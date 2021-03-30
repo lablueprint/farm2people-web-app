@@ -8,7 +8,7 @@ import {
 import { Remove, Add } from '@material-ui/icons';
 import Delete from '@material-ui/icons/DeleteOutlineOutlined';
 import PropTypes from 'prop-types';
-import './Cart.css';
+import '../../styles/fonts.css';
 import CartDialog from './CartDialog';
 
 // airtable setup

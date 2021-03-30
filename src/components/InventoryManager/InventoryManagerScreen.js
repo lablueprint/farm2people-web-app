@@ -32,9 +32,6 @@ export default function InventoryManagerScreen() {
   const classes = useStyles();
   const [cardListings, setCardListings] = useState([]);
   const [selectedCards, setSelectedCards] = useState({});
-  // function getRecord(id) {
-  //   return base('Listings').find(id);
-  // }
   function createRecord(rec) {
     const record = {
       fields: rec,

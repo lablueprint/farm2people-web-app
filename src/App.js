@@ -1,7 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import { Navbar, Footer } from './components/Navigation';
-import { InventoryManagerScreen, MarketplaceScreen } from './components/Marketplace';
+import InventoryManagerScreen from './components/InventoryManager';
+import MarketplaceScreen from './components/Marketplace';
 import ContactScreen from './components/Contact';
 import NotificationsScreen from './components/Notifications';
 import CartScreen from './components/Cart';

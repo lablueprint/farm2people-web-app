@@ -46,8 +46,6 @@ export default function ListingManagerCard({
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
   const handleClickOpen = () => {
-    console.log(id);
-    console.log(listing);
     setEditActive(true);
   };
 

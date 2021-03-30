@@ -17,6 +17,7 @@ const useStyles = makeStyles({
   },
   text: {
     fontFamily: 'Work Sans',
+    whiteSpace: 'nowrap',
   },
 });
 

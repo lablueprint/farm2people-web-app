@@ -1,3 +1,11 @@
+Log March 10, 2020
+1. This is the problem:
+https://stackoverflow.com/questions/56064571/react-text-input-loses-focus-when-i-type-a-letter
+2. Also you still need to work on the onboarding form submission.
+Check that and see if it makes a new airtable user.
+3. Otherwise, the omboarding pipeline should be done.
+
+Archived------
 1. Figure out what to persist in redux. 
   a) You can't persist the owner table, because 
     we don't want to bring over the whole table like pplpower does. We might want to persist

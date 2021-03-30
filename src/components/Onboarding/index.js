@@ -1,3 +1,3 @@
-import MasterForm from './OnboardingScreen';
+import OnboardingScreen from './OnboardingScreen_func';
 
-export default MasterForm;
+export default OnboardingScreen;

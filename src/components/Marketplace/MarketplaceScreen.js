@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import Airtable from 'airtable';
-import './MarketplaceScreen.css';
 import { makeStyles } from '@material-ui/core/styles';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
-import MarketplaceHeader from './MarketplaceHeader';
+import MarketplaceHeader from './Header/MarketplaceHeader';
 import '../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({

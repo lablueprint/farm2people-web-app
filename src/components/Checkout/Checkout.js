@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+import { withStyles } from '@material-ui/core/styles';
+import { green } from '@material-ui/core/colors';
 import {
   Card, CardContent, Typography, TextField, makeStyles, Grid, Button, ButtonBase,
-  FormControlLabel, Checkbox, Select, MenuItem,
+  FormControlLabel, Checkbox, Select, MenuItem, FormGroup,
 } from '@material-ui/core';
 import ArrowBack from '@material-ui/icons/ArrowBack';
+import RadioButtonUnchecked from '@material-ui/icons/RadioButtonUnchecked';
+import RadioButtonChecked from '@material-ui/icons/RadioButtonChecked';
 import CheckoutItem from './CheckoutItem';
+import CartDialog from '../Cart/CartDialog';
 
 const Airtable = require('airtable');
 
@@ -33,6 +38,7 @@ const useStyles = makeStyles({
     lineHeight: '59px',
     color: '#373737',
     paddingTop: '2%',
+    paddingBottom: '10px',
   },
   sectionHeader: {
     fontFamily: 'Work Sans',
@@ -40,15 +46,14 @@ const useStyles = makeStyles({
     fontSize: '20px',
     lineHeight: ' 140%',
     color: '#373737',
-    paddingTop: 30,
     paddingBottom: 10,
   },
   inputCards: {
-    paddingTop: '10px',
     paddingLeft: '30px',
     paddingRight: '30px',
+    marginBottom: '20px',
     margin: 'auto',
-    boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
     borderRadius: '15px',
   },
   stepNum: {
@@ -96,12 +101,15 @@ const useStyles = makeStyles({
   green: {
     color: '#53AA48',
   },
-  buttonContainer: {
+  fieldRow: {
+    paddingTop: 10,
+    paddingBottom: 20,
+  },
+  rowContainer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     margin: 'auto',
-    paddingTop: '17px',
     marginBottom: '5%',
   },
   cost: {
@@ -146,13 +154,28 @@ const useStyles = makeStyles({
   },
 });
 
+const GreenCheckbox = withStyles({
+  root: {
+    '&$checked': {
+      color: green[600],
+    },
+  },
+  checked: {},
+})((props) => <Checkbox color="default" {...props} />);
+
 function Checkout() {
   const classes = useStyles();
+  const history = useHistory();
   const [editing, setEditing] = useState(false); // bool if editing
   const [items, setItems] = useState([]); // items in cart
   const [subtotal, setSubtotal] = useState(0); // subtotal of cart
   const [pastProfiles, setPastProfiles] = useState([]); // array of all profiles related to user
   const [selectedProfile, setSelectedProfile] = useState(''); // id of selected profile
+
+  // bools for launching alerts
+  const [saveProfileAlert, setSaveProfileAlert] = useState(false);
+  const [updateProfileAlert, setUpdateProfileAlert] = useState(false);
+  const [quitEditingAlert, setQuitEditingAlert] = useState(false);
 
   // empty profile for new profile creation
   const emptyProfile = {
@@ -172,13 +195,11 @@ function Checkout() {
   const [profile, setProfile] = useState(emptyProfile);
 
   const [selectors, setSelectors] = useState({
-    canCash: false,
+    canACH: false,
     canPaypal: false,
     canCard: false,
-    canOther: false,
-    canPickup: false,
-    canDeliver: false,
-    canMeet: false,
+    canCheck: false,
+    preferPickup: true,
   });
 
   // TODO: only fetch records related to user
@@ -194,6 +215,7 @@ function Checkout() {
     });
 
     // fetch all the checkout profiles
+    // TODO: only fetch appropriate fields in the first place
     base('Checkout Profiles').select({ view: 'Grid view' }).all().then((records) => {
       setPastProfiles(records);
       console.log(records);
@@ -207,16 +229,34 @@ function Checkout() {
 
   // method to handle checkbox input (event.checked not value)
   const handleCheck = (event) => {
-    setSelectors({ ...selectors, [event.target.name]: event.target.checked });
+    setSelectors({ ...selectors, [event.target.name]: !selectors[event.target.name] });
   };
 
-  // preloads data to form when requested
+  // TODO: validate fields before creating profile
+  function validate() {
+    return true;
+  }
+
+  // links to success page
+  const toSuccess = () => history.push('/cart/success');
+
+  // loads profile data to form
+  const loadProfile = (checkoutProfile) => {
+    // set current profile to the correct pastProfile
+    // removing the id field for editing convenience
+    const file = pastProfiles.filter((p) => (p.id === checkoutProfile));
+    delete file[0].fields['profile id'];
+    setProfile(file[0].fields);
+  };
+
+  // handles the selection of a checkout profile
   const handlePreload = (event) => {
+    setEditing(false);
     setSelectedProfile(event.target.value);
     if (event.target.value === '') {
       setProfile(emptyProfile);
     } else {
-      pastProfiles.map((p) => (p.id === event.target.value) && (setProfile(p.fields)));
+      loadProfile(event.target.value);
     }
   };
 
@@ -240,9 +280,29 @@ function Checkout() {
         if (err) {
           console.log(err);
         } else {
-          callback(records[0].id);
+          const p = records[0];
+          setPastProfiles([...pastProfiles, p]);
+          callback(p.id);
         }
       });
+  }
+
+  // edits selected profile
+  function editProfile() {
+    setEditing(false);
+    base('Checkout Profiles').update([{
+      id: selectedProfile,
+      // TODO: only update edited fields
+      fields: profile,
+    }], (err, records) => {
+      if (err) {
+        console.log(err);
+      }
+      // update the profile in the pastProfile array
+      const editedProfile = records[0];
+      const profiles = pastProfiles.filter((p) => (p.id !== selectedProfile));
+      setPastProfiles([editedProfile, ...profiles]);
+    });
   }
 
   // create a quote with the passed checkoutProfile id
@@ -261,18 +321,14 @@ function Checkout() {
           },
         },
       ],
-      (err, records) => {
+      (err) => {
         if (err) {
           console.log(err);
+        } else {
+          toSuccess();
         }
-        console.log(records);
       });
     }
-  }
-
-  // TODO: validate fields before creating profile
-  function validate() {
-    return true;
   }
 
   // handles the submitting the form
@@ -280,10 +336,46 @@ function Checkout() {
     e.preventDefault();
     if (validate()) {
       if (selectedProfile !== '') {
-        createQuote(selectedProfile);
+        if (editing) { setUpdateProfileAlert(true); } else {
+          createQuote(selectedProfile);
+        }
       } else {
-        createProfile(createQuote);
+        setSaveProfileAlert(true);
+        // createProfile(createQuote);
       }
+    }
+  }
+
+  function saveProfileAlertClosed(value) {
+    // TODO: if false save profile w/o user id
+    setSaveProfileAlert(false);
+    createProfile(createQuote);
+    console.log(value ? 'new profile saved' : 'info not saved');
+  }
+
+  function quitEditingAlertClosed(value) {
+    setQuitEditingAlert(false);
+    if (value) {
+      setEditing(false);
+      loadProfile(selectedProfile);
+    }
+  }
+
+  function editButtonClick() {
+    if (editing) {
+      setQuitEditingAlert(true);
+    } else {
+      setEditing(true);
+    }
+  }
+
+  function updateProfileAlertClosed(value) {
+    setUpdateProfileAlert(false);
+    if (value) {
+      editProfile();
+      createQuote(selectedProfile);
+    } else {
+      setSaveProfileAlert(true);
     }
   }
 
@@ -292,34 +384,36 @@ function Checkout() {
   return (
     <div className={classes.container}>
       <Typography className={classes.title}> Checkout </Typography>
-
-      <Select
-        value={selectedProfile}
-        onChange={handlePreload}
-        displayEmpty
-      >
-        <MenuItem value="">Preload User and Billing Information</MenuItem>
-        {pastProfiles.map((p) => (
-          <MenuItem key={p.id} value={p.id}>
-            {p.fields.name}
-            {' '}
-            {p.fields['last name']}
-            {', '}
-            {p.fields['address line 1']}
-          </MenuItem>
-        ))}
-      </Select>
-      { (selectedProfile !== '')
-        && (
-        <Button
-          onClick={() => (setEditing(!editing))}
-        >
-          Edit/Change Information
-        </Button>
-        )}
       <form onSubmit={(event) => handleSubmit(event)}>
         <Grid container spacing={3}>
           <Grid item xs>
+            <div className={classes.rowContainer}>
+              <Select
+                value={selectedProfile}
+                onChange={handlePreload}
+                displayEmpty
+                label="Preload User and Billing Information"
+              >
+                <MenuItem value="">{(selectedProfile === '') ? 'Preload User and Billing Information' : 'None'}</MenuItem>
+                {pastProfiles.map((p) => (
+                  <MenuItem key={p.id} value={p.id}>
+                    {p.fields.name}
+                    {' '}
+                    {p.fields['last name']}
+                    {', '}
+                    {p.fields['address line 1']}
+                  </MenuItem>
+                ))}
+              </Select>
+              { (selectedProfile !== '')
+                && (
+                <Button
+                  onClick={editButtonClick}
+                >
+                  {!editing ? 'Edit Checkout Profile Information' : 'Editing Checkout Profile Information'}
+                </Button>
+                )}
+            </div>
             <Typography className={classes.sectionHeader}> User Information</Typography>
             <Card className={classes.inputCards}>
               <CardContent>
@@ -328,60 +422,71 @@ function Checkout() {
                   <span className={classes.stepSlash}>/</span>
                   <span className={classes.stepLabel}>Name</span>
                 </Typography>
-                <span className={classes.fieldRowContainer}>
-                  <TextField
-                    label="First Name"
-                    value={profile.name}
-                    onChange={handleChange('name')}
-                    required
-                    disabled={selectedProfile !== ''}
-                  />
-                  <TextField
-                    label="Last Name"
-                    value={profile['last name']}
-                    onChange={handleChange('last name')}
-                    required
-                    disabled={selectedProfile !== ''}
-                  />
-                </span>
+                <Grid container spacing={1} className={classes.fieldRow}>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="First Name"
+                      value={profile.name}
+                      onChange={handleChange('name')}
+                      required
+                      fullWidth
+                      disabled={selectedProfile !== '' && !editing}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Last Name"
+                      value={profile['last name']}
+                      onChange={handleChange('last name')}
+                      required
+                      fullWidth
+                      disabled={selectedProfile !== '' && !editing}
+                    />
+                  </Grid>
+                </Grid>
                 <Typography className={classes.stepNum}>
                   02
                   <span className={classes.stepSlash}>/</span>
                   <span className={classes.stepLabel}>Contact Information</span>
                 </Typography>
-                <span className={classes.fieldRowContainer}>
-                  <TextField
-                    label="Phone Number"
-                    value={profile.phone}
-                    onChange={handleChange('phone')}
-                    disabled={selectedProfile !== ''}
-                  />
-                  <TextField
-                    label="Email"
-                    value={profile.email}
-                    onChange={handleChange('email')}
-                    disabled={selectedProfile !== ''}
-                  />
-                </span>
+                <Grid container spacing={1} className={classes.fieldRow}>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Phone Number"
+                      value={profile.phone}
+                      onChange={handleChange('phone')}
+                      disabled={selectedProfile !== '' && !editing}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Email"
+                      value={profile.email}
+                      onChange={handleChange('email')}
+                      disabled={selectedProfile !== '' && !editing}
+                      fullWidth
+                    />
+                  </Grid>
+                </Grid>
                 <Typography className={classes.stepNum}>
                   03
                   <span className={classes.stepSlash}>/</span>
                   <span className={classes.stepLabel}>
-                    Which delivery options do you prefer?
+                    Which delivery option do you prefer?
                   </span>
                 </Typography>
-                <FormControlLabel
-                  control={<Checkbox checked={selectors.canPickup} onChange={handleCheck} name="canPickup" />}
-                  label="Pick-up"
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={selectors.canDeliver} onChange={handleCheck} name="canDeliver" />}
-                  label="Delivery"
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={selectors.canMeet} onChange={handleCheck} name="canMeet" />}
-                  label="Location meet-up"
-                />
+                <FormGroup>
+                  <FormControlLabel
+                    control={<GreenCheckbox icon={<RadioButtonUnchecked />} checkedIcon={<RadioButtonChecked />} checked={selectors.preferPickup} onChange={handleCheck} name="preferPickup" />}
+                    label="Pick-up"
+                  />
+                  <FormControlLabel
+                    control={<GreenCheckbox icon={<RadioButtonUnchecked />} checkedIcon={<RadioButtonChecked />} checked={!selectors.preferPickup} onChange={handleCheck} name="preferPickup" />}
+                    label="Delivery"
+                    fullWidth
+                  />
+                </FormGroup>
               </CardContent>
             </Card>
             <Typography className={classes.sectionHeader}> Billing Information</Typography>
@@ -394,18 +499,24 @@ function Checkout() {
                     Which payment methods are you comfortable with using?
                   </span>
                 </Typography>
-                <FormControlLabel
-                  control={<Checkbox checked={selectors.canCash} onChange={handleCheck} name="canCash" />}
-                  label="Cash"
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={selectors.canPaypal} onChange={handleCheck} name="canPaypal" />}
-                  label="Paypal"
-                />
-                <FormControlLabel
-                  control={<Checkbox checked={selectors.canCard} onChange={handleCheck} name="canCard" />}
-                  label="Debit/credit card"
-                />
+                <FormGroup>
+                  <FormControlLabel
+                    control={<GreenCheckbox checked={selectors.canCash} onChange={handleCheck} name="canACH" />}
+                    label="ACH transfer (Automated clearing house)"
+                  />
+                  <FormControlLabel
+                    control={<GreenCheckbox checked={selectors.canPaypal} onChange={handleCheck} name="canPaypal" />}
+                    label="Paypal"
+                  />
+                  <FormControlLabel
+                    control={<GreenCheckbox checked={selectors.canCard} onChange={handleCheck} name="canCard" />}
+                    label="Debit/credit card"
+                  />
+                  <FormControlLabel
+                    control={<GreenCheckbox checked={selectors.canCheck} onChange={handleCheck} name="canCheck" />}
+                    label="Check"
+                  />
+                </FormGroup>
                 <Typography className={classes.stepNum}>
                   04
                   <span className={classes.stepSlash}>/</span>
@@ -417,47 +528,77 @@ function Checkout() {
                   onChange={handleChange('address line 1')}
                   fullWidth
                   required
-                  disabled={selectedProfile !== ''}
+                  disabled={selectedProfile !== '' && !editing}
                 />
                 <TextField
                   label="Address Line 2"
                   value={profile['address line 2']}
                   onChange={handleChange('address line 2')}
                   fullWidth
-                  disabled={selectedProfile !== ''}
+                  disabled={selectedProfile !== '' && !editing}
                 />
-                <div className={classes.fieldRowContainer}>
-                  <TextField
-                    label="City"
-                    value={profile.city}
-                    onChange={handleChange('city')}
-                    required
-                    disabled={selectedProfile !== ''}
-                  />
-                  <TextField
-                    label="State"
-                    value={profile.state}
-                    onChange={handleChange('state')}
-                    disabled={selectedProfile !== ''}
-                  />
-                </div>
-                <div className={classes.fieldRowContainer}>
-                  <TextField
-                    label="Zip Code"
-                    value={profile.zipcode}
-                    onChange={handleChange('zipcode')}
-                    required
-                    disabled={selectedProfile !== ''}
-                  />
-                  <TextField
-                    label="Country"
-                    value={profile.country}
-                    onChange={handleChange('country')}
-                    disabled={selectedProfile !== ''}
-                  />
-                </div>
+                <Grid container spacing={3}>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="City"
+                      value={profile.city}
+                      onChange={handleChange('city')}
+                      required
+                      disabled={selectedProfile !== '' && !editing}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="State"
+                      value={profile.state}
+                      onChange={handleChange('state')}
+                      disabled={selectedProfile !== '' && !editing}
+                      fullWidth
+                    />
+                  </Grid>
+                </Grid>
+                <Grid container spacing={3}>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Zip Code"
+                      value={profile.zipcode}
+                      onChange={handleChange('zipcode')}
+                      disabled={selectedProfile !== '' && !editing}
+                      required
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Country"
+                      value={profile.country}
+                      onChange={handleChange('country')}
+                      disabled={selectedProfile !== '' && !editing}
+                      fullWidth
+                    />
+                  </Grid>
+                </Grid>
               </CardContent>
             </Card>
+            <div className={classes.rowContainer}>
+              {(selectedProfile === '' || editing) && (
+              <Button
+                className={classes.requestQuoteButton}
+                onClick={() => { createProfile(setSelectedProfile); }}
+              >
+                create new profile
+              </Button>
+              )}
+              {(editing) && (
+              <Button
+                className={classes.requestQuoteButton}
+                onClick={editProfile}
+              >
+                update existing profile
+              </Button>
+              )}
+            </div>
           </Grid>
           <Grid item xs={6} sm={6} md={5}>
             <Typography className={classes.sectionHeader}> Your Order</Typography>
@@ -486,14 +627,24 @@ function Checkout() {
                   {parseFloat(subtotal).toFixed(2)}
                 </Typography>
                 <Typography className={classes.cost}>
-                  <span className={classes.costLabel}>Estimated Transportation Cost: </span>
-                  $
-                  {parseFloat(20).toFixed(2)}
+                  <span className={classes.costLabel}>Transportation Cost: </span>
+                  TBD
                 </Typography>
                 <Typography className={classes.cost}>
-                  <span className={classes.costLabel}>Processing Fee: </span>
-                  $
-                  {parseFloat(5).toFixed(2)}
+                  <span className={classes.costLabel}>Processing Fees: </span>
+                  TBD
+                </Typography>
+                <Typography className={classes.cost}>
+                  <span className={classes.costLabel}>Additional Taxes: </span>
+                  TBD
+                </Typography>
+                <Typography className={classes.cost}>
+                  <span className={classes.costLabel}>Administration Fees: </span>
+                  TBD
+                </Typography>
+                <Typography>
+                  The agency cost will be TBD.
+                  F2P will investigate how much money they can save you.
                 </Typography>
                 <Typography className={classes.totalLabel}>
                   ESTIMATED TOTAL:
@@ -505,7 +656,7 @@ function Checkout() {
                 </Typography>
               </CardContent>
             </Card>
-            <div className={classes.buttonContainer}>
+            <div className={classes.rowContainer}>
               <Link className={classes.links} to="/cart">
                 <ButtonBase>
                   <ArrowBack className={classes.green} />
@@ -523,6 +674,26 @@ function Checkout() {
           </Grid>
         </Grid>
       </form>
+      <CartDialog
+        message="Save information as a new checkout profile?"
+        alert={saveProfileAlert}
+        close={saveProfileAlertClosed}
+        getResponse
+      />
+      <CartDialog
+        title="Quit editing?"
+        message="Changes you made will not be saved."
+        alert={quitEditingAlert}
+        close={quitEditingAlertClosed}
+        getResponse
+      />
+      <CartDialog
+        title="Update checkout profile?"
+        message="Changes you made will override the current info."
+        alert={updateProfileAlert}
+        close={updateProfileAlertClosed}
+        getResponse
+      />
     </div>
   );
 }

@@ -13,6 +13,13 @@ const useStyles = makeStyles({
     position: 'relative',
     minHeight: '100vh',
   },
+  mainScreen: {
+    width: '78%',
+  },
+  sidebar: {
+    sidebar: '22%',
+    marginLeft: '0.5%',
+  },
 });
 
 // Airtable set-up
@@ -46,12 +53,12 @@ export default function MarketplaceScreen() {
   const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
 
   return (
-    <Grid container spacing={1} className={classes.root}>
-      <Grid item xs>
+    <Grid container spacing={2} className={classes.root}>
+      <Grid item className={classes.sidebar}>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar />
       </Grid>
-      <Grid item xs={10}>
+      <Grid item className={classes.mainScreen}>
         {/* Entire marketplace header, contains tabs, view, and search */}
         <MarketplaceHeader
           tabValue={tabValue}

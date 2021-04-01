@@ -1,9 +1,14 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid, Typography } from '@material-ui/core';
+import FilterMenu from './FilterMenu';
 import '../../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
+  titleContainer: {
+    marginTop: '18%',
+    marginBottom: '30%',
+  },
   marketplaceText: {
     fontFamily: 'Work Sans',
     fontSize: '12.5px',
@@ -25,7 +30,7 @@ export default function MarketplaceSidebar() {
 
   return (
     <div>
-      <Grid container direction="row">
+      <Grid container direction="row" className={classes.titleContainer}>
         <Typography className={classes.marketplaceText}>
           Marketplace /
         </Typography>
@@ -33,6 +38,7 @@ export default function MarketplaceSidebar() {
           PageName
         </Typography>
       </Grid>
+      <FilterMenu menuTitle="Item Type" filterOptions={['Agency Price', 'Standard Items']} />
     </div>
   );
 }

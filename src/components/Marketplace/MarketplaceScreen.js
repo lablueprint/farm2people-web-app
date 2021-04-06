@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
-import '../../assets/styles/fonts.css';
+import '../../styles/fonts.css';
 
 const useStyles = makeStyles({
   root: {

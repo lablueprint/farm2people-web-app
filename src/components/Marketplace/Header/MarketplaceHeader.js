@@ -8,7 +8,7 @@ import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import SearchIcon from '@material-ui/icons/Search';
 import TabHeader from './TabHeader';
 import ViewResults from './ViewResults';
-import '../../../assets/styles/fonts.css';
+import '../../../styles/fonts.css';
 import Fruit1 from '../../../assets/images/Fruit1.svg';
 import Fruit2 from '../../../assets/images/Fruit2.svg';
 

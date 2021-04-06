@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container, Grid, Typography } from '@material-ui/core';
 import FilterMenu from './FilterMenu';
+import PriceMenu from './PriceMenu';
 import '../../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
@@ -28,6 +29,7 @@ const useStyles = makeStyles({
   },
 });
 
+/* Sidebar with filter selections for types + sorting */
 export default function MarketplaceSidebar() {
   const classes = useStyles();
 
@@ -47,6 +49,7 @@ export default function MarketplaceSidebar() {
         filterOptions={['Vegetables', 'Fruits', 'Legumes', 'Grains', 'Oats']}
         isLast={false}
       />
+      <PriceMenu priceOptions={[0, 15, 30, 45, 60, 75]} />
       <FilterMenu
         menuTitle="Farming"
         filterOptions={['Fall', 'Winter', 'Summer', 'Spring']}

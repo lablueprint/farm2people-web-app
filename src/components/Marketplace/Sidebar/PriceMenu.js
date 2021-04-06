@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Checkbox, Divider, Grid, List, ListItem, ListItemIcon, ListItemSecondaryAction,
-  ListItemText, Typography,
+  ListItemText, TextField, Typography,
 } from '@material-ui/core';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import '../../../assets/styles/fonts.css';
@@ -11,6 +12,7 @@ const useStyles = makeStyles({
   titleContainer: {
     marginTop: '8%',
     marginLeft: '5%',
+    marginBottom: '4%',
   },
   menuTitleText: {
     fontFamily: 'Work Sans',
@@ -21,7 +23,22 @@ const useStyles = makeStyles({
   iconColour: {
     color: '#2D5496',
   },
-  // Styling for filter menu items
+  // Styling for min - max input
+  dollarIcon: {
+    fontFamily: 'Work Sans',
+    fontSize: '12px',
+    fontWeight: 'bold',
+    marginLeft: '-8%',
+    marginRight: '8%',
+  },
+  inputText: {
+    fontFamily: 'Work Sans',
+    fontSize: '12px',
+  },
+  inputContainer: {
+    width: '33%',
+  },
+  // Styling for menu items
   optionContainer: {
     marginTop: '-5%',
   },
@@ -42,7 +59,7 @@ const useStyles = makeStyles({
 });
 
 /* Menu in the sidebar for selecting filters, takes in array of filter options */
-export default function PriceMenu() {
+export default function PriceMenu({ priceOptions }) {
   const classes = useStyles();
   const [isChecked, setIsChecked] = useState([0]);
 
@@ -60,8 +77,10 @@ export default function PriceMenu() {
     setIsChecked(newChecked);
   };
 
-  const priceOptions = ['$0 - $15', '$15 - $30', '$30 - $45', '$45 - $60', '$60 - $75'];
-
+  const priceText = [];
+  for (let i = 0; i < priceOptions.length - 1; i += 1) {
+    priceText[i] = `$${priceOptions[i]} - $${priceOptions[i + 1]}`;
+  }
   return (
     <div>
       <Grid
@@ -75,8 +94,39 @@ export default function PriceMenu() {
           Sort by Price Per Unit
         </Typography>
       </Grid>
+      {/* Min-max manual input + apply button */}
+      <Grid container direction="row">
+        <TextField
+          placeholder="Min"
+          variant="outlined"
+          size="small"
+          InputProps={{
+            disableUnderline: true,
+            classes: {
+              input: classes.inputText,
+            },
+            startAdornment: <Typography className={classes.dollarIcon}> $ </Typography>,
+          }}
+          className={classes.inputContainer}
+        />
+        <Typography className={classes.inputText}> to </Typography>
+        <TextField
+          placeholder="Max"
+          variant="outlined"
+          size="small"
+          InputProps={{
+            disableUnderline: true,
+            classes: {
+              input: classes.inputText,
+            },
+            startAdornment: <Typography className={classes.dollarIcon}> $$ </Typography>,
+          }}
+          className={classes.inputContainer}
+        />
+      </Grid>
+      {/* Price options list */}
       <List dense>
-        {priceOptions.map((option) => (
+        {priceText.map((option) => (
           <ListItem
             dense
             key={option}
@@ -109,3 +159,7 @@ export default function PriceMenu() {
     </div>
   );
 }
+
+PriceMenu.propTypes = {
+  priceOptions: PropTypes.arrayOf(PropTypes.number).isRequired,
+};

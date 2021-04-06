@@ -49,9 +49,6 @@ const useStyles = makeStyles({
     fontSize: '12.5px',
     color: '#2D5496',
   },
-  divider: {
-    minWidth: '180px',
-  },
 });
 
 /* Menu in the sidebar for selecting filters, takes in array of filter options */
@@ -126,7 +123,7 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
 
         )))}
       </List>
-      {!isLast && <Divider variant="middle" className={classes.divider} />}
+      {!isLast && <Divider variant="middle" />}
     </div>
   );
 }

@@ -53,7 +53,7 @@ export default function MarketplaceScreen() {
   const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
 
   return (
-    <Grid container spacing={1} className={classes.root}>
+    <Grid container className={classes.root}>
       <Grid item>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar />

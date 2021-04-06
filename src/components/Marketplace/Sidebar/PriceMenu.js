@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Checkbox, Divider, Grid, IconButton, List, ListItem, ListItemIcon, ListItemSecondaryAction,
+  Checkbox, Divider, Grid, List, ListItem, ListItemIcon, ListItemSecondaryAction,
   ListItemText, Typography,
 } from '@material-ui/core';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import '../../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
@@ -20,16 +17,6 @@ const useStyles = makeStyles({
     fontSize: '15px',
     color: '#373737',
     fontWeight: 'bold',
-  },
-  resetText: {
-    marginTop: '-10.1%',
-    fontFamily: 'Work Sans',
-    fontSize: '12.5px',
-    color: '#373737',
-  },
-  expandIcon: {
-    marginTop: '-18%',
-    color: '#2D5496',
   },
   iconColour: {
     color: '#2D5496',
@@ -55,10 +42,9 @@ const useStyles = makeStyles({
 });
 
 /* Menu in the sidebar for selecting filters, takes in array of filter options */
-export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
+export default function PriceMenu() {
   const classes = useStyles();
   const [isChecked, setIsChecked] = useState([0]);
-  const [isExpanded, setIsExpanded] = useState(false);
 
   /* Sets checkboxes to checked/unchecked when toggled */
   const handleToggle = (value) => () => {
@@ -74,6 +60,8 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
     setIsChecked(newChecked);
   };
 
+  const priceOptions = ['$0 - $15', '$15 - $30', '$30 - $45', '$45 - $60', '$60 - $75'];
+
   return (
     <div>
       <Grid
@@ -83,21 +71,12 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
         alignItems="flex-end"
         className={classes.titleContainer}
       >
-        <Typography className={classes.menuTitleText}>{menuTitle}</Typography>
-        <Grid container direction="row" justify="flex-end">
-          <Typography className={classes.resetText}> Reset </Typography>
-          <IconButton
-            className={classes.expandIcon}
-            onClick={() => setIsExpanded(!isExpanded)}
-          >
-            {!isExpanded && <ExpandMoreIcon />}
-            {isExpanded && <ExpandLessIcon />}
-          </IconButton>
-        </Grid>
+        <Typography className={classes.menuTitleText}>
+          Sort by Price Per Unit
+        </Typography>
       </Grid>
-      {/* List of filter options only shows if expanded */}
       <List dense>
-        {isExpanded && (filterOptions.map((option) => (
+        {priceOptions.map((option) => (
           <ListItem
             dense
             key={option}
@@ -124,15 +103,9 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
             </ListItemSecondaryAction>
           </ListItem>
 
-        )))}
+        ))}
       </List>
-      {!isLast && <Divider variant="middle" className={classes.divider} />}
+      <Divider variant="middle" className={classes.divider} />
     </div>
   );
 }
-
-FilterMenu.propTypes = {
-  menuTitle: PropTypes.string.isRequired,
-  filterOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
-  isLast: PropTypes.bool.isRequired,
-};

@@ -162,7 +162,7 @@ export default function FarmCard(props) {
           container
           direction="row"
           justify="space-between"
-          alignItems="start"
+          alignItems="flex-start"
           className={classes.titleContainer}
         >
           <div className={classes.titleText}>
@@ -172,7 +172,7 @@ export default function FarmCard(props) {
             container
             direction="row"
             justify="flex-end"
-            alignItems="start"
+            alignItems="flex-start"
             className={classes.addressContainer}
           >
             <Typography className={classes.subTitleText}>

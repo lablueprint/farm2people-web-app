@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-  Checkbox, Divider, Grid, List, ListItem, ListItemIcon, ListItemSecondaryAction,
+  Button, Checkbox, Divider, Grid, List, ListItem, ListItemIcon, ListItemSecondaryAction,
   ListItemText, TextField, Typography,
 } from '@material-ui/core';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
@@ -24,19 +24,39 @@ const useStyles = makeStyles({
     color: '#2D5496',
   },
   // Styling for min - max input
+  minMaxContainer: {
+    width: '105%',
+  },
   dollarIcon: {
     fontFamily: 'Work Sans',
-    fontSize: '12px',
+    fontSize: '9.5px',
     fontWeight: 'bold',
-    marginLeft: '-8%',
-    marginRight: '8%',
+    marginLeft: '-7px',
+    marginRight: '6%',
   },
   inputText: {
     fontFamily: 'Work Sans',
-    fontSize: '12px',
+    fontSize: '10.5px',
+    paddingRight: '-5%',
   },
   inputContainer: {
-    width: '33%',
+    width: '55px',
+  },
+  middleText: {
+    marginLeft: '3%',
+    marginRight: '3%',
+    fontFamily: 'Work Sans',
+    fontSize: '11.5px',
+  },
+  applyButton: {
+    backgroundColor: '#E7EEFA',
+    color: '#373737',
+    borderRadius: '6px',
+    fontFamily: 'Work Sans',
+    fontWeight: 'lighter',
+    fontSize: '11px',
+    marginLeft: '4%',
+    width: '10%',
   },
   // Styling for menu items
   optionContainer: {
@@ -62,6 +82,10 @@ const useStyles = makeStyles({
 export default function PriceMenu({ priceOptions }) {
   const classes = useStyles();
   const [isChecked, setIsChecked] = useState([0]);
+  // Sort priceOptions in asc order + get highest price for default max
+  priceOptions.sort();
+  const [min, setMin] = useState(0);
+  const [max, setMax] = useState(priceOptions[priceOptions.length - 1]);
 
   /* Sets checkboxes to checked/unchecked when toggled */
   const handleToggle = (value) => () => {
@@ -75,6 +99,32 @@ export default function PriceMenu({ priceOptions }) {
     }
 
     setIsChecked(newChecked);
+  };
+
+  /* Sets min + max when input entered */
+  const handleMinChange = (event) => {
+    console.log(event.target.value);
+    setMin(event.target.value);
+    console.log(min);
+  };
+  const handleMaxChange = (event) => {
+    console.log(event.target.value);
+    setMax(event.target.value);
+    console.log(max);
+  };
+
+  /* When apply clicked, checks if min/max are valid + limits results */
+  const handleApply = () => {
+    // bugs for empty spots + max < min = valid, check that length > 0
+    // If valid (non-neg #, max >= min), set actual min/max + limit results
+    if (min.toString().length && max.toString().length
+      && !Number.isNaN(min) && !Number.isNaN(max)
+      && Number(min) >= 0 && Number(max) >= min) {
+      // TODO: actually limit results based on min/max price
+      console.log('valid');
+    } else {
+      console.log('invalid');
+    }
   };
 
   const priceText = [];
@@ -95,7 +145,13 @@ export default function PriceMenu({ priceOptions }) {
         </Typography>
       </Grid>
       {/* Min-max manual input + apply button */}
-      <Grid container direction="row">
+      <Grid
+        container
+        direction="row"
+        justify="center"
+        alignItems="center"
+        className={classes.minMaxContainer}
+      >
         <TextField
           placeholder="Min"
           variant="outlined"
@@ -107,9 +163,10 @@ export default function PriceMenu({ priceOptions }) {
             },
             startAdornment: <Typography className={classes.dollarIcon}> $ </Typography>,
           }}
+          onChange={handleMinChange}
           className={classes.inputContainer}
         />
-        <Typography className={classes.inputText}> to </Typography>
+        <Typography className={classes.middleText}> to </Typography>
         <TextField
           placeholder="Max"
           variant="outlined"
@@ -121,8 +178,19 @@ export default function PriceMenu({ priceOptions }) {
             },
             startAdornment: <Typography className={classes.dollarIcon}> $$ </Typography>,
           }}
+          onChange={handleMaxChange}
           className={classes.inputContainer}
         />
+        <Button
+          className={classes.applyButton}
+          variant="container"
+          disableElevation
+          style={{ textTransform: 'none' }} // Removes auto-caps
+          size="small"
+          onClick={handleApply}
+        >
+          Apply
+        </Button>
       </Grid>
       {/* Price options list */}
       <List dense>

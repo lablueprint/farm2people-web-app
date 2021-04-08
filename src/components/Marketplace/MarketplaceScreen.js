@@ -17,8 +17,7 @@ const useStyles = makeStyles({
     width: '78%',
   },
   sidebar: {
-    sidebar: '22%',
-    marginLeft: '0.5%',
+    marginLeft: '5px',
   },
 });
 
@@ -54,7 +53,7 @@ export default function MarketplaceScreen() {
 
   return (
     <Grid container className={classes.root}>
-      <Grid item>
+      <Grid item className={classes.sidebar}>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar />
       </Grid>

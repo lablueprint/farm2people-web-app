@@ -49,7 +49,7 @@ export default function MarketplaceSidebar() {
         filterOptions={['Vegetables', 'Fruits', 'Legumes', 'Grains', 'Oats']}
         isLast={false}
       />
-      <PriceMenu priceOptions={[0, 15, 30, 45, 60, 75]} />
+      <PriceMenu priceOptions={[0, 15, 30, 45, 75, 60]} />
       <FilterMenu
         menuTitle="Farming"
         filterOptions={['Fall', 'Winter', 'Summer', 'Spring']}

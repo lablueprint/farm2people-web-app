@@ -133,7 +133,7 @@ export default function PriceMenu({ priceOptions }) {
         className={classes.titleContainer}
       >
         <Typography className={classes.menuTitleText}>
-          Sort by Price Per Unit
+          Filter by Price Per Unit
         </Typography>
       </Grid>
       {/* Min-max manual input + apply button */}

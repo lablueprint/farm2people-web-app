@@ -17,20 +17,21 @@ const useStyles = makeStyles({
   },
   optionText: {
     fontFamily: 'Work Sans',
-    fontSize: '11px',
+    fontSize: '12px',
   },
   optionMenu: {
     marginTop: '10px',
     marginBottom: '18px',
     marginLeft: '-9px',
+    width: '100%',
   },
 });
 
 /* Contains view results text + selection menu for # of results */
-export default function DateMenu() {
+export default function SortMenu() {
   const classes = useStyles();
-  const sortOptions = ['Expiration date: earliest first', 'Expiration date: latest first'];
-  const [selectedOption, setOption] = useState(sortOptions[1]);
+  const sortOptions = ['Best match', 'Expiration Date: latest first', 'Harvest Date: latest first', 'Best seller'];
+  const [selectedOption, setOption] = useState(sortOptions[0]);
 
   // TODO: update to sort results based on chosen option
   const handleChange = (event) => {
@@ -40,7 +41,7 @@ export default function DateMenu() {
   return (
     <div className={classes.container}>
       <Typography className={classes.menuTitleText}>
-        Sort by Date
+        Sort by:
       </Typography>
       <TextField
         select

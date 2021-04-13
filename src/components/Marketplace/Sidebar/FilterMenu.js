@@ -17,7 +17,7 @@ const useStyles = makeStyles({
   },
   menuTitleText: {
     fontFamily: 'Work Sans',
-    fontSize: '15px',
+    fontSize: '14.5px',
     color: '#373737',
     fontWeight: 'bold',
   },
@@ -26,6 +26,7 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '12.5px',
     color: '#373737',
+    marginRight: '-6px',
   },
   expandIcon: {
     marginTop: '-35px',

@@ -3,6 +3,8 @@ import Airtable from 'airtable';
 import { makeStyles } from '@material-ui/core/styles';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
+import MarketplaceHeader from './Header/MarketplaceHeader';
+import '../../styles/fonts.css';
 
 const useStyles = makeStyles({
   root: {
@@ -22,6 +24,8 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
   const [produceListings, setProduceListings] = useState([]);
+  const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
+  const [numResults, setNumResults] = useState(10); // # of results to display
 
   const classes = useStyles();
   // Get records from Airtable whenever DOM mounts and updates/changes
@@ -36,10 +40,21 @@ export default function MarketplaceScreen() {
       });
   }, []);
 
+  // Get total number of results depending on if produce or farm
+  const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
+
   return (
     <div className={classes.root}>
+      {/* Entire marketplace header, contains tabs, view, and search */}
+      <MarketplaceHeader
+        tabValue={tabValue}
+        setTabValue={setTabValue}
+        totalResults={totalResults}
+        numResults={numResults}
+        setNumResults={setNumResults}
+      />
       {/* Map each array of produceListing info to render a ProduceCard */
-        produceListings.map((produce) => (
+        tabValue === 'all' && produceListings.map((produce) => (
           <ProduceCard
             key={produce.id}
             cropName={produce.fields.crop || 'No crop name'}
@@ -50,7 +65,7 @@ export default function MarketplaceScreen() {
         ))
       }
       {/* Map each array of farmListing info to render a FarmCard */
-        farmListings.map((farm) => (
+        tabValue === 'farm' && farmListings.map((farm) => (
           <FarmCard
             key={farm.id}
             farmName={farm.fields['farm name'] || 'No farm name'}

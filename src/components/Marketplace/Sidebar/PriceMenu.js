@@ -103,27 +103,19 @@ export default function PriceMenu({ priceOptions }) {
 
   /* Sets min + max when input entered */
   const handleMinChange = (event) => {
-    console.log(event.target.value);
     setMin(event.target.value);
-    console.log(min);
   };
   const handleMaxChange = (event) => {
-    console.log(event.target.value);
     setMax(event.target.value);
-    console.log(max);
   };
 
   /* When apply clicked, checks if min/max are valid + limits results */
   const handleApply = () => {
-    // bugs for empty spots + max < min = valid, check that length > 0
     // If valid (non-neg #, max >= min), set actual min/max + limit results
-    if (min.toString().length && max.toString().length
+    if (min.toString().length > 0 && max.toString().length > 0
       && !Number.isNaN(min) && !Number.isNaN(max)
       && Number(min) >= 0 && Number(max) >= min) {
       // TODO: actually limit results based on min/max price
-      console.log('valid');
-    } else {
-      console.log('invalid');
     }
   };
 

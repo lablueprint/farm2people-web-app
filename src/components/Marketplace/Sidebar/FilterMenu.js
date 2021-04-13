@@ -54,9 +54,15 @@ const useStyles = makeStyles({
 /* Menu in the sidebar for selecting filters, takes in array of filter options */
 export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
   const classes = useStyles();
-  const [isChecked, setIsChecked] = useState([0]);
+  const [isChecked, setIsChecked] = useState([0]); // -1 is checked, 1 is unchecked
   const [isExpanded, setIsExpanded] = useState(false);
 
+  /* Resets all filters to be unchecked when reset clicked */
+  const resetFilters = () => {
+    const newChecked = [...isChecked];
+    newChecked.fill(1);
+    setIsChecked(newChecked);
+  };
   /* Sets checkboxes to checked/unchecked when toggled */
   const handleToggle = (value) => () => {
     const currentIndex = isChecked.indexOf(value);
@@ -71,6 +77,7 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
     setIsChecked(newChecked);
   };
 
+  // TODO: actually filter results based on selected filters
   return (
     <div>
       <Grid
@@ -82,7 +89,10 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
       >
         <Typography className={classes.menuTitleText}>{menuTitle}</Typography>
         <Grid container direction="row" justify="flex-end">
-          <Typography className={classes.resetText}> Reset </Typography>
+          {/* On click, calls fx to reset filters */}
+          <Typography className={classes.resetText} onClick={resetFilters}>
+            Reset
+          </Typography>
           <IconButton
             className={classes.expandIcon}
             onClick={() => setIsExpanded(!isExpanded)}

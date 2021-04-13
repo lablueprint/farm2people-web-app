@@ -79,7 +79,7 @@ function CheckoutItem({ listingID, pallets }) {
             <Grid item xs container direction="column" spacing={0} justify="space-evenly">
               <Grid item xs>
                 <Typography gutterBottom variant="subtitle1" className={classes.listingCrop}>
-                  {listingDetails.fields.crop}
+                  {listingDetails.fields['produce name']}
                 </Typography>
               </Grid>
               <Grid item xs>

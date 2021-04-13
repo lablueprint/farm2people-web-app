@@ -66,17 +66,19 @@ export default function MarketplaceScreen() {
           numResults={numResults}
           setNumResults={setNumResults}
         />
-        {/* Map each array of produceListing info to render a ProduceCard */
-          tabValue === 'all' && produceListings.map((produce) => (
-            <ProduceCard
-              // key={TODO, no unique identifiers in table}
-              cropName={produce.fields.crop || 'No crop name'}
-              farmID={produce.fields['farm id'] || null}
-              unitPrice={produce.fields['standard price per pallet'] || -1}
-              unitType={produce.fields['unit type'] || 'pallet'}
-            />
-          ))
-        }
+        <Grid container direction="row" justify="space-between">
+          {/* Map each array of produceListing info to render a ProduceCard */
+            tabValue === 'all' && produceListings.map((produce) => (
+              <ProduceCard
+                // key={TODO, no unique identifiers in table}
+                cropName={produce.fields.crop || 'No crop name'}
+                farmID={produce.fields['farm id'] || null}
+                unitPrice={produce.fields['standard price per pallet'] || -1}
+                unitType={produce.fields['unit type'] || 'pallet'}
+              />
+            ))
+          }
+        </Grid>
         {/* Map each array of farmListing info to render a FarmCard */
           tabValue === 'farm' && farmListings.map((farm) => (
             <FarmCard

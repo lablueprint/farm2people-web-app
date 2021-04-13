@@ -10,8 +10,8 @@ import '../../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
   titleContainer: {
-    marginTop: '8%',
-    marginLeft: '5%',
+    marginTop: '18px',
+    marginLeft: '10px',
     marginBottom: '4%',
   },
   menuTitleText: {

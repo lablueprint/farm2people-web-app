@@ -12,8 +12,8 @@ import '../../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
   titleContainer: {
-    marginTop: '8%',
-    marginLeft: '5%',
+    marginTop: '18px',
+    marginLeft: '10px',
   },
   menuTitleText: {
     fontFamily: 'Work Sans',
@@ -22,13 +22,13 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
   },
   resetText: {
-    marginTop: '-10.1%',
+    marginTop: '-20px',
     fontFamily: 'Work Sans',
     fontSize: '12.5px',
     color: '#373737',
   },
   expandIcon: {
-    marginTop: '-18%',
+    marginTop: '-35px',
     color: '#2D5496',
   },
   iconColour: {

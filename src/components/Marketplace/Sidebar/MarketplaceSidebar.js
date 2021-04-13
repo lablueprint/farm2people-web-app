@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Container, Grid, Typography } from '@material-ui/core';
 import FilterMenu from './FilterMenu';
 import PriceMenu from './PriceMenu';
+import DateMenu from './DateMenu';
 import '../../../assets/styles/fonts.css';
 
 const useStyles = makeStyles({
@@ -49,6 +50,7 @@ export default function MarketplaceSidebar() {
         filterOptions={['Vegetables', 'Fruits', 'Legumes', 'Grains', 'Oats']}
         isLast={false}
       />
+      <DateMenu />
       <PriceMenu priceOptions={[0, 15, 30, 45, 75, 60]} />
       <FilterMenu
         menuTitle="Farming"

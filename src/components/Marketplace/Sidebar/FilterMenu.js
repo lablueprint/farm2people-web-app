@@ -22,14 +22,14 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
   },
   resetText: {
-    marginTop: '-20px',
+    marginTop: '-18.5px',
     fontFamily: 'Work Sans',
-    fontSize: '12.5px',
+    fontSize: '12.4px',
     color: '#373737',
-    marginRight: '-6px',
+    marginRight: '-8px',
   },
   expandIcon: {
-    marginTop: '-35px',
+    marginTop: '-34.5px',
     color: '#2D5496',
   },
   iconColour: {
@@ -41,13 +41,13 @@ const useStyles = makeStyles({
   },
   filterOptionText: {
     fontFamily: 'Work Sans',
-    fontSize: '12.5px',
+    fontSize: '12.4px',
     color: '#373737',
-    marginLeft: '-20%',
+    marginLeft: '-22%',
   },
   filterNumText: {
     fontFamily: 'Work Sans',
-    fontSize: '12.5px',
+    fontSize: '12.4px',
     color: '#2D5496',
   },
 });

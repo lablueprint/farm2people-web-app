@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -10,7 +9,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import PropTypes from 'prop-types';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
-import AddListing from './AddListing';
+import EditListing from './EditListing';
 import OrangeCat from '../../assets/images/OrangeCat.jpeg';
 
 const useStyles = makeStyles({
@@ -46,8 +45,6 @@ export default function ListingManagerCard({
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
   const handleClickOpen = () => {
-    console.log(id);
-    console.log(listing);
     setEditActive(true);
   };
 
@@ -57,37 +54,35 @@ export default function ListingManagerCard({
   return (
     <>
       <Card className={classes.listingCard}>
-        <CardActionArea>
-          <CardMedia
-            className={classes.listingCardPicture}
-            image={OrangeCat}
-            title="orange-cat"
-            component="img"
-          />
-          <CardContent className={classes.listingCardContent}>
-            <Typography variant="h6" component="h4">
-              { listing.crop }
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              { listing['pallets available'] || 0 }
-              {' '}
-              pallet(s) in stock    |    $
-              { listing['standard price per pallet'] || 0 }
-              /pallet
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              { listing['pallets pending'] || 0}
-              {' '}
-              pallets pending
-            </Typography>
-          </CardContent>
-        </CardActionArea>
+        <CardMedia
+          className={classes.listingCardPicture}
+          image={OrangeCat}
+          title="orange-cat"
+          component="img"
+        />
+        <CardContent className={classes.listingCardContent}>
+          <Typography variant="h6" component="h4">
+            { listing['produce name'] }
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            { listing['pallets available'] || 0 }
+            {' '}
+            pallet(s) in stock    |    $
+            { listing['standard price per unit'] || 0 }
+            /pallet
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            { listing['pallets pending'] || 0}
+            {' '}
+            pallets pending
+          </Typography>
+        </CardContent>
         <CardActions className={classes.listingCardActionArea}>
           <Button size="small" color="primary" onClick={handleClickOpen}>
             Edit
           </Button>
           <Divider className={classes.divider} orientation="vertical" flexItem />
-          <AddListing
+          <EditListing
             id={id}
             listing={listing}
             edit
@@ -117,17 +112,24 @@ ListingManagerCard.defaultProps = {
 ListingManagerCard.propTypes = {
   id: PropTypes.string.isRequired,
   listing: PropTypes.shape({
-    crop: PropTypes.string,
-    description: PropTypes.string,
-    'unit type': PropTypes.string,
+    'produce name': PropTypes.string,
+    'growing season': PropTypes.string,
+    'produce details': PropTypes.string,
+    'unit type 1': PropTypes.string,
+    'unit type 2': PropTypes.string,
+    'master unit type': PropTypes.string,
+    'unit type 1 per unit type 2': PropTypes.number,
+    'unit type 2 per master unit': PropTypes.number,
     'units per pallet': PropTypes.number,
-    'lbs per unit': PropTypes.number,
-    'standard price per pallet': PropTypes.number,
-    'expiration date': PropTypes.string,
+    'lbs per unit type 2': PropTypes.number,
+    'unit type per pallet': PropTypes.string,
+    'pallets per master pallet': PropTypes.number,
+    'standard price per unit': PropTypes.number,
+    'agency price per unit': PropTypes.number,
+    'sell by date': PropTypes.string,
     'first available date': PropTypes.string,
     'date entered': PropTypes.string,
     'available until': PropTypes.string,
-    'growing season': PropTypes.string,
     'pallets available': PropTypes.number,
     'pallets pending': PropTypes.number,
     'pallets sold': PropTypes.number,

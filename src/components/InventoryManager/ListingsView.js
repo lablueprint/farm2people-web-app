@@ -11,7 +11,7 @@ export default function ListingsView({
       <Grid container spacing={2}>
         {
         cardListings.map((listing) => (
-          <Grid item xs={3}>
+          <Grid item xs={3} key={listing.id}>
             <ListingManagerCard
               id={listing.id}
               listing={listing.fields}
@@ -33,7 +33,10 @@ ListingsView.defaultProps = {
 };
 
 ListingsView.propTypes = {
-  cardListings: PropTypes.shape([]),
+  cardListings: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    fields: PropTypes.shape({}),
+  })),
   selectedCards: PropTypes.shape([]),
   updateSelectedCards: PropTypes.func.isRequired,
   editRecord: PropTypes.func.isRequired,

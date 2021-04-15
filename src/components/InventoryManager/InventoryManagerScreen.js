@@ -27,14 +27,24 @@ const useStyles = makeStyles({
 const base = new Airtable({ apiKey: airtableConfig.apiKey })
   .base(airtableConfig.baseKey);
 
+const getProduceTypes = () => {
+  const produceNames = [];
+  base('Produce Type').select({
+    fields: ['produce type'],
+  }).eachPage((records, fetchNextPage) => {
+    records.forEach((record) => (
+      produceNames.push(record.get('produce type'))
+    ));
+    fetchNextPage();
+  });
+  return produceNames;
+};
+
 let initialCardSelect = {};
 export default function InventoryManagerScreen() {
   const classes = useStyles();
   const [cardListings, setCardListings] = useState([]);
   const [selectedCards, setSelectedCards] = useState({});
-  // function getRecord(id) {
-  //   return base('Listings').find(id);
-  // }
   function createRecord(rec) {
     const record = {
       fields: rec,
@@ -99,6 +109,7 @@ export default function InventoryManagerScreen() {
       .select({ view: 'Grid view' })
       .all().then((records) => {
         setCardListings(records);
+        console.log(records);
         records.forEach((listing) => {
           initialCardSelect = { ...initialCardSelect, [listing.id]: false };
         });
@@ -110,7 +121,7 @@ export default function InventoryManagerScreen() {
       <div className={classes.root}>
         <Grid container spacing={0} className={classes.dashboard}>
           <Grid item xs={1} />
-          <Grid container item spacing={3} xs={9} alignItems="center" justify="left">
+          <Grid container item spacing={3} xs={9} alignItems="center">
             <Grid item xs={12}>
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
@@ -119,7 +130,7 @@ export default function InventoryManagerScreen() {
             <Grid container item direction="row" justify="space-between" alignItems="center" spacing={1} xs={12}>
               <Grid item xs={8} />
               <Grid item xs={2}>
-                <AddListingButton createRecord={createRecord} />
+                <AddListingButton createRecord={createRecord} getProduceTypes={getProduceTypes} />
               </Grid>
               <Grid item xs={2}>
                 <DeleteButton deleteRecords={deleteSelectedRecords} />

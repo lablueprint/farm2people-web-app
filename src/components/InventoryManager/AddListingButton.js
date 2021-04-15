@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 });
 
 export default function AddListingButton({
-  createRecord,
+  createRecord, getProduceTypes,
 }) {
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
@@ -40,11 +40,17 @@ export default function AddListingButton({
           Add Listing
         </Typography>
       </Button>
-      <AddListing closeDialog={handleClose} isOpen={editActive} modifyListings={createRecord} />
+      <AddListing
+        closeDialog={handleClose}
+        isOpen={editActive}
+        modifyListings={createRecord}
+        getProduceTypes={getProduceTypes}
+      />
     </>
   );
 }
 
 AddListingButton.propTypes = {
   createRecord: PropTypes.func.isRequired,
+  getProduceTypes: PropTypes.func.isRequired,
 };

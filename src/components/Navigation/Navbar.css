@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans&display=swap');
 /* TODO: Refactor this css into makeStyles and learn how to
 integrate media queries with makeStyles */
 
@@ -23,7 +22,7 @@ integrate media queries with makeStyles */
 
 .nav-menu {
   display: grid;
-  grid-template-columns: repeat(5, auto);
+  grid-template-columns: repeat(6, auto);
   grid-gap: 2%;
   list-style: none;
   width: 60vw;

@@ -1,4 +1,5 @@
-// TODO: Transform this to a child component of ChangePasswordWindow
+// TODO: Transform this to a mother component of ChangePassword and
+// ChangePasswordSuccess with states and handle props
 
 import React from 'react';
 import {
@@ -24,7 +25,7 @@ const ChangePasswordButton = withStyles({
   },
 })(Button);
 
-export default function ChangePassword() {
+export default function ChangePasswordWindow() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
 

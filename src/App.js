@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Router, Switch, Route } from 'react-router-dom';
 import { store, history } from './lib/redux/store';
 import { Navbar, Footer, PrivateRoute } from './components/Navigation';
-import { InventoryManagerScreen, MarketplaceScreen } from './components/Marketplace';
+import InventoryManagerScreen from './components/InventoryManager';
+import MarketplaceScreen from './components/Marketplace';
 import ContactScreen from './components/Contact';
 import NotificationsScreen from './components/Notifications';
 import CartScreen from './components/Cart';
@@ -18,7 +19,6 @@ export default function App() {
   // setUserRole keeps track of the user's role on the top of our app
   // setAuthenticad keeps track of the user's login status on the
   // top level of our app
-
   const sellingPermissions = ['vendor'];
   const purchasingPermissions = ['buyer', 'agency'];
   const allPermissions = ['buyer', 'agency', 'vendor'];

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import './Navbar.css';
+import '../../styles/fonts.css';
 import logo from '../../assets/images/F2P-logo.svg';
 
 export default function Navbar() {

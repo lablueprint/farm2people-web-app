@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Grid, Typography, makeStyles,
 } from '@material-ui/core';
-import './Cart.css';
+import '../../styles/fonts.css';
 
 const useStyles = makeStyles({
   columnLabels: {

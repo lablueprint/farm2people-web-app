@@ -25,7 +25,7 @@ const useStyles = makeStyles({
     height: '100%',
   },
   listingCardContent: {
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#ffffff',
     textAlign: 'left',
     borderTop: '2px solid Gray',
     borderBottom: '1px solid Gray',
@@ -38,7 +38,7 @@ const useStyles = makeStyles({
     height: '100%',
     width: '100%',
     padding: '0px',
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#ffffff',
   },
   divider: {
     backgroundColor: 'Gray',

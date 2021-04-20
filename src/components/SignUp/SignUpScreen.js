@@ -30,7 +30,7 @@ export default function SignUpScreen() {
     try {
       /* eslint-disable */
       const res = signupUser(formState.username, formState.password, formState.fullname, role);
-
+      console.log(res);
     } catch (err) {
       if (err) {
         setErrorMsg(err);

@@ -1,3 +1,8 @@
+Log April 7, 2020
+[OnboardingScreen_func.js]
+1. Incorporate the changes to the figma(shouldn't take too long except for the button images).
+2. Create an agency record if the user role is agency. Also populate the user record with all that info.
+
 Log March 10, 2020
 1. This is the problem:
 https://stackoverflow.com/questions/56064571/react-text-input-loses-focus-when-i-type-a-letter

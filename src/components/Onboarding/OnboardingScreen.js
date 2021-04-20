@@ -160,6 +160,8 @@ class MasterForm extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
     const { formFields } = this.state;
+    console.log('Submission recorded!');
+    console.log(formFields);
   }
 
   next() {

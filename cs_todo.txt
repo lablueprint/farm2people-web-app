@@ -1,6 +1,6 @@
 Log April 7, 2020
 [OnboardingScreen_func.js]
-1. Incorporate the changes to the figma(shouldn't take too long except for the button images).
+1. Incorporate the changes to the figma (shouldn't take too long except for the button images).
 2. Create an agency record if the user role is agency. Also populate the user record with all that info.
 
 Log March 10, 2020

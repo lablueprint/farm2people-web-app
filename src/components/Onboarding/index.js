@@ -1,3 +1,3 @@
-import OnboardingScreen from './OnboardingScreen_func';
+import OnboardingScreen from './OnboardingScreen';
 
 export default OnboardingScreen;

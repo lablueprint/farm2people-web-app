@@ -1,36 +1,32 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
-import PropTypes from 'prop-types';
-// import './Onboarding.css';
+import React, { useMemo, useState, useCallback } from 'react';
 import { ThemeProvider } from '@material-ui/styles';
-import { withStyles, createMuiTheme } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import {
-  Button, FormControl,
+  Button,
   Typography,
-  Paper,
-  Box,
-  Link,
   Grid,
-  CssBaseline,
   TextField,
-  RadioGroup,
-  FormLabel,
-  MenuItem,
-  FormGroup,
-  FormControlLabel,
   Container,
+  CardMedia,
+  CardContent,
+  CardActionArea,
+  Card,
+  Box,
 } from '@material-ui/core';
+import { signupUser } from '../../lib/airlock/airlock';
+import Fruit1 from '../../assets/images/Fruit1.svg';
+import Fruit2 from '../../assets/images/Fruit2.svg';
+import Fruit3 from '../../assets/images/Fruit3.svg';
 
-const BUTTONS = [
-  { id: 0, title: 'Buyer' },
-  { id: 1, title: 'non-profit / agency' },
-  { id: 2, title: 'seller' },
-];
-
-const styles = ((theme) => ({
+const ROLE_NAMES = ['buyer', 'vendor', 'agency'];
+const theme = createMuiTheme({
+  spacing: 4,
+});
+/* eslint-disable no-debugger, no-console */
+const useStyles = makeStyles({
   formGroup: {
     alignItems: 'center',
     position: 'absolute',
@@ -38,8 +34,7 @@ const styles = ((theme) => ({
     width: '100%',
   },
   form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
+    width: '100%',
   },
   paper: {
     marginTop: '10%',
@@ -57,372 +52,433 @@ const styles = ((theme) => ({
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
   },
-  subtitleText: {
-    fontSize: '80px',
+  underlinedSubtitleText: {
     textDecoration: 'underline',
-    textDecorationColor: '#373737',
-  },
-}));
+    textDecorationColor: '#53AA48',
+    fontWeight: 'bold',
+    marginBottom: '2%',
 
-const theme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#373737',
-      contrastText: '#fff',
-    },
-    secondary: {
-      main: '#5e5e5e',
-      contrastText: '#fff',
+  },
+  subtitleText: {
+    textAlign: 'left',
+    fontSize: '30px',
+    fontWeight: 'bold',
+    marginBottom: '7%',
+  },
+  regSubtitleText: {
+    textAlign: 'left',
+    paddingLeft: '10%',
+    fontSize: '30px',
+    marginBottom: '2%',
+  },
+  cenSubtitleText: {
+    textAlign: 'center',
+    fontSize: '30px',
+    fontWeight: 'bold',
+    marginBottom: '7%',
+  },
+  cenRegSubtitleText: {
+    textAlign: 'center',
+    paddingLeft: '10%',
+    fontSize: '30px',
+    marginBottom: '2%',
+  },
+  labelText: {
+    fontWeight: 'bold',
+  },
+  grayButton: {
+    backgroundColor: '#5e5e5e',
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: '#5e5e5e',
     },
   },
-  typography: {
-    h4: {
-      fontWeight: 700,
+  blackButton: {
+    backgroundColor: '#373737',
+    color: '#fff',
+    '&:hover': {
+      backgroundColor: '#373737',
     },
+    marginTop: '10%',
+  },
+  greenButton: {
+    backgroundColor: '#53AA48',
+    '&:hover': {
+      backgroundColor: '#53AA48',
+    },
+    marginTop: '10%',
+  },
+  submitButton: {
+    backgroundColor: '#53AA48',
+    '&:hover': {
+      backgroundColor: '#53AA48',
+    },
+    width: '50%',
+  },
+  textBox: {
+    width: '70%',
+  },
+  card: {
+    margin: 16,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  stepper: {
+    margin: 'auto',
+    width: '60%',
+  },
+  icon: {
+    color: 'red !important',
   },
 });
+const ROLE_TITLES = ['buyer', 'nonprofit', 'seller'];
+const BUTTONS = [
+  {
+    id: 0,
+    title: 'Buyer',
+    image: Fruit3,
+    styling: useStyles.fruit3,
+    fruit: {
+      marginTop: '10%',
 
-const otherTheme = createMuiTheme({
-  palette: {
-    primary: {
-      main: '#53AA48',
-      contrastText: '#fff',
+      height: '134px',
+      width: '98px',
+      left: '89px',
+      top: '46px',
     },
   },
-  overrides: {
-    MuiButton: {
-      raisedPrimary: {
-        color: 'white',
-      },
+  {
+    id: 1,
+    title: 'Non-profit or Agency',
+    image: Fruit2,
+    styling: useStyles.fruit2,
+
+    fruit: {
+      marginTop: '10%',
+      height: '130px',
+      width: '105px',
+      left: '96px',
+      top: '50px',
     },
   },
-});
+  {
+    id: 2,
+    title: 'Seller',
+    image: Fruit1,
+    styling: useStyles.fruit1,
+
+    fruit: {
+      marginTop: '10%',
+      height: '141px',
+      width: '91px',
+      left: '72px',
+      top: '39px',
+      // border-radius: '0px',
+    },
+  },
+];
+
+const INITIAL_FORM_STATE = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  org: '',
+  phone: '',
+  zipcode: '',
+  comments: '',
+};
 
 function getSteps() {
-  return ['Step 1', 'Step 2', 'Confirmation'];
+  return ['Step 1', 'Step 2', 'Step 3', 'Confirmation'];
 }
 
-function getStepContent(stepIndex) {
-  switch (stepIndex) {
-    case 0:
-      return 'Select campaign settings...';
-    case 1:
-      return 'What is an ad group anyways?';
-    case 2:
-      return 'This is the bit I really care about!';
-    default:
-      return 'Unknown stepIndex';
-  }
-}
+export default function OnboardingScreen() {
+  const [formState, setFormState] = useState(INITIAL_FORM_STATE);
+  const [role, setRole] = useState(-1);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [currentStep, setCurrentStep] = useState(1);
 
-class MasterForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      currentStep: 1,
-      value: -1,
-      formFields: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        agency: '',
-        farmName: '',
-        contactName: '',
-        phone: '',
-        farmLocation: '',
-      },
-    };
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.next = this.next.bind(this);
-    this.prev = this.prev.bind(this);
-    this.previousButton = this.previousButton.bind(this);
-    this.nextButton = this.nextButton.bind(this);
-    this.handleButton = this.handleButton.bind(this);
-  }
+  const classes = useStyles();
 
-  handleChange(event) {
-    const { name, value } = event.target;
-    this.setState({
-      [name]: value,
-    });
-    console.log(value);
-  }
-
-  handleButton(button) {
-    this.setState({
-      value: button,
-    });
-  }
-
-  handleSubmit(event) {
+  const handleChange = useCallback((event) => {
     event.preventDefault();
-    const { formFields } = this.state;
-    console.log('Submission recorded!');
-    console.log(formFields);
-  }
+    setFormState(
+      {
+        ...formState,
+        [event.currentTarget.name]: event.currentTarget.value,
+      },
+    );
+  }, [formState, setFormState]);
 
-  next() {
-    console.log('clicked');
-    let { currentStep } = this.state;
-    currentStep = currentStep >= 2 ? 3 : currentStep + 1;
-    this.setState({
-      currentStep,
-    });
-  }
+  const handleSubmit = useCallback((event) => {
+    event.preventDefault();
+    setLoading(true);
+    try {
+      signupUser(formState.email, formState.password,
+        ROLE_NAMES[role],
+        formState.org, parseInt(formState.zipcode, 10), `${formState.firstName} ${formState.lastName}`,
+        formState.phone, formState.comments);
+    } catch (err) {
+      if (err) {
+        setErrorMsg(err);
+      }
+      console.log('Error in signupOnboarding');
+      console.log(err);
+    }
+    setFormState(INITIAL_FORM_STATE);
+    setLoading(false);
+    setCurrentStep(currentStep + 1);
+  }, [formState, role, currentStep]);
 
-  prev() {
-    let { currentStep } = this.state;
-    currentStep = currentStep <= 1 ? 1 : currentStep - 1;
-    this.setState({
-      currentStep,
-    });
-  }
+  const onNext = useCallback(() => {
+    if (currentStep >= 3) {
+      setCurrentStep(4);
+    } else {
+      setCurrentStep(currentStep + 1);
+    }
+  }, [currentStep, role]);
 
-  /*
-  * the functions for our button
-  */
-  previousButton() {
-    const { currentStep } = this.state;
+  const onPrev = useCallback(() => {
+    if (currentStep <= 1) {
+      setCurrentStep(1);
+    } else {
+      setCurrentStep(currentStep - 1);
+    }
+  }, [currentStep]);
+
+  const roleChange = useCallback((event) => {
+    event.preventDefault();
+    setRole(parseInt(event.currentTarget.value, 10));
+    setCurrentStep(currentStep + 1);
+  }, [currentStep, role]);
+
+  const isInvalid = useMemo(() => (
+    formState.password !== formState.confirmPassword
+      || formState.password === ''
+      || formState.email === ''
+  ),
+  [formState]);
+
+  const repeatPwdCheck = useMemo(() => {
+    let msg = '';
+    if (formState.password === '' && formState.confirmPassword === '') {
+      msg = '';
+    } else if (formState.password !== '' && formState.confirmPassword !== '') {
+      if (formState.password !== formState.confirmPassword) {
+        msg = "Passwords don't match!";
+      }
+    }
+    return msg;
+  },
+  [formState]);
+
+  const step3Check = useMemo(() => {
+    let msg = '';
+    if (formState.zipcode !== '' && Number.isNaN(formState.zipcode)) {
+      msg = 'Location (zipcode) should hold a number!';
+    }
+    return msg;
+  },
+  [formState]);
+
+  const step3IsInvalid = useMemo(() => (
+    formState.zipcode === '' || formState.firstName === ''
+      || formState.lastName === '' || formState.org === '' || formState.phone === ''
+      || formState.zipcode === ''
+  ),
+  [formState]);
+
+  function Step1() {
     if (currentStep !== 1) {
-      return (
-        <Button
-          type="button"
-          onClick={this.prev}
-          fullwidth
-          color="primary"
-          variant="contained"
-        >
-          Previous
-        </Button>
-      );
+      return null;
     }
-    return null;
-  }
-
-  nextButton() {
-    const { currentStep } = this.state;
-    if (currentStep < 3) {
-      return (
-        <Grid
-          container
-          spacing={1}
-          alignItems="center"
-        >
-          <Grid item xs={12}>
-            <Button
-              type="button"
-              onClick={this.next}
-              fullwidth
-              color="primary"
-              variant="contained"
-            >
-              Next
-            </Button>
-          </Grid>
-        </Grid>
-      );
-    }
-    return null;
-  }
-
-  render() {
-    const {
-      currentStep, value, formFields,
-    } = this.state;
-    const steps = getSteps();
     return [
-      <Box mt={5} mb={5}>
-        <Container component="main" maxWidth="xs">
-          <div className={styles.paper}>
-            <ThemeProvider theme={theme}>
-              <Typography color="textPrimary" gutterBottom variant="h4" align="center">
-                Sign Up
-              </Typography>
-            </ThemeProvider>
-            <Stepper activeStep={currentStep - 1} alternativeLabel>
-              {steps.map((label) => (
-                <Step key={label}>
-                  <StepLabel>{label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-            {/* <div>
-              <div>
-                <Typography className={styles.instructions}>
-                  {getStepContent(currentStep)}
+      <div className={classes.subtitleText}>
+        Are you a...
+      </div>,
+      <Grid
+        container
+        spacing={2}
+        direction="row"
+        justify="center"
+        alignItems="stretch"
+      >
+        {BUTTONS.map((bt) => (
+          <Grid
+            item
+            className={classes.card}
+            component={Card}
+            xs={12}
+            sm={6}
+            md={3}
+            key={BUTTONS.indexOf(bt)}
+          >
+            <CardActionArea onClick={roleChange} value={bt.id}>
+              <CardMedia
+                image={bt.image}
+                style={bt.fruit}
+              />
+              <CardContent>
+                <Typography className={classes.labelText}>
+                  {bt.title}
                 </Typography>
-                <div>
-                  <Button
-                    disabled={currentStep === 0}
-                    onClick={handleBack}
-                    className={classes.backButton}
-                  >
-                    Back
-                  </Button>
-                  <Button variant="contained" color="primary" onClick={handleNext}>
-                    {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                  </Button>
-                </div>
-              </div>
-            </div> */}
-            <form
-              className={styles.form}
-              onSubmit={this.handleSubmit}
-            >
-              <Grid
-                container
-                spacing={8}
-                align="center"
-                alignItems="center"
-                justify="center"
-              >
-                <Grid item xs={12}>
-                  <Step1
-                    currentStep={currentStep}
-                    handleChange={this.handleChange}
-                    handleButton={this.handleButton}
-                    value={value}
-                    next={this.next}
-                  />
-                </Grid>
-                <Step2
-                  currentStep={currentStep}
-                  handleChange={this.handleChange}
-                  value={value}
-                  formFields={formFields}
-                  next={this.next}
-                  prev={this.prev}
-                />
-                <Step3
-                  currentStep={currentStep}
-                  handleChange={this.handleChange}
-                />
-                {/* <ThemeProvider theme={otherTheme}>
-                  <Grid item xs={12}>
-                    {this.previousButton()}
-                  </Grid>
-                  <Grid item xs={12}>
-                    {this.nextButton()}
-                  </Grid>
-                </ThemeProvider> */}
-              </Grid>
-            </form>
-          </div>
-        </Container>
-      </Box>,
+              </CardContent>
+            </CardActionArea>
+          </Grid>
+        ))}
+      </Grid>,
     ];
   }
-}
 
-function Step1({
-  currentStep, handleChange, handleButton, value, next,
-}) {
-  if (currentStep !== 1) {
-    return null;
-  }
-  return [
-    <div>
-      <p className={styles.paper}>
-        Are you a...
-      </p>
-    </div>,
-    <Grid
-      container
-      spacing={2}
-      alignItems="center"
-    >
-      {BUTTONS.map((bt) => (
+  function Step4() {
+    if (currentStep !== 4) {
+      return null;
+    }
+    return [
+      <div>
+        <div className={classes.cenSubtitleText}>
+          Account Created!
+        </div>
+        <div className={classes.cenRegSubtitleText}>
+          { role === 1 ? 'Please await authentication from Farm2People.'
+            : 'Farm2People will be in touch with you shortly.'}
+        </div>
+      </div>,
+      <Grid
+        container
+        spacing={2}
+        alignItems="center"
+      >
         <Grid item xs={12}>
-          <ThemeProvider theme={theme}>
+          <Box mt={5}>
             <Button
               type="button"
-              key={bt.id}
-              fullWidth
-              variant="contained"
-              style={{ contrastText: '#fff' } && value === bt.id ? { backgroundColor: '#5e5e5e' } : { backgroundColor: '#373737' }}
+              className={classes.submitButton}
               color="primary"
-              onClick={() => handleButton(bt.id)}
+              variant="contained"
+              style={{ backgroundColor: '#53AA48' }}
+              onClick={onPrev}
             >
-              {bt.title}
+              {role === 0 ? 'Back To Sign In' : 'Done'}
             </Button>
-          </ThemeProvider>
+          </Box>
         </Grid>
-      ))}
-      <Grid item xs={12}>
-        <Box mt={5}>
-          <Button
-            type="button"
-            onClick={next}
-            fullWidth
-            color="primary"
-            variant="contained"
-            style={{ backgroundColor: '#53AA48' }}
+      </Grid>,
+    ];
+  }
+
+  const steps = getSteps();
+  return [
+    <Box mt={5} mb={5}>
+      <Container component="main" maxWidth="md">
+        <div>
+          <ThemeProvider theme={theme}>
+            {(currentStep === 1 || currentStep === 4) && (
+            <Typography className={classes.labelText} color="textPrimary" gutterBottom variant="h4" align="center">
+              Sign Up
+            </Typography>
+            )}
+            {(currentStep === 2 || currentStep === 3) && (
+            <Typography color="textPrimary" gutterBottom variant="h4" align="center">
+              Sign up as a&nbsp;
+              <span className={classes.underlinedSubtitleText}>
+                {ROLE_TITLES[role]}
+                {role}
+              </span>
+              {(role === 1)
+                && (
+                <>
+                  &nbsp;or&nbsp;
+                  <span className={classes.underlinedSubtitleText}>
+                    agency
+                  </span>
+                </>
+                )}
+            </Typography>
+            )}
+          </ThemeProvider>
+          <Stepper activeStep={currentStep - 1} alternativeLabel className={classes.stepper}>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>
+                  {label}
+                </StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+          <form
+            className={classes.form}
           >
-            Next
-          </Button>
-        </Box>
-      </Grid>
-    </Grid>,
+            <Grid
+              container
+              align="center"
+              alignItems="center"
+              justify="center"
+            >
+              <Grid item xs={12}>
+                <Step1 />
+              </Grid>
+              <Container maxWidth="sm">
+                <Grid item xs={12}>
+                  <Step2
+                    currentStep={currentStep}
+                    formState={formState}
+                    classes={classes}
+                    handleChange={handleChange}
+                    onPrev={onPrev}
+                    onNext={onNext}
+                    errorMsg={errorMsg}
+                    repeatPwdCheck={repeatPwdCheck}
+                    isInvalid={isInvalid}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Step3
+                    currentStep={currentStep}
+                    formState={formState}
+                    classes={classes}
+                    role={role}
+                    handleChange={handleChange}
+                    onPrev={onPrev}
+                    handleSubmit={handleSubmit}
+                    errorMsg={errorMsg}
+                    step3Check={step3Check}
+                    step3IsInvalid={step3IsInvalid}
+                    loading={loading}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Step4 />
+                </Grid>
+              </Container>
+            </Grid>
+          </form>
+        </div>
+      </Container>
+    </Box>,
   ];
 }
 
-Step1.propTypes = {
-  currentStep: PropTypes.number.isRequired,
-  handleChange: PropTypes.func.isRequired,
-  handleButton: PropTypes.func.isRequired,
-  value: PropTypes.instanceOf(Array).isRequired,
-  next: PropTypes.func.isRequired,
-};
-
 function Step2({
-  currentStep, handleChange, value, formFields, next, prev,
+  currentStep, formState, classes, handleChange, onPrev, onNext, errorMsg, repeatPwdCheck,
+  isInvalid,
 }) {
   if (currentStep !== 2) {
     return null;
   }
   return [
-    <div className={styles.paper}>
-      <p>
-        Create your account
-      </p>
+    <div className={classes.subtitleText}>
+      Create your account
     </div>,
     <Grid
       container
       spacing={2}
       alignItems="center"
     >
-      {value === 0 && (
-        <>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="fname"
-              label="Name"
-              name="formFields"
-              placeholder="First Name"
-              value={formFields.firstName}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              id="lname"
-              name="formFields"
-              placeholder="Last Name"
-              value={formFields.lastName}
-              onChange={handleChange}
-            />
-          </Grid>
-        </>
-      )}
       <Grid item xs={12}>
         <TextField
           variant="outlined"
@@ -430,9 +486,9 @@ function Step2({
           fullWidth
           id="email"
           label="Email Address"
-          name="formFields"
+          name="email"
           autoComplete="email"
-          value={formFields.email}
+          value={formState.email}
           onChange={handleChange}
         />
       </Grid>
@@ -441,12 +497,12 @@ function Step2({
           variant="outlined"
           required
           fullWidth
-          name="formFields"
+          name="password"
           label="Password"
           type="password"
           id="password"
           autoComplete="current-password"
-          value={formFields.password}
+          value={formState.password}
           onChange={handleChange}
         />
       </Grid>
@@ -456,124 +512,55 @@ function Step2({
           required
           type="password"
           fullWidth
-          name="formFields"
+          name="confirmPassword"
           id="standard-password-input"
-          value={formFields.confirmPassword}
+          value={formState.confirmPassword}
           label="Confirm Password"
           onChange={handleChange}
-          // disabled={loading}
         />
       </Grid>
-      {value > 0 && (
-        <>
-          <Grid item xs={12}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              name="formFields"
-              label={value === 1 ? 'Agency' : 'Farm Name'}
-              placeholder={value === 1 ? 'Name of Agency/Nonprofit' : ''}
-              value={value === 1 ? formFields.agency : formFields.farmName}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              label="contact"
-              name="formFields"
-              value={formFields.contactName}
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              variant="outlined"
-              required
-              fullWidth
-              label="phone"
-              name="formFields"
-              value={formFields.phone}
-              onChange={handleChange}
-            />
-          </Grid>
-        </>
-      )}
-      {value === 2 && (
-        <Grid item xs={12}>
-          <TextField
-            variant="outlined"
-            required
-            fullWidth
-            label="location"
-            name="formFields"
-            value={formFields.farmLocation}
-            onChange={handleChange}
-          />
-        </Grid>
-      )}
+      {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
+      {repeatPwdCheck && <Grid item xs={12} className="error-msg">{repeatPwdCheck}</Grid>}
       <Grid item xs={12} sm={6}>
         <Button
           type="button"
-          onClick={prev}
+          onClick={onPrev}
           fullWidth
           color="primary"
           variant="contained"
-          style={{ backgroundColor: '#373737' }}
+          className={classes.blackButton}
         >
           Back
         </Button>
       </Grid>
       <Grid item xs={12} sm={6}>
         <Button
+          className={classes.greenButton}
           type="button"
-          onClick={next}
+          onClick={onNext}
           fullWidth
           color="primary"
           variant="contained"
-          style={{ backgroundColor: '#53AA48' }}
+          disabled={isInvalid}
         >
-          Finish
+          Next
         </Button>
       </Grid>
     </Grid>,
   ];
 }
-Step2.propTypes = {
-  currentStep: PropTypes.number.isRequired,
-  handleChange: PropTypes.func.isRequired,
-  next: PropTypes.func.isRequired,
-  prev: PropTypes.func.isRequired,
-  value: PropTypes.number.isRequired,
-  formFields: PropTypes.instanceOf(Object).isRequired,
-};
 
 function Step3({
-  currentStep, handleChange, value,
+  currentStep, formState, classes, role, handleChange, onPrev, handleSubmit, errorMsg,
+  step3Check, step3IsInvalid, loading,
 }) {
+  const COMPANY_NAMES = ['Company Name', 'Agency', 'Farm Name'];
   if (currentStep !== 3) {
     return null;
   }
   return [
-    <div>
-      {value === 0 ? (
-        <p className={styles.paper}>
-          Buyer Account Created!
-        </p>
-      ) : (
-        <>
-          <p className={styles.paper}>
-            Account Created!
-          </p>
-          <p className={styles.paper}>
-            { value === 2 ? 'Please await authentication from Farm2People.'
-              : 'Farm2People will be in touch with you shortly.'}
-          </p>
-        </>
-      )}
+    <div className={classes.subtitleText}>
+      Contact Information
     </div>,
     <Grid
       container
@@ -581,24 +568,101 @@ function Step3({
       alignItems="center"
     >
       <Grid item xs={12}>
-        <Box mt={5}>
-          <Button
-            type="button"
-            fullWidth
-            color="primary"
-            variant="contained"
-            style={{ backgroundColor: '#53AA48' }}
-          >
-            {value === 0 ? 'Back To Sign In' : 'Done'}
-          </Button>
-        </Box>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          name="org"
+          label={COMPANY_NAMES[role]}
+          value={formState.org}
+          onChange={handleChange}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          label="Location"
+          name="zipcode"
+          value={formState.zipcode}
+          onChange={handleChange}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="fname"
+          label="First Name"
+          name="firstName"
+          placeholder="First Name"
+          value={formState.firstName}
+          onChange={handleChange}
+        />
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="lname"
+          name="lastName"
+          placeholder="Last Name"
+          value={formState.lastName}
+          onChange={handleChange}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          label="Phone"
+          name="phone"
+          value={formState.phone}
+          onChange={handleChange}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          label="Comments"
+          name="comments"
+          value={formState.comments}
+          onChange={handleChange}
+        />
+      </Grid>
+      {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
+      {step3Check && <Grid item xs={12} className="error-msg">{step3Check}</Grid>}
+      <Grid item xs={12} sm={6}>
+        <Button
+          type="button"
+          onClick={onPrev}
+          fullWidth
+          color="primary"
+          variant="contained"
+          className={classes.blackButton}
+        >
+          Back
+        </Button>
+      </Grid>
+      <Grid item xs={12} sm={6}>
+        <Button
+          className={classes.greenButton}
+          type="button"
+          onClick={handleSubmit}
+          fullWidth
+          color="primary"
+          variant="contained"
+          disabled={step3IsInvalid || loading}
+        >
+          Finish
+        </Button>
       </Grid>
     </Grid>,
   ];
 }
-
-Step3.propTypes = {
-  currentStep: PropTypes.number.isRequired,
-  handleChange: PropTypes.func.isRequired,
-};
-export default withStyles(styles)(MasterForm);

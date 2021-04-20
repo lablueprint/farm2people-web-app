@@ -29,10 +29,10 @@ export default function SignInScreen(props) {
         setErrorMsg('Incorrect username or password');
         setLoading(false);
       } else {
-        setDisplayName(`Welcome ${store.getState().userData.user.fields.display_name}`);
+        setDisplayName(`Welcome ${store.getState().userData.user.fields['contact name']}`);
         setErrorMsg('');
         setAuthAndRefreshNavbar(true);
-        setUserRoleAndRefreshNavbar(store.getState().userData.user.fields.user_type);
+        setUserRoleAndRefreshNavbar(store.getState().userData.user.fields['user type']);
         history.push('/');
       }
     } catch (err) {
@@ -65,7 +65,7 @@ export default function SignInScreen(props) {
 
   useEffect(() => {
     if (store.getState().authenticated) {
-      setDisplayName(`Welcome ${store.getState().userData.user.fields.display_name}`);
+      setDisplayName(`Welcome ${store.getState().userData.user.fields['contact name']}`);
     } else {
       setDisplayName('');
     }

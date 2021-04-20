@@ -13,7 +13,7 @@ const signupUser = async (email, password, fullname, role) => {
       username: email,
       password: password,
       fields: {
-        user_type: role,
+        'user type': role,
         display_name: fullname,
         approval: 'unapproved',
       },

@@ -10,7 +10,7 @@ const PrivateRoute = ({ component: Component, allowedRoles, ...rest }) => (
       /* User must be authenticated and be part of the allowedRules to access
       a PrivateRoute */
       if (store.getState().authenticated
-        && allowedRoles.includes(store.getState().userData.user.fields.user_type)) {
+        && allowedRoles.includes(store.getState().userData.user.fields['user type'])) {
         return <Component {...props} />;
       }
       /* If user is authenticated and not part of the allowedRules, they are

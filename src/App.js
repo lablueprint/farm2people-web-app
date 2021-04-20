@@ -22,7 +22,7 @@ export default function App() {
   const sellingPermissions = ['vendor'];
   const purchasingPermissions = ['buyer', 'agency'];
   const allPermissions = ['buyer', 'agency', 'vendor'];
-  const getInitialRole = () => (store.getState().userData == null ? '' : store.getState().userData.user.fields.user_type);
+  const getInitialRole = () => (store.getState().userData == null ? '' : store.getState().userData.user.fields['user type']);
   const getInitialAuth = () => (store.getState().authenticated);
   const [userRole, setUserRole] = useState(getInitialRole());
   const [authenticated, setAuthenticated] = useState(getInitialAuth());

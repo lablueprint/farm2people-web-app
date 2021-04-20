@@ -8,11 +8,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function NotificationsScreen() {
+export default function LandingScreen() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <h1>Notifications Screen</h1>
+      <h1>Landing Screen</h1>
     </div>
   );
 }

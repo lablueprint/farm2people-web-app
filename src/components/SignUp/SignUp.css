@@ -1,4 +1,6 @@
 .root {
+  position: relative;
+  min-height: 100vh;
   margin-left: 40%;
   margin-top: 5%;
   position: relative;

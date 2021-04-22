@@ -1,3 +1,8 @@
+/**
+ * Checkout Success
+ * Success screen after successful checkout
+ */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Typography, Button, makeStyles } from '@material-ui/core';
@@ -93,7 +98,7 @@ function CheckoutSuccess({ farms = "Ryan's Ronderful Rarm" }) {
           When your order is ready for review, you will get a notification and an email.
         </Typography>
         <Button className={classes.returnButton}>
-          Return to Marketplace
+          View order in profile
         </Button>
       </div>
       <img src={Asset1} alt="" className={classes.asset1} />

@@ -139,7 +139,7 @@ function CartScreen() {
     setSubtotal(0);
     base('Reserved Listings').select({ view: 'Grid view' }).all().then((records) => {
       records.map((element) => base('Listings').find(element.fields['listing id'][0], (err, record) => {
-        const currCartItemPrice = element.fields.pallets * record.fields['standard price per pallet'];
+        const currCartItemPrice = element.fields.pallets * record.fields['standard price per unit'];
         setSubtotal((prevTotal) => (prevTotal + currCartItemPrice));
       }));
       setCartListings(records);

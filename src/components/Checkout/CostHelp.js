@@ -1,11 +1,15 @@
+/**
+ * Cost Help Component
+ * Displays a tooltip with information about a cost or fee
+ */
+
 import React from 'react';
 import { makeStyles, withStyles, Tooltip } from '@material-ui/core';
 import Help from '@material-ui/icons/HelpOutline';
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles({
-  // styles temp copied from Cart Screen just to make it easier to read
-  helpButton: {
+  helpIcon: {
     color: 'rgba(55, 55, 55, 0.8)',
   },
 });
@@ -26,7 +30,7 @@ function CostHelp({ description }) {
       title={description}
       placement="left"
     >
-      <Help className={classes.helpButton} fontSize="small" />
+      <Help className={classes.helpIcon} fontSize="small" />
     </HelpTooltip>
   );
 }

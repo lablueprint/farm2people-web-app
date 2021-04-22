@@ -1,4 +1,7 @@
-/* Dialogs for changing the checkout profile name */
+/**
+ * CheckoutProfileNameDialog
+ * Dialog for setting the checkout profile name when editing or saving profiles
+*/
 
 import React, { useState } from 'react';
 import {
@@ -8,7 +11,6 @@ import {
 import PropTypes from 'prop-types';
 import '../../styles/fonts.css';
 
-// custom styling
 const useStyles = makeStyles({
   alertActionAlign: {
     display: 'flex',
@@ -57,6 +59,11 @@ function CheckoutProfileNameDialog({
     setNewName(event.target.value);
   };
 
+  // if the name has changed, save it, otherwise just close the dialog
+  const saveName = () => {
+    if (newName !== profileName) { saveProfileName(newName); } else { close(); }
+  };
+
   return (
     <Dialog
       open={alert}
@@ -81,7 +88,7 @@ function CheckoutProfileNameDialog({
           <ButtonBase className={classes.skipButton} onClick={close}>
             skip
           </ButtonBase>
-          <Button variant="contained" className={classes.saveButton} onClick={() => { saveProfileName(newName); }}>
+          <Button variant="contained" className={classes.saveButton} onClick={saveName}>
             {isNew ? 'save as new checkout profile' : 'update existing profile'}
           </Button>
         </div>

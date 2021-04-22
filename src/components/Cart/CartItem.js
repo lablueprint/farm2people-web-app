@@ -27,17 +27,18 @@ export default function CartItem({
     });
   }, []);
 
+  // TODO: talk to ryan about which fields to use here
   if (!loading && reservedListingID) {
     return (
       <>
         {errorMessage && <p>{errorMessage}</p>}
         <CartItemDisplay
           id={reservedListingID}
-          crop={listingDetails.fields.crop}
+          crop={listingDetails.fields['produce name']}
           pallets={pallets}
           unitsPerPallet={listingDetails.fields['units per pallet']}
-          unitType={listingDetails.fields['unit type']}
-          price={listingDetails.fields['standard price per pallet']}
+          unitType={listingDetails.fields['unit type per pallet']}
+          price={listingDetails.fields['standard price per unit']}
           updateSubtotal={updateSubtotal}
           removeListing={removeListing}
           maxAvailable={listingDetails.fields['pallets available']}

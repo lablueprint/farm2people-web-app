@@ -1,3 +1,8 @@
+/**
+ * CheckoutItem
+ * Displays details about listing within cart at checkout
+ */
+
 import React, { useState, useEffect } from 'react';
 import Airtable from 'airtable';
 import {
@@ -13,7 +18,6 @@ const airtableConfig = {
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 const useStyles = makeStyles({
-  // TODO: Look into breakpoints/media queries for adaptive styling
   listingImage: {
     height: '80px',
     width: '80px',
@@ -93,7 +97,7 @@ function CheckoutItem({ listingID, pallets }) {
                 <Typography gutterBottom variant="subtitle1" className={classes.listingDescription}>
                   <span className={classes.listingDetail}>Price: </span>
                   $
-                  {parseFloat((listingDetails.fields['standard price per pallet'] * pallets)).toFixed(2)}
+                  {parseFloat((listingDetails.fields['standard price per unit'] * pallets)).toFixed(2)}
                 </Typography>
               </Grid>
             </Grid>

@@ -1,9 +1,12 @@
+/**
+ * CheckoutPriceDetails
+ * Displays and describes unset costs + fees that will be added to quote total
+ */
 import React from 'react';
 import { makeStyles, Typography, Divider } from '@material-ui/core';
 import CostHelp from './CostHelp';
 
 const useStyles = makeStyles({
-  // styles temp copied from Cart Screen just to make it easier to read
   cost: {
     fontFamily: 'Work Sans',
     fontStyle: 'normal',
@@ -43,7 +46,7 @@ function CheckoutPriceDetails() {
           TBD
         </Typography>
         <CostHelp
-          description="Transportation costs will apply if you choose you want delivery. There is no cost for pick-up. Some locations do not offer pick-up."
+          description="Transportation costs are generated based on producer and delivery locations, as well as purchasing quatity. Purchaser pick-up is no cost, however some locations may not have pick-up option availability."
         />
       </div>
       <Divider />
@@ -54,7 +57,7 @@ function CheckoutPriceDetails() {
           TBD
         </Typography>
         <CostHelp
-          description="Processing fees cover the costs of using Farm2People’s service."
+          description="This contribution allows us to operate and maintain the Farm2People platform. Thank you!"
         />
       </div>
       <Divider />

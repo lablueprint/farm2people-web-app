@@ -27,6 +27,7 @@ const useStyles = makeStyles({
     fontSize: '12.4px',
     color: '#373737',
     marginRight: '-8px',
+    textDecoration: 'underline',
   },
   expandIcon: {
     marginTop: '-34.5px',

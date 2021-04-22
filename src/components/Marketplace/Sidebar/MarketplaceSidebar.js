@@ -55,7 +55,7 @@ export default function MarketplaceSidebar() {
       <Typography className={classes.filterText}>
         FILTERS
       </Typography>
-      <SortMenu sortOptions={['Best match', 'Expiration Date: latest first']} />
+      <SortMenu sortOptions={['Sell by date: earliest first', 'First available date: earliest first', 'Available until: earliest first', 'Recently added first', 'Alphabetical order']} />
       {/* TODO: Item type menu only shows for agency buyer view */}
       <FilterMenu menuTitle="Item Type" filterOptions={['Agency Price', 'Standard Items']} isLast={false} />
       <FilterMenu

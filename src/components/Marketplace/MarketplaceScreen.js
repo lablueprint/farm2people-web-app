@@ -13,11 +13,9 @@ const useStyles = makeStyles({
     position: 'relative',
     minHeight: '100vh',
   },
-  mainScreen: {
-    width: '78%',
-  },
   sidebar: {
     marginLeft: '5px',
+    width: '21%',
   },
 });
 
@@ -57,7 +55,7 @@ export default function MarketplaceScreen() {
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar />
       </Grid>
-      <Grid item className={classes.mainScreen}>
+      <Grid item xs>
         {/* Entire marketplace header, contains tabs, view, and search */}
         <MarketplaceHeader
           tabValue={tabValue}
@@ -70,7 +68,7 @@ export default function MarketplaceScreen() {
           {/* Map each array of produceListing info to render a ProduceCard */
             tabValue === 'all' && produceListings.map((produce) => (
               <ProduceCard
-                // key={TODO, no unique identifiers in table}
+                key={produce.id}
                 cropName={produce.fields.crop || 'No crop name'}
                 farmID={produce.fields['farm id'] || null}
                 unitPrice={produce.fields['standard price per pallet'] || -1}
@@ -82,7 +80,7 @@ export default function MarketplaceScreen() {
         {/* Map each array of farmListing info to render a FarmCard */
           tabValue === 'farm' && farmListings.map((farm) => (
             <FarmCard
-              // key={TODO, no unique identifiers in table}
+              key={farm.id}
               farmName={farm.fields['farm name'] || 'No farm name'}
               address={farm.fields.address || 'No address'}
               zipCode={farm.fields['zip code'] || -1}

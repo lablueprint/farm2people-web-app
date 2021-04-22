@@ -19,6 +19,7 @@ const useStyles = makeStyles({
   optionText: {
     fontFamily: 'Work Sans',
     fontSize: '12px',
+    marginLeft: '-4px',
   },
   optionMenu: {
     marginTop: '10px',

@@ -9,15 +9,25 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
+import Fruit1 from '../../assets/images/Fruit1.svg';
+import Fruit2 from '../../assets/images/Fruit2.svg';
+import Fruit3 from '../../assets/images/Fruit3.svg';
 
 const useStyles = makeStyles({
-  box: {
-    // background: '#aaffaa',
-  },
+  // box: {
+  //   background: '#aaffaa',
+  // },
   centerHeading: {
     fontFamily: 'Work Sans',
     fontSize: '24px',
     fontWeight: '700',
+    color: '#373737',
+    textAlign: 'center',
+  },
+  successSubtitle: {
+    fontFamily: 'Work Sans',
+    fontSize: '20px',
+    fontWeight: '400',
     color: '#373737',
     textAlign: 'center',
   },
@@ -55,12 +65,18 @@ const useStyles = makeStyles({
   centerAlignDialogActions: {
     justifyContent: 'center',
   },
+  fruit1: {
+    width: '80px',
+    height: 'auto',
+    margin: '10px',
+  },
 });
 
 const DoneButton = withStyles({
   root: {
     color: '#fff',
     backgroundColor: '#53AA48',
+    width: '200px',
     '&:hover': {
       backgroundColor: '#3D7736',
     },
@@ -86,9 +102,29 @@ export default function ChangePasswordSuccess({ handleClose, open }) {
           </Box>
         </DialogTitle>
         <DialogContent>
+          <Box className={classes.box} style={{ textAlign: 'center' }}>
+            <img
+              src={Fruit1}
+              alt="fruit1"
+              className={classes.fruit1}
+            />
+            <img
+              src={Fruit2}
+              alt="fruit2"
+              className={classes.fruit1}
+            />
+            <img
+              src={Fruit3}
+              alt="fruit3"
+              className={classes.fruit1}
+            />
+          </Box>
           <Box p={6} pt={2} pb={6} className={classes.box} justifyContent="center">
             <Typography className={classes.centerHeading}>
               Password Successfully Changed!
+            </Typography>
+            <Typography className={classes.successSubtitle} style={{ marginTop: '10px' }}>
+              You can now use your new password to login to your account.
             </Typography>
           </Box>
         </DialogContent>

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
   Typography, Dialog, Box, Button,
 } from '@material-ui/core';
@@ -13,12 +14,12 @@ const useStyles = makeStyles({
   box: {
     // background: '#aaffaa',
   },
-  leftHeading: {
+  centerHeading: {
     fontFamily: 'Work Sans',
-    fontSize: '28px',
+    fontSize: '24px',
     fontWeight: '700',
     color: '#373737',
-    textAlign: 'left',
+    textAlign: 'center',
   },
   form: {
     // background: 'pink',
@@ -66,50 +67,44 @@ const DoneButton = withStyles({
   },
 })(Button);
 
-export default function AddListing() {
+export default function ChangePasswordSuccess({ handleClose, open }) {
   const classes = useStyles();
-  const [open, setOpen] = React.useState(false);
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
 
   return (
-    <Box m={2} p={2} className={classes.box}>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        Open form dialog
-      </Button>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
-      >
-        <Box p={3}>
-          <DialogTitle>
-            <Box display="flex" justifyContent="space-between">
-              <Typography align="center" className={classes.leftHeading}>
-                Change Password
-              </Typography>
-              <IconButton onClick={handleClose}>
-                <CloseIcon style={{ color: '#373737', transform: 'scale(1.2)' }} />
-              </IconButton>
-            </Box>
-          </DialogTitle>
-          <DialogContent>
-            <Box p={6} pt={4} pb={6} className={classes.box} justifyContent="center">
-              Yass
-            </Box>
-          </DialogContent>
-          <DialogActions classes={{ root: classes.centerAlignDialogActions }}>
-            <DoneButton />
-          </DialogActions>
-        </Box>
-      </Dialog>
-    </Box>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+    >
+      <Box p={3}>
+        <DialogTitle>
+          <Box display="flex" justifyContent="flex-end">
+            <IconButton onClick={handleClose}>
+              <CloseIcon style={{ color: '#373737', transform: 'scale(1.2)' }} />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box p={6} pt={2} pb={6} className={classes.box} justifyContent="center">
+            <Typography className={classes.centerHeading}>
+              Password Successfully Changed!
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions classes={{ root: classes.centerAlignDialogActions }}>
+          <DoneButton variant="contained" size="large" onClick={handleClose}>
+            <Typography className={classes.changePasswordButton}>
+              DONE
+            </Typography>
+          </DoneButton>
+        </DialogActions>
+      </Box>
+    </Dialog>
   );
 }
+
+ChangePasswordSuccess.propTypes = {
+  handleClose: PropTypes.func.isRequired,
+  open: PropTypes.bool.isRequired,
+};

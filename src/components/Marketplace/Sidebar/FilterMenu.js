@@ -8,7 +8,7 @@ import {
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
-import '../../../assets/styles/fonts.css';
+import '../../../styles/fonts.css';
 
 const useStyles = makeStyles({
   titleContainer: {
@@ -55,23 +55,23 @@ const useStyles = makeStyles({
 /* Menu in the sidebar for selecting filters, takes in array of filter options */
 export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
   const classes = useStyles();
-  const [isChecked, setIsChecked] = useState([0]); // -1 is checked, 1 is unchecked
+  const [isChecked, setIsChecked] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
   /* Resets all filters to be unchecked when reset clicked */
   const resetFilters = () => {
-    const newChecked = [...isChecked];
-    newChecked.fill(1);
+    const newChecked = [];
     setIsChecked(newChecked);
   };
+
   /* Sets checkboxes to checked/unchecked when toggled */
   const handleToggle = (value) => () => {
     const currentIndex = isChecked.indexOf(value);
     const newChecked = [...isChecked];
 
-    if (currentIndex === -1) {
+    if (currentIndex === -1) { // option not found, add to isChecked
       newChecked.push(value);
-    } else {
+    } else { // option found, remove from isChecked
       newChecked.splice(currentIndex, 1);
     }
 
@@ -116,6 +116,7 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
               <Checkbox
                 edge="start"
                 tabIndex={-1}
+                /* Check the box if this option is found in isChecked */
                 checked={isChecked.indexOf(option) !== -1}
                 size="small"
                 checkedIcon={<CheckBoxIcon className={classes.iconColour} />}

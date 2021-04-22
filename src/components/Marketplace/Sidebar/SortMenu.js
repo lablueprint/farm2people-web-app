@@ -3,6 +3,7 @@ import {
   Divider, MenuItem, TextField, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles({
   container: {
@@ -28,9 +29,8 @@ const useStyles = makeStyles({
 });
 
 /* Contains view results text + selection menu for # of results */
-export default function SortMenu() {
+export default function SortMenu({ sortOptions }) {
   const classes = useStyles();
-  const sortOptions = ['Best match', 'Expiration Date: latest first', 'Harvest Date: latest first', 'Best seller'];
   const [selectedOption, setOption] = useState(sortOptions[0]);
 
   // TODO: update to sort results based on chosen option
@@ -66,3 +66,7 @@ export default function SortMenu() {
     </div>
   );
 }
+
+SortMenu.propTypes = {
+  sortOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+};

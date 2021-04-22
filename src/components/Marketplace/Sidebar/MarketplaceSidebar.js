@@ -4,7 +4,7 @@ import { Container, Grid, Typography } from '@material-ui/core';
 import FilterMenu from './FilterMenu';
 import PriceMenu from './PriceMenu';
 import SortMenu from './SortMenu';
-import '../../../assets/styles/fonts.css';
+import '../../../styles/fonts.css';
 
 const useStyles = makeStyles({
   sidebarContainer: {
@@ -55,8 +55,8 @@ export default function MarketplaceSidebar() {
       <Typography className={classes.filterText}>
         FILTERS
       </Typography>
-      <SortMenu />
-      {/* Item type menu only shows for agency buyer view */}
+      <SortMenu sortOptions={['Best match', 'Expiration Date: latest first']} />
+      {/* TODO: Item type menu only shows for agency buyer view */}
       <FilterMenu menuTitle="Item Type" filterOptions={['Agency Price', 'Standard Items']} isLast={false} />
       <FilterMenu
         menuTitle="Produce Type"

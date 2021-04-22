@@ -6,7 +6,7 @@ import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
 import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
-import '../../assets/styles/fonts.css';
+import '../../styles/fonts.css';
 
 const useStyles = makeStyles({
   root: {

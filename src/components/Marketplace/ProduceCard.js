@@ -7,7 +7,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
 import cabbageDog from '../../assets/images/cabbagedog.png';
-import '../../assets/styles/fonts.css';
+import '../../styles/fonts.css';
 
 // Airtable set-up
 const airtableConfig = {

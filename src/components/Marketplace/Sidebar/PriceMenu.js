@@ -6,7 +6,7 @@ import {
   ListItemText, TextField, Typography,
 } from '@material-ui/core';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import '../../../assets/styles/fonts.css';
+import '../../../styles/fonts.css';
 
 const useStyles = makeStyles({
   titleContainer: {
@@ -81,7 +81,7 @@ const useStyles = makeStyles({
 /* Menu in the sidebar for selecting filters, takes in array of filter options */
 export default function PriceMenu({ priceOptions }) {
   const classes = useStyles();
-  const [isChecked, setIsChecked] = useState([0]);
+  const [isChecked, setIsChecked] = useState([]);
   // Sort priceOptions in asc order + get highest price for default max
   priceOptions.sort();
   const [min, setMin] = useState(0);
@@ -92,9 +92,9 @@ export default function PriceMenu({ priceOptions }) {
     const currentIndex = isChecked.indexOf(value);
     const newChecked = [...isChecked];
 
-    if (currentIndex === -1) {
+    if (currentIndex === -1) { // option not found, add to isChecked
       newChecked.push(value);
-    } else {
+    } else { // option found, remove from isChecked
       newChecked.splice(currentIndex, 1);
     }
 
@@ -120,9 +120,13 @@ export default function PriceMenu({ priceOptions }) {
   };
 
   const priceText = [];
-  for (let i = 0; i < priceOptions.length - 1; i += 1) {
-    priceText[i] = `$${priceOptions[i]} - $${priceOptions[i + 1]}`;
-  }
+  // Goes through each price amt and gets each price1-price2 text
+  priceOptions.forEach((elem, index) => {
+    if (index < priceOptions.length - 1) {
+      priceText[index] = `$${priceOptions[index]} - $${priceOptions[index + 1]}`;
+    }
+  });
+
   return (
     <div>
       <Grid

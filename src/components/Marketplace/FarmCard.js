@@ -6,7 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import PropTypes from 'prop-types';
-import '../../assets/styles/fonts.css';
+import '../../styles/fonts.css';
 
 const useStyles = makeStyles({
   cardContainer: { // Overall card container

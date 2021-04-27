@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ListingsView from './ListingsView';
 import AddListingButton from './AddListingButton';
+import '../../styles/fonts.css';
 
 const useStyles = makeStyles({
   root: {

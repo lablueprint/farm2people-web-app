@@ -8,6 +8,14 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import StepConnector from '@material-ui/core/StepConnector';
+import Check from '@material-ui/icons/Check';
+import clsx from 'clsx';
 import BasicInfoStep from './ListingSteps/BasicInfoStep';
 import UnitsStep from './ListingSteps/UnitsStep';
 import PricesStep from './ListingSteps/PricesStep';
@@ -15,30 +23,141 @@ import DatesStep from './ListingSteps/DatesStep';
 import PhotoStep from './ListingSteps/PhotoStep';
 import ConfirmationStep from './ListingSteps/ConfirmationStep';
 
+const useStyles = makeStyles({
+  dialogTitle: {
+    padding: '1rem 3rem 0rem 3rem',
+  },
+  dialogContent: {
+    padding: '0rem 3rem 1rem 3rem',
+  },
+  dialogButtons: {
+    padding: '1rem 3rem',
+  },
+  heading: {
+    fontFamily: 'Work Sans',
+    fontSize: '3rem',
+    fontWeight: '700',
+  },
+  nextButton: {
+    backgroundColor: '#53AA48',
+    color: '#FFFFFF',
+    fontFamily: 'Work Sans',
+    fontSize: '1.2rem',
+    '&:hover': {
+      backgroundColor: '#388e3c',
+    },
+  },
+  backButton: {
+    color: '#53AA48',
+    backgroundColor: '#FFFFFF',
+    fontFamily: 'Work Sans',
+    fontSize: '1.2rem',
+  },
+});
+
+const Connector = withStyles({
+  alternativeLabel: {
+    top: 10,
+    left: 'calc(-50%)',
+    right: 'calc(50%)',
+  },
+  active: {
+    '& $line': {
+      borderColor: '#53AA48',
+    },
+  },
+  completed: {
+    '& $line': {
+      borderColor: '#53AA48',
+    },
+  },
+  line: {
+    borderColor: '#F1F2F2',
+    borderRadius: 1,
+    borderWidth: '8px',
+  },
+})(StepConnector);
+
+const useIconStyles = makeStyles({
+  root: {
+    color: '#F1F2F2',
+    display: 'flex',
+    height: 32,
+    alignItems: 'center',
+  },
+  active: {
+    color: '#53AA48',
+  },
+  circle: {
+    width: 21,
+    height: 21,
+    borderRadius: '50%',
+    backgroundColor: 'currentColor',
+    border: 'currentColor solid 6px',
+    zIndex: 1,
+  },
+  completed: {
+    color: '#F1F2F2',
+    fontSize: 18,
+    width: 21,
+    height: 21,
+    borderRadius: '50%',
+    backgroundColor: '#53AA48',
+    border: '#53AA48 solid 6px',
+    zIndex: 1,
+  },
+});
+
+function Icons(props) {
+  const classes = useIconStyles();
+  const { active, completed } = props;
+
+  return (
+    <div
+      className={clsx(classes.root, {
+        [classes.active]: active,
+      })}
+    >
+      {completed ? <Check className={classes.completed} /> : <div className={classes.circle} />}
+    </div>
+  );
+}
+
 const today = (new Date()).toISOString().split('T')[0];
-// TODO : split up edit and add listing
+// TODO : add finished screen
 const initialListing = {
-  'produce name': '',
+  produce: [],
   'growing season': '',
-  'produce details': '',
-  'unit type 1': '',
-  'unit type 1 per unit type 2': 0,
-  'unit type 2': '',
-  'lbs per unit type 2': 0,
-  'unit type 2 per master unit': 0,
-  'master unit type': '',
-  'unit type per pallet': '',
-  'units per pallet': 0.0,
+  details: '',
+  'individual produce unit': '',
+  'individual produce units per grouped produce type': 0,
+  'grouped produce type': '',
+  'lbs per grouped produce type': 0,
+  'has master units': false,
+  'grouped produce type per master unit': 0,
+  'master units per pallet': 0,
+  'grouped produce type per pallet': 0.0,
+  'has master pallets': false,
   'pallets per master pallet': 0,
-  'standard price per unit': 0.0,
-  'agency price per unit': 0.0,
+  'standard price per grouped produce type': 0.0,
+  'agency price per grouped produce type': 0.0,
   'date entered': today,
   'first available date': '',
   'sell by date': '',
+  'available until': '',
   'pallets available': 0,
   'pallets pending': 0,
   'pallets sold': 0,
+  'listing picture': [],
   privatized: false,
+};
+
+const initialProduce = {
+  id: 0,
+  fields: {
+    'produce type': '',
+    'produce picture': [],
+  },
 };
 
 function getSteps() {
@@ -53,8 +172,10 @@ function getSteps() {
 }
 
 export default function AddListing({
-  closeDialog, isOpen, modifyListings, getProduceTypes,
+  closeDialog, isOpen, modifyListings, produceTypes,
 }) {
+  const classes = useStyles();
+  const [produceRecord, setProduceRecord] = useState(initialProduce);
   const [listingRecord, setListingRecord] = useState(initialListing);
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
@@ -68,6 +189,7 @@ export default function AddListing({
     closeDialog();
     setActiveStep(0);
     setListingRecord(initialListing);
+    setProduceRecord(initialProduce);
     setCompleted({});
   }
   function handleBack() {
@@ -87,7 +209,6 @@ export default function AddListing({
       modifyListings(listingRecord);
       handleClose();
     }
-    console.log(listingRecord);
   }
   const onChangeField = (e, type) => {
     const { name } = e.target;
@@ -106,8 +227,10 @@ export default function AddListing({
           <BasicInfoStep
             setListingRecord={setListingRecord}
             listingRecord={listingRecord}
-            getProduceTypes={getProduceTypes}
+            produceTypes={produceTypes}
             onChangeField={(e) => onChangeField(e, 'string')}
+            produceRecord={produceRecord}
+            setProduceRecord={setProduceRecord}
           />
         );
       case 1:
@@ -123,9 +246,15 @@ export default function AddListing({
       case 3:
         return (<DatesStep onChangeField={(e) => onChangeField(e, 'date')} listingRecord={listingRecord} />);
       case 4:
-        return (<PhotoStep setListingRecord={setListingRecord} listingRecord={listingRecord} />);
+        return (<PhotoStep produceRecord={produceRecord} />);
       case 5:
-        return (<ConfirmationStep onChangeField={(e) => onChangeField(e, 'string')} listingRecord={listingRecord} />);
+        return (
+          <ConfirmationStep
+            listingRecord={listingRecord}
+            produceRecord={produceRecord}
+            setStep={setActiveStep}
+          />
+        );
       default:
         return 'Finished';
     }
@@ -133,13 +262,31 @@ export default function AddListing({
 
   return (
     <Dialog open={isOpen} fullWidth maxWidth="lg">
-      <DialogTitle id="form-dialog-title">Add Listing</DialogTitle>
-      <DialogContent>
-        <Stepper alternativeLabel activeStep={activeStep}>
+      <DialogTitle id="form-dialog-title" className={classes.dialogTitle}>
+        <Box display="flex" alignItems="center">
+          <Box flexGrow={1}>
+            <Typography className={classes.heading}>
+              Add Listing
+            </Typography>
+          </Box>
+          <Box>
+            <IconButton onClick={handleClose}>
+              <CloseIcon fontSize="large" />
+            </IconButton>
+          </Box>
+        </Box>
+      </DialogTitle>
+      <DialogContent className={classes.dialogTitle}>
+        <Stepper
+          alternativeLabel
+          activeStep={activeStep}
+          connector={<Connector />}
+        >
           {steps.map((label, index) => (
             <Step key={label}>
               <StepLabel
                 completed={completed[index]}
+                StepIconComponent={Icons}
               >
                 {label}
               </StepLabel>
@@ -150,13 +297,17 @@ export default function AddListing({
           {getStepContent(activeStep)}
         </form>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={handleBack} color="primary">
-          {activeStep > 0 ? 'Back' : 'Cancel' }
-        </Button>
-        <Button form="listing-form" type="submit" color="primary">
-          {activeStep < 5 ? 'Next' : 'Submit Changes' }
-        </Button>
+      <DialogActions className={classes.dialogButtons}>
+        <Box flexGrow={1}>
+          <Button onClick={handleBack} className={classes.backButton} variant="contained">
+            {activeStep > 0 ? 'Back' : 'Cancel' }
+          </Button>
+        </Box>
+        <Box>
+          <Button form="listing-form" type="submit" className={classes.nextButton} variant="contained">
+            {activeStep < 5 ? 'Next' : 'Submit Changes' }
+          </Button>
+        </Box>
       </DialogActions>
     </Dialog>
   );
@@ -170,5 +321,13 @@ AddListing.propTypes = {
   closeDialog: PropTypes.func.isRequired,
   isOpen: PropTypes.bool,
   modifyListings: PropTypes.func.isRequired,
-  getProduceTypes: PropTypes.func.isRequired,
+  produceTypes: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    fields: PropTypes.shape({}),
+  })).isRequired,
+};
+
+Icons.propTypes = {
+  active: PropTypes.bool.isRequired,
+  completed: PropTypes.bool.isRequired,
 };

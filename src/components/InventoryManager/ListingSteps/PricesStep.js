@@ -24,7 +24,6 @@ const useStyles = makeStyles({
     fontWeight: '400',
   },
   text: {
-    paddingLeft: '1rem',
     fontFamily: 'Work Sans',
     fontSize: '1rem',
     fontWeight: '400',
@@ -33,6 +32,12 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontWeight: '600',
     fontSize: '1.05rem',
+  },
+  unitLabel: {
+    fontFamily: 'Work Sans',
+    fontSize: '1rem',
+    fontWeight: '400',
+    paddingLeft: '.5rem',
   },
 });
 
@@ -47,6 +52,21 @@ export default function PricesStep({
   const onChangePrice = (e, newValue, target) => {
     setListingRecord({ ...listingRecord, [target]: newValue });
   };
+  const validPrices = `${listingRecord['has master units'] ? 'Master Unit/' : ''}Pallet${listingRecord['has master pallets'] ? '/Master Pallet' : ''}`;
+  const getPrices = (basePrice) => {
+    const prices = {};
+    if (listingRecord['has master units']) {
+      prices.masterUnitPrice = listingRecord['grouped produce type per master unit'] * basePrice;
+    } else {
+      prices.masterUnitPrice = 0;
+    }
+    prices.palletPrice = prices.masterUnitPrice * listingRecord['master units per pallet'] + basePrice * listingRecord['grouped produce type per pallet'];
+    prices.masterPalletPrice = prices.palletPrice * listingRecord['pallets per master pallet'];
+    return prices;
+  };
+
+  const standardPrices = getPrices(listingRecord['standard price per grouped produce type']);
+  const agencyPrices = getPrices(listingRecord['agency price per grouped produce type']);
   return (
     <>
       <Grid spacing={3} container>
@@ -59,8 +79,8 @@ export default function PricesStep({
         <Grid container item xs={12}>
           <Grid container spacing={1} item xs={12}>
             <Grid item xs={12}>
-              <Typography className={classes.subheading} variant="h6" component="h6">
-                Standard Price per Unit Type 2
+              <Typography className={classes.subheading} variant="h2" component="h2">
+                Standard Price per Grouped Produce Type
               </Typography>
             </Grid>
             <Grid container item xs={12} alignItems="center">
@@ -68,15 +88,65 @@ export default function PricesStep({
                 id="standard-number"
                 name="standard price per unit"
                 type="currency"
-                onChange={(event, value) => onChangePrice(event, value, 'standard price per unit')}
-                val={listingRecord['standard price per unit']}
+                onChange={(event, value) => onChangePrice(event, value, 'standard price per grouped produce type')}
+                val={listingRecord['standard price per grouped produce type']}
               />
-              <Typography display="inline" className={classes.text} variant="h6" component="h6">
+              <Typography className={classes.unitLabel} variant="h2" component="h2">
                 { '  PER ' }
-                <Typography display="inline" className={classes.labels} variant="h6" component="h6">
-                  {listingRecord['unit type 2'].toUpperCase() || 'UNIT TYPE 2'}
+                <Typography display="inline" className={classes.labels}>
+                  {listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}
                 </Typography>
               </Typography>
+            </Grid>
+            <Grid container item xs={12} spacing={1}>
+              <Grid item xs={12}>
+                <Typography className={classes.text}>
+                  {`This is what your prices per ${validPrices} will be:`}
+                </Typography>
+              </Grid>
+              {listingRecord['has master units']
+              && (
+              <Grid item xs={12}>
+                <Typography className={classes.labels}>
+                  Standard Price per Master Unit:
+                  <Typography display="inline" className={classes.unitLabel}>
+                    $
+                  </Typography>
+                  <Typography display="inline" className={classes.text}>
+                    {`${Number(standardPrices.masterUnitPrice).toFixed(2) || '0.00'} `}
+                    per Master
+                    {` ${listingRecord['grouped produce type']}`}
+                  </Typography>
+                </Typography>
+              </Grid>
+              )}
+              <Grid item xs={12}>
+                <Typography className={classes.labels}>
+                  Standard Price per Pallet:
+                  <Typography display="inline" className={classes.unitLabel}>
+                    $
+                  </Typography>
+                  <Typography display="inline" className={classes.text}>
+                    {`${Number(standardPrices.palletPrice).toFixed(2) || '0.00'} `}
+                    per Pallet
+                  </Typography>
+                </Typography>
+              </Grid>
+              {listingRecord['has master pallets']
+              && (
+              <Grid item xs={12}>
+                <Typography className={classes.labels}>
+                  Standard Price per Master Pallet:
+                  <Typography display="inline" className={classes.unitLabel}>
+                    $
+                  </Typography>
+                  <Typography display="inline" className={classes.text}>
+                    {`${Number(standardPrices.masterPalletPrice).toFixed(2) || '0.00'} `}
+                    per Master Pallet
+                  </Typography>
+                </Typography>
+              </Grid>
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -87,23 +157,73 @@ export default function PricesStep({
           <Grid container spacing={1} item xs={12}>
             <Grid item xs={12}>
               <Typography className={classes.subheading} variant="h6" component="h6">
-                Agency Price per Unit Type 2
+                Agency Price per Grouped Product Type
               </Typography>
             </Grid>
             <Grid container item xs={12} alignItems="center">
               <ListingInputField
                 id="standard-number"
-                name="agency price per unit"
+                name="agency price grouped produce type"
                 type="currency"
-                onChange={(event, value) => onChangePrice(event, value, 'agency price per unit')}
-                val={listingRecord['agency price per unit']}
+                onChange={(event, value) => onChangePrice(event, value, 'agency price per grouped produce type')}
+                val={listingRecord['agency price per grouped produce type']}
               />
-              <Typography display="inline" className={classes.text} variant="h6" component="h6">
+              <Typography display="inline" className={classes.unitLabel} variant="h6" component="h6">
                 { '  PER ' }
                 <Typography display="inline" className={classes.labels} variant="h6" component="h6">
-                  {listingRecord['unit type 2'].toUpperCase() || 'UNIT TYPE 2'}
+                  {listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}
                 </Typography>
               </Typography>
+            </Grid>
+            <Grid container item xs={12} spacing={1}>
+              <Grid item xs={12}>
+                <Typography className={classes.text}>
+                  {`This is what your prices per ${validPrices} will be:`}
+                </Typography>
+              </Grid>
+              {listingRecord['has master units']
+              && (
+              <Grid item xs={12}>
+                <Typography className={classes.labels}>
+                  Agency Price per Master Unit:
+                  <Typography display="inline" className={classes.unitLabel}>
+                    $
+                  </Typography>
+                  <Typography display="inline" className={classes.text}>
+                    {`${Number(agencyPrices.masterUnitPrice).toFixed(2) || '0.00'} `}
+                    per Master
+                    {` ${listingRecord['grouped produce type']}`}
+                  </Typography>
+                </Typography>
+              </Grid>
+              )}
+              <Grid item xs={12}>
+                <Typography className={classes.labels}>
+                  Agency Price per Pallet:
+                  <Typography display="inline" className={classes.unitLabel}>
+                    $
+                  </Typography>
+                  <Typography display="inline" className={classes.text}>
+                    {`${Number(agencyPrices.palletPrice).toFixed(2) || '0.00'} `}
+                    per Pallet
+                  </Typography>
+                </Typography>
+              </Grid>
+              {listingRecord['has master pallets']
+              && (
+              <Grid item xs={12}>
+                <Typography className={classes.labels}>
+                  Agency Price per Master Pallet:
+                  <Typography display="inline" className={classes.unitLabel}>
+                    $
+                  </Typography>
+                  <Typography display="inline" className={classes.text}>
+                    {`${Number(agencyPrices.masterPalletPrice).toFixed(2) || '0.00'} `}
+                    per Master Pallet
+                  </Typography>
+                </Typography>
+              </Grid>
+              )}
             </Grid>
           </Grid>
         </Grid>
@@ -114,10 +234,15 @@ export default function PricesStep({
 
 PricesStep.propTypes = {
   listingRecord: PropTypes.shape({
-    'standard price per unit': PropTypes.number,
-    'agency price per unit': PropTypes.number,
-    'unit type 1': PropTypes.string,
-    'unit type 2': PropTypes.string,
+    'standard price per grouped produce type': PropTypes.number,
+    'agency price per grouped produce type': PropTypes.number,
+    'has master units': PropTypes.bool,
+    'grouped produce type per pallet': PropTypes.number,
+    'master units per pallet': PropTypes.number,
+    'grouped produce type per master unit': PropTypes.number,
+    'has master pallets': PropTypes.bool,
+    'pallets per master pallet': PropTypes.number,
+    'grouped produce type': PropTypes.string,
   }).isRequired,
   setListingRecord: PropTypes.func.isRequired,
 };

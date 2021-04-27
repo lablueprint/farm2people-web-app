@@ -21,7 +21,7 @@ const useStyles = makeStyles({
 });
 
 export default function AddListingButton({
-  createRecord, getProduceTypes,
+  createRecord, produceTypes,
 }) {
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
@@ -44,7 +44,7 @@ export default function AddListingButton({
         closeDialog={handleClose}
         isOpen={editActive}
         modifyListings={createRecord}
-        getProduceTypes={getProduceTypes}
+        produceTypes={produceTypes}
       />
     </>
   );
@@ -52,5 +52,8 @@ export default function AddListingButton({
 
 AddListingButton.propTypes = {
   createRecord: PropTypes.func.isRequired,
-  getProduceTypes: PropTypes.func.isRequired,
+  produceTypes: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    fields: PropTypes.shape({}),
+  })).isRequired,
 };

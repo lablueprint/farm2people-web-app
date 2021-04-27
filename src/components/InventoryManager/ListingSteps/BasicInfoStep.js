@@ -14,7 +14,7 @@ const useStyles = makeStyles({
 });
 
 export default function BasicInfoStep({
-  listingRecord, getProduceTypes, onChangeField, setListingRecord,
+  listingRecord, produceTypes, onChangeField, setListingRecord, produceRecord, setProduceRecord,
 }) {
   const Seasons = [
     'Summer',
@@ -22,27 +22,26 @@ export default function BasicInfoStep({
     'Winter',
     'Spring',
   ];
-  const onChangeAutoComplete = (e, newValue, target) => {
-    setListingRecord({ ...listingRecord, [target]: newValue });
-  };
-  // const [nameInputValue, setNameInputValue] = useState(listingRecord['produce name']);
-  const produceTypes = getProduceTypes();
-  // console.log(nameInputValue);
+
   const classes = useStyles();
   return (
-    <Grid spacing={3} container>
+    <Grid spacing={2} container>
       <Grid item xs={12}>
         <Typography gutterBottom variant="h1" component="h1" className={classes.title}>Step 1: Basic Information</Typography>
       </Grid>
       <Grid container item xs={12}>
         <Grid container spacing={1} item xs={5}>
           <ListingInputField
-            name="produce name"
+            name="produce"
             label="Produce Name"
             type="autoComplete"
             options={produceTypes}
-            onChange={(e, newValue) => onChangeAutoComplete(e, newValue, 'produce name')}
-            val={listingRecord['produce name']}
+            getLabel={(option) => (option.fields ? option.fields['produce type'] : '')}
+            onChange={(e, newValue) => {
+              setProduceRecord(newValue);
+              setListingRecord({ ...listingRecord, produce: [newValue.id] });
+            }}
+            val={produceRecord}
             placeholder="Start typing the name of produce"
           />
         </Grid>
@@ -54,19 +53,19 @@ export default function BasicInfoStep({
             label="Growing Season"
             type="autoComplete"
             options={Seasons}
-            onChange={(e, newValue) => onChangeAutoComplete(e, newValue, 'growing season')}
+            onChange={(e, newValue) => setListingRecord({ ...listingRecord, 'growing season': newValue })}
             val={listingRecord['growing season']}
             placeholder="Season"
           />
         </Grid>
       </Grid>
       <Grid container item xs={12}>
-        <Grid container spacing={1} item xs={11}>
+        <Grid container spacing={1} item xs={12}>
           <ListingInputField
             label="Produce Details"
-            name="produce details"
+            name="details"
             onChange={onChangeField}
-            val={listingRecord['produce details']}
+            val={listingRecord.details}
             type="multiline"
             placeholder="Enter any details about the produce such as grade,
             cosmetic defects, and overall condition of the produce. Don't
@@ -80,11 +79,25 @@ export default function BasicInfoStep({
 
 BasicInfoStep.propTypes = {
   listingRecord: PropTypes.shape({
-    'produce name': '',
-    'growing season': '',
-    'produce details': '',
+    produce: PropTypes.arrayOf(PropTypes.string),
+    'growing season': PropTypes.string,
+    details: PropTypes.string,
+    'listing picture': PropTypes.arrayOf(PropTypes.shape({})),
   }).isRequired,
   setListingRecord: PropTypes.func.isRequired,
-  getProduceTypes: PropTypes.func.isRequired,
+  produceTypes: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    fields: PropTypes.shape({}),
+  })).isRequired,
   onChangeField: PropTypes.func.isRequired,
+  produceRecord: PropTypes.shape({
+    id: PropTypes.string,
+    fields: PropTypes.shape({
+      'produce type': PropTypes.string,
+      'produce picture': PropTypes.arrayOf(PropTypes.shape({
+        url: PropTypes.string,
+      })),
+    }),
+  }).isRequired,
+  setProduceRecord: PropTypes.func.isRequired,
 };

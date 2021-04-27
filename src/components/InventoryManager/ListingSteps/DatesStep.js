@@ -23,6 +23,7 @@ const useStyles = makeStyles({
 export default function DatesStep({
   onChangeField, listingRecord,
 }) {
+  // TODO : Make the calendar button open the date picker
   const classes = useStyles();
   const question = 'When is your produce available?';
   return (
@@ -77,9 +78,9 @@ export default function DatesStep({
 
 DatesStep.propTypes = {
   listingRecord: PropTypes.shape({
-    'first available date': '',
-    'sell by date': '',
-    'available until': '',
+    'first available date': PropTypes.string,
+    'sell by date': PropTypes.string,
+    'available until': PropTypes.string,
   }).isRequired,
   onChangeField: PropTypes.func.isRequired,
 };

@@ -12,6 +12,10 @@ const useStyles = makeStyles({
   listingCard: {
     maxWidth: '90%',
   },
+  selectedCard: {
+    maxWidth: '90%',
+    border: '2px solid gray',
+  },
   listingCardPicture: {
     height: '100%',
   },
@@ -24,14 +28,14 @@ const useStyles = makeStyles({
 });
 
 export default function UnitTypeCard({
-  onSelect, label,
+  onSelect, label, selected,
 }) {
   const classes = useStyles();
   const setCardSelected = () => {
     onSelect();
   };
   return (
-    <Card className={classes.listingCard} onClick={setCardSelected}>
+    <Card classes={{ root: selected ? classes.selectedCard : classes.listingCard }} elevation={4} variant={selected ? 'outlined' : 'elevation'} onClick={setCardSelected}>
       <CardActionArea>
         <CardMedia
           className={classes.listingCardPicture}
@@ -52,4 +56,5 @@ export default function UnitTypeCard({
 UnitTypeCard.propTypes = {
   onSelect: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
+  selected: PropTypes.bool.isRequired,
 };

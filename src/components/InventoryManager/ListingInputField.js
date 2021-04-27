@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
@@ -46,13 +46,17 @@ const useStyles = makeStyles({
     textUnderlinePosition: 'under',
     textUnderlineOffset: '0.1rem',
   },
+  button: {
+    color: '#53AA48',
+  },
 });
 
 export default function ListingInputField({
-  id, name, label, type, val, onChange, options,
-  placeholder,
+  id, name, label, type, val, onChange, options, getLabel,
+  placeholder, onButtonClick,
 }) {
   const classes = useStyles();
+  const textFieldRef = useRef();
   function getInputProps() {
     let InputProps = {
       classes: {
@@ -66,6 +70,7 @@ export default function ListingInputField({
           style: {
             textAlign: 'center',
           },
+          min: 1,
         },
       };
     }
@@ -92,12 +97,13 @@ export default function ListingInputField({
     return (
       <>
         <Grid item xs={12}>
-          <Typography className={classes.infoLabel} variant="h6" component="h6">{label}</Typography>
+          <Typography className={classes.infoLabel} variant="h2" component="h2">{label}</Typography>
         </Grid>
         <Grid item xs={12}>
           <Autocomplete
             autoComplete
             options={options}
+            getOptionLabel={getLabel}
             onChange={onChange}
             value={val}
             renderInput={(params) => (
@@ -120,7 +126,7 @@ export default function ListingInputField({
     return (
       <>
         <Grid item xs={12}>
-          <Typography className={classes.infoLabel} variant="h6" component="h6">{label}</Typography>
+          <Typography className={classes.infoLabel} variant="h2" component="h2">{label}</Typography>
         </Grid>
         <Grid item xs={12}>
           <TextField
@@ -146,8 +152,8 @@ export default function ListingInputField({
   if (type === 'number') {
     return (
       <>
-        <IconButton color="primary">
-          <RemoveIcon />
+        <IconButton className={classes.button} onClick={() => onButtonClick(name, -1)}>
+          <RemoveIcon fontSize="small" />
         </IconButton>
         <TextField
           id={id}
@@ -159,17 +165,48 @@ export default function ListingInputField({
           variant="outlined"
           size="small"
         />
-        <IconButton color="primary">
-          <AddIcon />
+        <IconButton className={classes.button} onClick={() => onButtonClick(name, 1)}>
+          <AddIcon fontSize="small" />
         </IconButton>
       </>
     );
   }
 
+  if (type === 'date') {
+    const focusTextField = () => {
+      textFieldRef.current.click();
+    };
+    return (
+      <>
+        <Grid item xs={12}>
+          <Typography className={classes.subheading} variant="h2" component="h2">{label}</Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <TextField
+            required
+            id={id}
+            name={name}
+            type={type}
+            value={val}
+            InputProps={inputProps}
+            onChange={onChange}
+            className={classes.inputField}
+            variant="outlined"
+            placeholder={placeholder}
+            size="small"
+            inputRef={textFieldRef}
+          />
+          <IconButton color="primary" onClick={focusTextField}>
+            <CalendarTodayIcon />
+          </IconButton>
+        </Grid>
+      </>
+    );
+  }
   return (
     <>
       <Grid item xs={12}>
-        <Typography className={classes.subheading} variant="h6" component="h6">{label}</Typography>
+        <Typography className={classes.subheading} variant="h2" component="h2">{label}</Typography>
       </Grid>
       <Grid item xs={12}>
         <TextField
@@ -187,8 +224,9 @@ export default function ListingInputField({
         />
         {(type === 'date')
         && (
+        // TODO : Make the calendar button open the date picker
         <>
-          <IconButton color="primary">
+          <IconButton color="primary" onClick={onButtonClick}>
             <CalendarTodayIcon />
           </IconButton>
         </>
@@ -204,6 +242,8 @@ ListingInputField.defaultProps = {
   options: [],
   placeholder: '',
   label: '',
+  onButtonClick: () => { },
+  getLabel: (option) => option,
 };
 
 ListingInputField.propTypes = {
@@ -216,6 +256,9 @@ ListingInputField.propTypes = {
     PropTypes.number,
   ]).isRequired,
   onChange: PropTypes.func.isRequired,
-  options: PropTypes.arrayOf(PropTypes.string),
+  // eslint-disable-next-line react/forbid-prop-types
+  options: PropTypes.array,
+  getLabel: PropTypes.func,
   placeholder: PropTypes.string,
+  onButtonClick: PropTypes.func,
 };

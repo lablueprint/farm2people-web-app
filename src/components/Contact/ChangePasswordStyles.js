@@ -1,9 +1,6 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
-  box: {
-    // background: '#aaffaa',
-  },
   leftHeading: {
     fontFamily: 'Work Sans',
     fontSize: '28px',
@@ -12,7 +9,6 @@ const useStyles = makeStyles({
     textAlign: 'left',
   },
   form: {
-    // background: 'pink',
     width: '400px',
     fontFamily: 'Work Sans',
     display: 'flex',
@@ -20,7 +16,9 @@ const useStyles = makeStyles({
     margin: 'auto',
   },
   formControl: {
-    margin: '10px',
+    margin: '0px',
+    marginBottom: '10px',
+    width: '100%',
   },
   inputLabel: {
     fontFamily: 'Work Sans',

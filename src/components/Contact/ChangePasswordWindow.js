@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Box, Button,
+  Box, Button, Dialog,
 } from '@material-ui/core';
 import useStyles from './ChangePasswordStyles';
 import ChangePasswordForm from './ChangePasswordForm';
@@ -8,44 +8,56 @@ import ChangePasswordSuccess from './ChangePasswordSuccess';
 
 export default function ChangePasswordWindow() {
   const classes = useStyles();
-  const [formOpen, formSetOpen] = React.useState(false);
-  const [successOpen, successSetOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [isSubmitted, setSubmit] = React.useState(false);
+  const [passwords, setPasswords] = React.useState({
+    oldP: '',
+    confirmP: '',
+    newP: '',
+  });
 
-  const handleFormClickOpen = () => {
-    formSetOpen(true);
+  const handleOpen = () => {
+    setOpen(true);
   };
 
-  const handleFormClose = () => {
-    formSetOpen(false);
+  const handleClose = () => {
+    setOpen(false);
   };
 
-  const handleSuccessClose = () => {
-    successSetOpen(false);
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswords({ ...passwords, [name]: value });
   };
-
-  // const handleChange = (input, e) => {
-  //   setState({ [input]: e.target.value });
-  // };
 
   const onSubmit = () => {
-    formSetOpen(false);
-    successSetOpen(true);
+    setSubmit(true);
   };
+
+  // TODO: Add validation details (confirm password matching, etc.)
+  const validate = () => false;
 
   return (
     <Box m={2} p={2} className={classes.box}>
-      <Button variant="outlined" color="primary" onClick={handleFormClickOpen}>
+      <Button variant="outlined" color="primary" onClick={handleOpen}>
         Change Password
       </Button>
-      <ChangePasswordForm
-        handleClose={handleFormClose}
-        open={formOpen}
-        onSubmit={onSubmit}
-      />
-      <ChangePasswordSuccess
-        handleClose={handleSuccessClose}
-        open={successOpen}
-      />
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="sm"
+        fullWidth
+      >
+        {!isSubmitted && (
+          <ChangePasswordForm
+            handleClose={handleClose}
+            onSubmit={onSubmit}
+            handlePasswordChange={handlePasswordChange}
+            passwords={passwords}
+            validateForm={validate}
+          />
+        )}
+        {isSubmitted && <ChangePasswordSuccess handleClose={handleClose} />}
+      </Dialog>
     </Box>
   );
 }

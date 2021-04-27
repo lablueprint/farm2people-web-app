@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  TextField, FormControl, Typography, Dialog, Box, Button,
+  TextField, FormControl, Typography, Box, Button,
 } from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -23,75 +23,82 @@ const ChangePasswordButton = withStyles({
   },
 })(Button);
 
-export default function ChangePasswordForm({ handleClose, open, onSubmit }) {
+export default function ChangePasswordForm({
+  handleClose, onSubmit, handlePasswordChange, passwords, validateForm,
+}) {
   const classes = useStyles();
-
   const submit = (e) => {
     e.preventDefault();
     onSubmit();
   };
 
+  // TODO: Make validateForm work somehow
+  const buttonEnabled = passwords.newP === passwords.confirmP && validateForm;
+
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth="sm"
-      fullWidth
-    >
-      <Box p={3}>
-        <DialogTitle>
-          <Box display="flex" justifyContent="space-between">
-            <Typography align="center" className={classes.leftHeading}>
-              Change Password
-            </Typography>
-            <IconButton onClick={handleClose}>
-              <CloseIcon style={{ color: '#373737', transform: 'scale(1.2)' }} />
-            </IconButton>
-          </Box>
-        </DialogTitle>
+    <Box p={3}>
+      <DialogTitle>
+        <Box display="flex" justifyContent="space-between">
+          <Typography align="center" className={classes.leftHeading}>
+            Change Password
+          </Typography>
+          <IconButton onClick={handleClose}>
+            <CloseIcon style={{ color: '#373737', transform: 'scale(1.2)' }} />
+          </IconButton>
+        </Box>
+      </DialogTitle>
+      <form className={classes.form} onSubmit={submit} noValidate>
         <DialogContent>
-          <Box p={6} pt={4} pb={6} className={classes.box} justifyContent="center">
-            <form className={classes.form} noValidate>
-              <FormControl variant="outlined" className={classes.formControl}>
-                <Typography className={classes.inputLabel}>
-                  Old Password
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  type="password"
-                  placeholder="Enter your old password"
-                  InputProps={{ className: classes.placeholder }}
-                  margin="dense"
-                  required
-                />
-              </FormControl>
-              <FormControl variant="outlined" className={classes.formControl}>
-                <Typography className={classes.inputLabel}>
-                  New Password
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  type="password"
-                  placeholder="Enter a new password"
-                  InputProps={{ className: classes.placeholder }}
-                  margin="dense"
-                  required
-                />
-              </FormControl>
-              <FormControl variant="outlined" className={classes.formControl}>
-                <Typography className={classes.inputLabel}>
-                  Confirm New Password
-                </Typography>
-                <TextField
-                  variant="outlined"
-                  type="password"
-                  placeholder="Confirm your new password"
-                  InputProps={{ className: classes.placeholder }}
-                  margin="dense"
-                  required
-                />
-              </FormControl>
-            </form>
+          <Box p={2} pt={6} pb={8} justifyContent="center">
+            <FormControl variant="outlined" className={classes.formControl}>
+              <Typography className={classes.inputLabel}>
+                Old Password
+              </Typography>
+              <TextField
+                fullWidth
+                variant="outlined"
+                type="password"
+                placeholder="Enter your old password"
+                InputProps={{ className: classes.placeholder }}
+                margin="dense"
+                name="oldP"
+                value={passwords.oldP}
+                onChange={handlePasswordChange}
+                required
+              />
+            </FormControl>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <Typography className={classes.inputLabel}>
+                New Password
+              </Typography>
+              <TextField
+                variant="outlined"
+                type="password"
+                placeholder="Enter a new password"
+                InputProps={{ className: classes.placeholder }}
+                margin="dense"
+                name="newP"
+                value={passwords.newP}
+                onChange={handlePasswordChange}
+                required
+              />
+            </FormControl>
+            <FormControl variant="outlined" className={classes.formControl}>
+              <Typography className={classes.inputLabel}>
+                Confirm New Password
+              </Typography>
+              <TextField
+                variant="outlined"
+                type="password"
+                placeholder="Confirm your new password"
+                InputProps={{ className: classes.placeholder }}
+                margin="dense"
+                name="confirmP"
+                value={passwords.confirmP}
+                onChange={handlePasswordChange}
+                required
+              />
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions classes={{ root: classes.centerAlignDialogActions }}>
@@ -100,19 +107,30 @@ export default function ChangePasswordForm({ handleClose, open, onSubmit }) {
               Cancel
             </Typography>
           </Button>
-          <ChangePasswordButton variant="contained" size="large" onClick={submit}>
+          <ChangePasswordButton
+            variant="contained"
+            size="large"
+            type="submit"
+            disabled={!buttonEnabled}
+          >
             <Typography className={classes.changePasswordButton}>
               CHANGE PASSWORD
             </Typography>
           </ChangePasswordButton>
         </DialogActions>
-      </Box>
-    </Dialog>
+      </form>
+    </Box>
   );
 }
 
 ChangePasswordForm.propTypes = {
   handleClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
   onSubmit: PropTypes.func.isRequired,
+  handlePasswordChange: PropTypes.func.isRequired,
+  passwords: PropTypes.shape({
+    oldP: PropTypes.string,
+    confirmP: PropTypes.string,
+    newP: PropTypes.string,
+  }).isRequired,
+  validateForm: PropTypes.bool.isRequired,
 };

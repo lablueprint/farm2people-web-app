@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Typography, Dialog, Box, Button,
+  Typography, Box, Button,
 } from '@material-ui/core';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -13,10 +13,8 @@ import Fruit1 from '../../assets/images/Fruit1.svg';
 import Fruit2 from '../../assets/images/Fruit2.svg';
 import Fruit3 from '../../assets/images/Fruit3.svg';
 
+// TODO: Combine all styles into ChangePasswordStyles
 const useStyles = makeStyles({
-  // box: {
-  //   background: '#aaffaa',
-  // },
   centerHeading: {
     fontFamily: 'Work Sans',
     fontSize: '24px',
@@ -32,7 +30,6 @@ const useStyles = makeStyles({
     textAlign: 'center',
   },
   form: {
-    // background: 'pink',
     width: '400px',
     fontFamily: 'Work Sans',
     display: 'flex',
@@ -83,64 +80,56 @@ const DoneButton = withStyles({
   },
 })(Button);
 
-export default function ChangePasswordSuccess({ handleClose, open }) {
+export default function ChangePasswordSuccess({ handleClose }) {
   const classes = useStyles();
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth="sm"
-      fullWidth
-    >
-      <Box p={3}>
-        <DialogTitle>
-          <Box display="flex" justifyContent="flex-end">
-            <IconButton onClick={handleClose}>
-              <CloseIcon style={{ color: '#373737', transform: 'scale(1.2)' }} />
-            </IconButton>
-          </Box>
-        </DialogTitle>
-        <DialogContent>
-          <Box className={classes.box} style={{ textAlign: 'center' }}>
-            <img
-              src={Fruit1}
-              alt="fruit1"
-              className={classes.fruit1}
-            />
-            <img
-              src={Fruit2}
-              alt="fruit2"
-              className={classes.fruit1}
-            />
-            <img
-              src={Fruit3}
-              alt="fruit3"
-              className={classes.fruit1}
-            />
-          </Box>
-          <Box p={6} pt={2} pb={6} className={classes.box} justifyContent="center">
-            <Typography className={classes.centerHeading}>
-              Password Successfully Changed!
-            </Typography>
-            <Typography className={classes.successSubtitle} style={{ marginTop: '10px' }}>
-              You can now use your new password to login to your account.
-            </Typography>
-          </Box>
-        </DialogContent>
-        <DialogActions classes={{ root: classes.centerAlignDialogActions }}>
-          <DoneButton variant="contained" size="large" onClick={handleClose}>
-            <Typography className={classes.changePasswordButton}>
-              DONE
-            </Typography>
-          </DoneButton>
-        </DialogActions>
-      </Box>
-    </Dialog>
+    <Box p={3}>
+      <DialogTitle>
+        <Box display="flex" justifyContent="flex-end">
+          <IconButton onClick={handleClose}>
+            <CloseIcon style={{ color: '#373737', transform: 'scale(1.2)' }} />
+          </IconButton>
+        </Box>
+      </DialogTitle>
+      <DialogContent>
+        <Box style={{ textAlign: 'center' }}>
+          <img
+            src={Fruit1}
+            alt="fruit1"
+            className={classes.fruit1}
+          />
+          <img
+            src={Fruit2}
+            alt="fruit2"
+            className={classes.fruit1}
+          />
+          <img
+            src={Fruit3}
+            alt="fruit3"
+            className={classes.fruit1}
+          />
+        </Box>
+        <Box p={6} pt={2} pb={6} justifyContent="center">
+          <Typography className={classes.centerHeading}>
+            Password Successfully Changed!
+          </Typography>
+          <Typography className={classes.successSubtitle} style={{ marginTop: '10px' }}>
+            You can now use your new password to login to your account.
+          </Typography>
+        </Box>
+      </DialogContent>
+      <DialogActions classes={{ root: classes.centerAlignDialogActions }}>
+        <DoneButton variant="contained" size="large" onClick={handleClose}>
+          <Typography className={classes.changePasswordButton}>
+            DONE
+          </Typography>
+        </DoneButton>
+      </DialogActions>
+    </Box>
   );
 }
 
 ChangePasswordSuccess.propTypes = {
   handleClose: PropTypes.func.isRequired,
-  open: PropTypes.bool.isRequired,
 };

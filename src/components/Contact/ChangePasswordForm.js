@@ -33,7 +33,7 @@ export default function ChangePasswordForm({
   };
 
   // TODO: Make validateForm work somehow
-  const buttonEnabled = passwords.newP === passwords.confirmP && validateForm;
+  const buttonEnabled = passwords.newP === passwords.confirmP && passwords.newP !== '' && validateForm;
 
   return (
     <Box p={3}>

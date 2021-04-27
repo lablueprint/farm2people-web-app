@@ -24,7 +24,7 @@ const useStyles = makeStyles({
 });
 
 const today = new Date().toDateString();
-// TODO : split up edit and add listing
+// TODO : update edit listing fields, update stylings
 export default function EditListing({
   id, listing, closeDialog, isOpen, modifyListings,
 }) {

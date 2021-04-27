@@ -8,11 +8,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function NotificationsScreen() {
+export default function AboutScreen() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <h1>Notifications Screen</h1>
+      <h1>About Screen</h1>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import './Footer.css';
+import '../../styles/fonts.css';
 import greenLogo from '../../assets/images/F2P-green-logo.svg';
 
 const useStyles = makeStyles({
@@ -9,14 +9,13 @@ const useStyles = makeStyles({
     display: 'flex',
     lineHeight: 1.75,
     flexWrap: 'wrap',
-    marginTop: '1rem',
-    padding: '1rem',
+    padding: '1rem 0rem 1rem 0rem',
     backgroundColor: '#EBD7D0',
     position: 'relative',
     width: '100%',
   },
   footerLogo: {
-    paddingLeft: '8%',
+    paddingLeft: '10%',
     paddingRight: '16%',
     alignSelf: 'center',
   },
@@ -113,7 +112,6 @@ function Footer() {
           </NavLink>
         </li>
       </ul>
-
       <ul className={classes.footerList}>
         <li className={classes.footerItemTitle}>
           Contact

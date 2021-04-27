@@ -22,6 +22,6 @@ module.exports = {
     'react-hooks/rules-of-hooks': 'error', // part of react hooks
     /* We want to remove this so we do not have infinite read requests from Airtable */
     // 'react-hooks/exhaustive-deps': 'warn', // part of react hooks
-    'linebreak-style': 0, // avoids CRLF / LF warnings
+    'linebreak-style': 0,
   },
 };

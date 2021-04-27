@@ -34,16 +34,38 @@ export default function MarketplaceScreen() {
   const [numResults, setNumResults] = useState(10); // # of results to display
 
   const classes = useStyles();
-  // Get records from Airtable whenever DOM mounts and updates/changes
-  useEffect(() => {
+  function getFarmRecords() {
     base('Farms').select({ view: 'Grid view' }).all()
       .then((farmRecords) => {
         setFarmListings(farmRecords);
       });
-    base('Listings').select({ view: 'Grid view' }).all()
+  }
+  // Get prod id, grouped unit type, price per grouped unit for each produce record
+  function getProduceRecords() {
+    // TODO: change Listing UPDATED back to Listings
+    base('Listing UPDATED').select({ view: 'Grid view' }).all()
       .then((produceRecords) => {
-        setProduceListings(produceRecords);
+        const filteredProduceRecords = [];
+        produceRecords.forEach((record) => {
+          const recordInfo = {
+            produceID: record.fields['listing id'],
+            unitType: record.fields['grouped produce type'] || 'pallet',
+            unitPrice: record.fields['standard price per grouped produce type'] || -1,
+          };
+          filteredProduceRecords.push(recordInfo);
+        });
+        setProduceListings(filteredProduceRecords);
+        console.log(filteredProduceRecords);
       });
+  }
+  // Using produce id, gets farm by farm id + produce name + picture from Produce Type table
+  function getProduceInfo() {
+  }
+  // Get records from Airtable whenever DOM mounts and updates/changes
+  useEffect(() => {
+    getFarmRecords();
+    getProduceRecords();
+    getProduceInfo();
   }, []);
 
   // Get total number of results depending on if produce or farm
@@ -65,7 +87,7 @@ export default function MarketplaceScreen() {
           setNumResults={setNumResults}
         />
         <Grid container direction="row" justify="space-between">
-          {/* Map each array of produceListing info to render a ProduceCard */
+          {/* Map each array of produceListing info to render a ProduceCard
             tabValue === 'all' && produceListings.map((produce) => (
               <ProduceCard
                 key={produce.id}
@@ -73,6 +95,17 @@ export default function MarketplaceScreen() {
                 farmID={produce.fields['farm id'] || null}
                 unitPrice={produce.fields['standard price per pallet'] || -1}
                 unitType={produce.fields['unit type'] || 'pallet'}
+              />
+            ))
+          */}
+          {/* Map each array of produceListing info to render a ProduceCard */
+            tabValue === 'all' && produceListings.map((produce) => (
+              <ProduceCard
+                key={produce.produceID}
+                cropName="No crop name"
+                farmID={null}
+                unitPrice={produce.unitPrice || -1}
+                unitType={produce.unitType || 'pallet'}
               />
             ))
           }

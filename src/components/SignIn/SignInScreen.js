@@ -1,19 +1,20 @@
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import './SignIn.css';
-import Airlock from '@calblueprint/airlock';
+import PropTypes from 'prop-types';
+import { history, store } from '../../lib/redux/store';
 
-Airlock.configure({
-  endpointUrl: 'http://localhost:3000',
-  apiKey: 'airlock',
-});
-const BASE_ID = process.env.REACT_APP_AIRTABLE_BASE_ID;
+import { loginUser, logoutUser } from '../../lib/airlock/airlock';
 
-const base = Airlock.base(BASE_ID);
-
-export default function SignInScreen() {
+export default function SignInScreen(props) {
+  const {
+    /* authenticated is a boolean and userRole is a string that can be
+    can either be: {'', 'buyer', 'seller', 'agency'} */
+    setAuthAndRefreshNavbar,
+    setUserRoleAndRefreshNavbar,
+  } = props;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,28 +24,35 @@ export default function SignInScreen() {
     evt.preventDefault();
     setLoading(true);
     try {
-      const login = await base.login({ username: email, password });
-      const { body: { user } } = login;
-      setDisplayName(`Welcome ${user.fields.display_name}!`);
-
-      setErrorMsg('');
-      setTimeout(() => { setLoading(false); }, 1000);
+      const res = await loginUser(email, password);
+      if (!(res.match && res.found)) {
+        setErrorMsg('Incorrect username or password');
+        setLoading(false);
+      } else {
+        setDisplayName(`Welcome ${store.getState().userData.user.fields['contact name']}`);
+        setErrorMsg('');
+        setAuthAndRefreshNavbar(true);
+        setUserRoleAndRefreshNavbar(store.getState().userData.user.fields['user type']);
+        history.push('/');
+      }
     } catch (err) {
       setErrorMsg('Incorrect username or password');
       setLoading(false);
     }
     setEmail('');
     setPassword('');
-    // TODO: Replace arbitrary time with calling setLoading(false) only when it finished signing up
+    setLoading(false);
   };
 
   const logOut = async (evt) => {
     evt.preventDefault();
     try {
-      const status = await base.logout();
-      if (!status.body.success) {
+      const status = await logoutUser();
+      if (!status) {
         setErrorMsg('Error logging out.');
       } else {
+        setAuthAndRefreshNavbar(false);
+        setUserRoleAndRefreshNavbar('');
         setDisplayName('');
       }
     } catch (err) {
@@ -54,6 +62,14 @@ export default function SignInScreen() {
 
   const isInvalid = useMemo(() => password === '' || email === '',
     [email, password]);
+
+  useEffect(() => {
+    if (store.getState().authenticated) {
+      setDisplayName(`Welcome ${store.getState().userData.user.fields['contact name']}`);
+    } else {
+      setDisplayName('');
+    }
+  }, [setDisplayName]);
 
   return (
     <form className="root">
@@ -102,3 +118,9 @@ export default function SignInScreen() {
     </form>
   );
 }
+
+SignInScreen.propTypes = {
+  setAuthAndRefreshNavbar: PropTypes.func.isRequired,
+  setUserRoleAndRefreshNavbar: PropTypes.func.isRequired,
+
+};

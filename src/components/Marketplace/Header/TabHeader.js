@@ -31,7 +31,7 @@ const useStyles = makeStyles({
   tabText: {
     textTransform: 'none',
     fontFamily: 'Work Sans',
-    fontSize: '16px',
+    fontSize: '15.5px',
     fontWeight: 'bold',
     color: '#373737',
   },

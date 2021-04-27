@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Airtable from 'airtable';
 import { makeStyles } from '@material-ui/core/styles';
+import { Grid } from '@material-ui/core';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
+import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
 import '../../styles/fonts.css';
 
 const useStyles = makeStyles({
   root: {
     position: 'relative',
     minHeight: '100vh',
+  },
+  sidebar: {
+    marginLeft: '5px',
+    width: '21%',
   },
 });
 
@@ -44,39 +50,47 @@ export default function MarketplaceScreen() {
   const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
 
   return (
-    <div className={classes.root}>
-      {/* Entire marketplace header, contains tabs, view, and search */}
-      <MarketplaceHeader
-        tabValue={tabValue}
-        setTabValue={setTabValue}
-        totalResults={totalResults}
-        numResults={numResults}
-        setNumResults={setNumResults}
-      />
-      {/* Map each array of produceListing info to render a ProduceCard */
-        tabValue === 'all' && produceListings.map((produce) => (
-          <ProduceCard
-            key={produce.id}
-            cropName={produce.fields.crop || 'No crop name'}
-            farmID={produce.fields['farm id'] || null}
-            unitPrice={produce.fields['standard price per pallet'] || -1}
-            unitType={produce.fields['unit type'] || 'pallet'}
-          />
-        ))
-      }
-      {/* Map each array of farmListing info to render a FarmCard */
-        tabValue === 'farm' && farmListings.map((farm) => (
-          <FarmCard
-            key={farm.id}
-            farmName={farm.fields['farm name'] || 'No farm name'}
-            address={farm.fields.address || 'No address'}
-            zipCode={farm.fields['zip code'] || -1}
-            description={farm.fields.description || 'No description'}
-            operationTypeTags={farm.fields['operation type'] || []}
-            farmingPracticeTags={farm.fields['farming practice type'] || []}
-          />
-        ))
-      }
-    </div>
+    <Grid container className={classes.root}>
+      <Grid item className={classes.sidebar}>
+        {/* Entire marketplace sidebar, contains toolbars for filter selection */}
+        <MarketplaceSidebar />
+      </Grid>
+      <Grid item xs>
+        {/* Entire marketplace header, contains tabs, view, and search */}
+        <MarketplaceHeader
+          tabValue={tabValue}
+          setTabValue={setTabValue}
+          totalResults={totalResults}
+          numResults={numResults}
+          setNumResults={setNumResults}
+        />
+        <Grid container direction="row" justify="space-between">
+          {/* Map each array of produceListing info to render a ProduceCard */
+            tabValue === 'all' && produceListings.map((produce) => (
+              <ProduceCard
+                key={produce.id}
+                cropName={produce.fields.crop || 'No crop name'}
+                farmID={produce.fields['farm id'] || null}
+                unitPrice={produce.fields['standard price per pallet'] || -1}
+                unitType={produce.fields['unit type'] || 'pallet'}
+              />
+            ))
+          }
+        </Grid>
+        {/* Map each array of farmListing info to render a FarmCard */
+          tabValue === 'farm' && farmListings.map((farm) => (
+            <FarmCard
+              key={farm.id}
+              farmName={farm.fields['farm name'] || 'No farm name'}
+              address={farm.fields.address || 'No address'}
+              zipCode={farm.fields['zip code'] || -1}
+              description={farm.fields.description || 'No description'}
+              operationTypeTags={farm.fields['operation type'] || []}
+              farmingPracticeTags={farm.fields['farming practice type'] || []}
+            />
+          ))
+        }
+      </Grid>
+    </Grid>
   );
 }

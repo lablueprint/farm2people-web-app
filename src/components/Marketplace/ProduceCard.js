@@ -19,11 +19,12 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 
 const useStyles = makeStyles({
   cardContainer: {
-    width: '18%',
+    width: '22%',
     background: 'white',
     borderWidth: '0px',
-    margin: '1.5%',
-    borderRadius: '8px',
+    marginTop: '15px',
+    marginBottom: '15px',
+    borderRadius: '6px',
     fontFamily: 'Work Sans',
   },
   img: { // Height must be specified for image to appear
@@ -32,11 +33,12 @@ const useStyles = makeStyles({
     marginTop: '4%',
     marginLeft: '5%',
     marginRight: '5%',
+    borderRadius: '6px',
   },
   titleText: {
     fontFamily: 'Work Sans',
-    fontSize: '18px',
-    marginBottom: '1.5%',
+    fontSize: '17.5px',
+    marginBottom: '2.5%',
     marginTop: '-4%',
     fontWeight: 'bold',
   },
@@ -50,7 +52,7 @@ const useStyles = makeStyles({
   },
   priceText: {
     fontFamily: 'Work Sans',
-    fontSize: '16px',
+    fontSize: '15.5px',
     fontWeight: 'bolder',
     marginTop: '1%',
   },
@@ -58,12 +60,12 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '12px',
     fontWeight: 'bolder',
-    marginTop: '1%',
-    marginBottom: '1%',
+    marginTop: '10px',
+    marginBottom: '1px',
   },
   cartButton: {
     width: '100%',
-    borderRadius: '8px',
+    borderRadius: '6px',
     backgroundColor: '#53AA48',
     color: 'white',
     fontFamily: 'Work Sans',

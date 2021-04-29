@@ -1,31 +1,34 @@
+/* eslint-disable no-unused-vars */
+// NOTES:
+// 1. I think its better if we just replace all the location fields
+// with explicitly labeled zipcode fields.
+// 2. I think you can use InputLabel from MUI to actually label your text boxes etc.
 import React, { useMemo, useState, useCallback } from 'react';
 import { ThemeProvider } from '@material-ui/styles';
 import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
+import PropTypes from 'prop-types';
 import {
   Button,
   Typography,
   Grid,
   TextField,
   Container,
-  CardMedia,
-  CardContent,
-  CardActionArea,
-  Card,
+  Paper,
+  // CardMedia,
+  // CardContent,
+  // CardActionArea,
+  // Card,
   Box,
 } from '@material-ui/core';
-import { signupUser } from '../../lib/airlock/airlock';
-import Fruit1 from '../../assets/images/Fruit1.svg';
-import Fruit2 from '../../assets/images/Fruit2.svg';
-import Fruit3 from '../../assets/images/Fruit3.svg';
 
-const ROLE_NAMES = ['buyer', 'vendor', 'agency'];
+// const ROLE_TITLES = ['buyer', 'nonprofit', 'seller'];
+
 const theme = createMuiTheme({
   spacing: 4,
 });
-/* eslint-disable no-debugger, no-console */
 const useStyles = makeStyles({
   formGroup: {
     alignItems: 'center',
@@ -35,12 +38,6 @@ const useStyles = makeStyles({
   },
   form: {
     width: '100%',
-  },
-  paper: {
-    marginTop: '10%',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
   },
   pageButtons: {
     marginTop: '50%',
@@ -56,8 +53,8 @@ const useStyles = makeStyles({
     textDecoration: 'underline',
     textDecorationColor: '#53AA48',
     fontWeight: 'bold',
-    marginBottom: '2%',
-
+    marginBottom: '5%',
+    marginTop: '5%',
   },
   subtitleText: {
     textAlign: 'left',
@@ -67,9 +64,9 @@ const useStyles = makeStyles({
   },
   regSubtitleText: {
     textAlign: 'left',
-    paddingLeft: '10%',
-    fontSize: '30px',
-    marginBottom: '2%',
+    // paddingLeft: '10%',
+    // fontSize: '30px',
+    marginBottom: '7%',
   },
   cenSubtitleText: {
     textAlign: 'center',
@@ -85,6 +82,9 @@ const useStyles = makeStyles({
   },
   labelText: {
     fontWeight: 'bold',
+  },
+  valueText: {
+    paddingLeft: '10%',
   },
   grayButton: {
     backgroundColor: '#5e5e5e',
@@ -123,6 +123,9 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
+    background: 'FFFFFF',
+    borderRadius: '15px',
+    boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
   },
   stepper: {
     margin: 'auto',
@@ -131,73 +134,64 @@ const useStyles = makeStyles({
   icon: {
     color: 'red !important',
   },
+  testRoot: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+  listItem: {
+    padding: theme.spacing(1, 0),
+  },
+  total: {
+    fontWeight: 700,
+  },
+  title: {
+    marginTop: theme.spacing(2),
+  },
+  smallButton: {
+    // position: 'absolute',
+    // width: '104px',
+    // height: '33px',
+    // left: '1195px',
+    // top: '557px',
+    // width: '30px',
+    /* Web/Navy Blue Accent */
+    color: 'white',
+    background: '#2D5496',
+    borderRadius: '6px',
+  },
 });
-const ROLE_TITLES = ['buyer', 'nonprofit', 'seller'];
-const BUTTONS = [
-  {
-    id: 0,
-    title: 'Buyer',
-    image: Fruit3,
-    styling: useStyles.fruit3,
-    fruit: {
-      marginTop: '10%',
-
-      height: '134px',
-      width: '98px',
-      left: '89px',
-      top: '46px',
-    },
-  },
-  {
-    id: 1,
-    title: 'Non-profit or Agency',
-    image: Fruit2,
-    styling: useStyles.fruit2,
-
-    fruit: {
-      marginTop: '10%',
-      height: '130px',
-      width: '105px',
-      left: '96px',
-      top: '50px',
-    },
-  },
-  {
-    id: 2,
-    title: 'Seller',
-    image: Fruit1,
-    styling: useStyles.fruit1,
-
-    fruit: {
-      marginTop: '10%',
-      height: '141px',
-      width: '91px',
-      left: '72px',
-      top: '39px',
-      // border-radius: '0px',
-    },
-  },
-];
 
 const INITIAL_FORM_STATE = {
-  firstName: '',
-  lastName: '',
+  contactName: '',
+  agencyName: '',
+  taxID: '',
+  website: '',
   email: '',
+  phone: '',
+  addOne: '',
+  addTwo: '',
+  additionalContact: '',
+  socials: '',
+  additionalComments: '',
   password: '',
   confirmPassword: '',
   org: '',
-  phone: '',
   zipcode: '',
   comments: '',
 };
 
 function getSteps() {
-  return ['Step 1', 'Step 2', 'Step 3', 'Confirmation'];
+  return ['Step 1', 'Step 2', 'Confirmation'];
 }
 
+// TODO: Implement popup so when the user presses 'next' at step 3, there is a confirmation message
 export default function RegistrationScreen() {
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
-  const [role, setRole] = useState(-1);
+  // Role mappings: 0 -> Buyer, 1 -> Agency, 2 -> Seller
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
@@ -218,21 +212,28 @@ export default function RegistrationScreen() {
     event.preventDefault();
     setLoading(true);
     try {
-      signupUser(formState.email, formState.password,
-        ROLE_NAMES[role],
-        formState.org, parseInt(formState.zipcode, 10), `${formState.firstName} ${formState.lastName}`,
-        formState.phone, formState.comments);
+      // res = signupUser(formState.email, formState.password,
+      //   ROLE_NAMES[role],
+      //   formState.org, parseInt(formState.zipcode, 10),
+      // `${formState.firstName} ${formState.lastName}`,
+      //   formState.phone, formState.comments);
+      setErrorMsg('');
     } catch (err) {
+      console.log('error 1');
       if (err) {
+        console.log('error 2');
         setErrorMsg(err);
       }
-      console.log('Error in signupRegistration');
-      console.log(err);
     }
-    setFormState(INITIAL_FORM_STATE);
-    setLoading(false);
-    setCurrentStep(currentStep + 1);
-  }, [formState, role, currentStep]);
+
+    if (errorMsg) {
+      setErrorMsg('Please choose a different email!');
+      setLoading(false);
+    } else {
+      setFormState(INITIAL_FORM_STATE);
+      setCurrentStep(currentStep + 1);
+    }
+  }, [formState, currentStep]);
 
   const onNext = useCallback(() => {
     if (currentStep >= 3) {
@@ -240,7 +241,7 @@ export default function RegistrationScreen() {
     } else {
       setCurrentStep(currentStep + 1);
     }
-  }, [currentStep, role]);
+  }, [currentStep, formState]);
 
   const onPrev = useCallback(() => {
     if (currentStep <= 1) {
@@ -250,18 +251,23 @@ export default function RegistrationScreen() {
     }
   }, [currentStep]);
 
-  const roleChange = useCallback((event) => {
-    event.preventDefault();
-    setRole(parseInt(event.currentTarget.value, 10));
-    setCurrentStep(currentStep + 1);
-  }, [currentStep, role]);
+  const onSelect = useCallback((step) => {
+    if (step >= 1 && step <= 3) {
+      setCurrentStep(step);
+    }
+  }, [currentStep]);
 
-  const isInvalid = useMemo(() => (
-    formState.password !== formState.confirmPassword
-      || formState.password === ''
-      || formState.email === ''
-  ),
-  [formState]);
+  // const isMatchingPasswordInputs = useMemo(() => (
+  //   formState.password !== formState.confirmPassword
+  //     || formState.password === ''
+  //     || formState.email === ''
+  // ),
+  // [formState]);
+
+  function validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
 
   const repeatPwdCheck = useMemo(() => {
     let msg = '';
@@ -272,67 +278,42 @@ export default function RegistrationScreen() {
         msg = "Passwords don't match!";
       }
     }
+    if (formState.email !== '' && !validateEmail(formState.email)) {
+      msg = 'Email is not valid';
+    }
     return msg;
   },
+  [formState]);
+
+  function isNumeric(str) {
+    if (typeof str !== 'string') return false;
+    return !Number.isNaN(str)
+    && !Number.isNaN(parseFloat(str));
+  }
+
+  const step3IsInvalid = useMemo(() => (
+    formState.addOne === '' || formState.addTwo === ''
+      || formState.additonalContact === '' || formState.socials === ''
+  ),
   [formState]);
 
   const step3Check = useMemo(() => {
     let msg = '';
-    if (formState.zipcode !== '' && Number.isNaN(formState.zipcode)) {
-      msg = 'Location (zipcode) should hold a number!';
+    if (formState.zipcode !== '' && (!isNumeric(formState.zipcode) || formState.zipcode.length !== 5)) {
+      msg = 'Location (zipcode) should hold a five digit number!';
     }
+    if (formState.phone !== '' && !isNumeric(formState.phone)) {
+      msg = 'Phone should be a number!';
+    }
+    // console.log(loading);
+    // console.log(step3IsInvalid);
+    // console.log(isNumeric('12'));
+    // console.log(isNumeric('hello'));
+    // console.log(formState.zipcode);
+    // console.log(isNumeric(formState.zipcode));
     return msg;
   },
   [formState]);
-
-  const step3IsInvalid = useMemo(() => (
-    formState.zipcode === '' || formState.firstName === ''
-      || formState.lastName === '' || formState.org === '' || formState.phone === ''
-      || formState.zipcode === ''
-  ),
-  [formState]);
-
-  function Step1() {
-    if (currentStep !== 1) {
-      return null;
-    }
-    return [
-      <div className={classes.subtitleText}>
-        Are you a...
-      </div>,
-      <Grid
-        container
-        spacing={2}
-        direction="row"
-        justify="center"
-        alignItems="stretch"
-      >
-        {BUTTONS.map((bt) => (
-          <Grid
-            item
-            className={classes.card}
-            component={Card}
-            xs={12}
-            sm={6}
-            md={3}
-            key={BUTTONS.indexOf(bt)}
-          >
-            <CardActionArea onClick={roleChange} value={bt.id}>
-              <CardMedia
-                image={bt.image}
-                style={bt.fruit}
-              />
-              <CardContent>
-                <Typography className={classes.labelText}>
-                  {bt.title}
-                </Typography>
-              </CardContent>
-            </CardActionArea>
-          </Grid>
-        ))}
-      </Grid>,
-    ];
-  }
 
   function Step4() {
     if (currentStep !== 4) {
@@ -344,8 +325,7 @@ export default function RegistrationScreen() {
           Account Created!
         </div>
         <div className={classes.cenRegSubtitleText}>
-          { role === 1 ? 'Please await authentication from Farm2People.'
-            : 'Farm2People will be in touch with you shortly.'}
+          Farm2People will be in touch with you shortly.
         </div>
       </div>,
       <Grid
@@ -363,7 +343,7 @@ export default function RegistrationScreen() {
               style={{ backgroundColor: '#53AA48' }}
               onClick={onPrev}
             >
-              {role === 0 ? 'Back To Sign In' : 'Done'}
+              Done
             </Button>
           </Box>
         </Grid>
@@ -384,20 +364,7 @@ export default function RegistrationScreen() {
             )}
             {(currentStep === 2 || currentStep === 3) && (
             <Typography color="textPrimary" gutterBottom variant="h4" align="center">
-              Sign up as a&nbsp;
-              <span className={classes.underlinedSubtitleText}>
-                {ROLE_TITLES[role]}
-                {role}
-              </span>
-              {(role === 1)
-                && (
-                <>
-                  &nbsp;or&nbsp;
-                  <span className={classes.underlinedSubtitleText}>
-                    agency
-                  </span>
-                </>
-                )}
+              Agency Registration Form
             </Typography>
             )}
           </ThemeProvider>
@@ -419,12 +386,9 @@ export default function RegistrationScreen() {
               alignItems="center"
               justify="center"
             >
-              <Grid item xs={12}>
-                <Step1 />
-              </Grid>
               <Container maxWidth="sm">
                 <Grid item xs={12}>
-                  <Step2
+                  <Step1
                     currentStep={currentStep}
                     formState={formState}
                     classes={classes}
@@ -433,7 +397,21 @@ export default function RegistrationScreen() {
                     onNext={onNext}
                     errorMsg={errorMsg}
                     repeatPwdCheck={repeatPwdCheck}
-                    isInvalid={isInvalid}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Step2
+                    currentStep={currentStep}
+                    formState={formState}
+                    classes={classes}
+                    handleChange={handleChange}
+                    onPrev={onPrev}
+                    onNext={onNext}
+                    handleSubmit={handleSubmit}
+                    errorMsg={errorMsg}
+                    step3Check={step3Check}
+                    step3IsInvalid={step3IsInvalid}
+                    loading={loading}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -441,9 +419,10 @@ export default function RegistrationScreen() {
                     currentStep={currentStep}
                     formState={formState}
                     classes={classes}
-                    role={role}
                     handleChange={handleChange}
                     onPrev={onPrev}
+                    onNext={onNext}
+                    onSelect={onSelect}
                     handleSubmit={handleSubmit}
                     errorMsg={errorMsg}
                     step3Check={step3Check}
@@ -463,16 +442,15 @@ export default function RegistrationScreen() {
   ];
 }
 
-function Step2({
-  currentStep, formState, classes, handleChange, onPrev, onNext, errorMsg, repeatPwdCheck,
-  isInvalid,
+function Step1({
+  currentStep, formState, classes, handleChange, onNext, errorMsg,
 }) {
-  if (currentStep !== 2) {
+  if (currentStep !== 1) {
     return null;
   }
   return [
     <div className={classes.subtitleText}>
-      Create your account
+      Basic Information
     </div>,
     <Grid
       container
@@ -484,11 +462,49 @@ function Step2({
           variant="outlined"
           required
           fullWidth
-          id="email"
-          label="Email Address"
-          name="email"
-          autoComplete="email"
-          value={formState.email}
+          id="agencyname"
+          label="Agency Name"
+          name="agencyname"
+          disabled
+        >
+          {formState.agencyName}
+        </TextField>
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          name="location"
+          label="Location"
+          id="location"
+          disabled
+        >
+          {formState.zipcode}
+        </TextField>
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="fullname"
+          label="Contact Name"
+          name="agencyname"
+          disabled
+        >
+          {formState.contactName}
+        </TextField>
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="taxid"
+          label="Federal Tax ID"
+          name="taxID"
+          value={formState.taxID}
           onChange={handleChange}
         />
       </Grid>
@@ -497,30 +513,138 @@ function Step2({
           variant="outlined"
           required
           fullWidth
-          name="password"
-          label="Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-          value={formState.password}
-          onChange={handleChange}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          required
-          type="password"
-          fullWidth
-          name="confirmPassword"
-          id="standard-password-input"
-          value={formState.confirmPassword}
-          label="Confirm Password"
+          id="website"
+          label="Website"
+          name="website"
+          value={formState.website}
           onChange={handleChange}
         />
       </Grid>
       {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
-      {repeatPwdCheck && <Grid item xs={12} className="error-msg">{repeatPwdCheck}</Grid>}
+      <Grid item xs={12} sm={6}>
+        <Button
+          className={classes.greenButton}
+          type="button"
+          onClick={onNext}
+          fullWidth
+          color="primary"
+          variant="contained"
+          // disabled={}
+        >
+          Next
+        </Button>
+      </Grid>
+    </Grid>,
+  ];
+}
+
+function Step2({
+  currentStep, formState, classes, handleChange, onPrev, handleSubmit, errorMsg,
+  step3Check, step3IsInvalid, loading, onNext,
+}) {
+  if (currentStep !== 2) {
+    return null;
+  }
+  return [
+    <div className={classes.subtitleText}>
+      Contact Information
+    </div>,
+    <Grid
+      container
+      spacing={2}
+      alignItems="center"
+    >
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="phone"
+          label="Phone"
+          name="phone"
+          value={formState.phone}
+          onChange={handleChange}
+          disabled
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="email"
+          label="Email"
+          name="email"
+          value={formState.email}
+          onChange={handleChange}
+          disabled
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="add1"
+          name="addOne"
+          placeholder="Address Line 1"
+          value={formState.addOne}
+          onChange={handleChange}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="add2"
+          name="addTwo"
+          placeholder="Address Line 2"
+          value={formState.addTwo}
+          onChange={handleChange}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="additionalContact"
+          name="additionalContact"
+          placeholder="Additional Contact Information"
+          value={formState.additionalContact}
+          onChange={handleChange}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="socials"
+          name="socials"
+          placeholder="Social Media"
+          value={formState.socials}
+          onChange={handleChange}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField
+          variant="outlined"
+          required
+          fullWidth
+          id="additionalComments"
+          name="additionalComments"
+          placeholder="Additional Comments"
+          value={formState.additionalComments}
+          onChange={handleChange}
+          rows={3}
+          multiline
+        />
+      </Grid>
+      {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
+      {step3Check && <Grid item xs={12} className="error-msg">{step3Check}</Grid>}
+
       <Grid item xs={12} sm={6}>
         <Button
           type="button"
@@ -541,9 +665,9 @@ function Step2({
           fullWidth
           color="primary"
           variant="contained"
-          disabled={isInvalid}
+          disabled={step3IsInvalid || loading}
         >
-          Next
+          Finish
         </Button>
       </Grid>
     </Grid>,
@@ -551,93 +675,73 @@ function Step2({
 }
 
 function Step3({
-  currentStep, formState, classes, role, handleChange, onPrev, handleSubmit, errorMsg,
-  step3Check, step3IsInvalid, loading,
+  currentStep, formState, classes, handleChange, onNext, errorMsg, onPrev,
+  onSelect,
 }) {
-  const COMPANY_NAMES = ['Company Name', 'Agency', 'Farm Name'];
   if (currentStep !== 3) {
     return null;
   }
+  const fields = [
+    {
+      heading: 'Basic Information',
+      page: 1,
+      body: [
+        { name: 'Agency Name', value: formState.agencyName },
+        { name: 'Agency Location', value: formState.zipcode },
+        { name: 'Contact Name', value: formState.contactName },
+        { name: 'EIN', value: formState.taxID },
+        { name: 'Website', value: formState.website },
+      ],
+    },
+    {
+      heading: 'Contact Information',
+      page: 2,
+      body: [
+        { name: 'Email', value: formState.email },
+        { name: 'Phone', value: formState.phone },
+        { name: 'Address Line 1', value: formState.addOne },
+        { name: 'Address Line 2', value: formState.addTwo },
+        { name: 'Additional Contact', value: formState.additionalContact },
+        { name: 'Social Media', value: formState.socials },
+        { name: 'Additional Comments', value: formState.additionalComments },
+      ],
+    },
+  ];
+
   return [
     <div className={classes.subtitleText}>
-      Contact Information
+      Confirmation
     </div>,
-    <Grid
-      container
-      spacing={2}
-      alignItems="center"
-    >
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          required
-          fullWidth
-          name="org"
-          label={COMPANY_NAMES[role]}
-          value={formState.org}
-          onChange={handleChange}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          required
-          fullWidth
-          label="Location"
-          name="zipcode"
-          value={formState.zipcode}
-          onChange={handleChange}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant="outlined"
-          required
-          fullWidth
-          id="fname"
-          label="First Name"
-          name="firstName"
-          placeholder="First Name"
-          value={formState.firstName}
-          onChange={handleChange}
-        />
-      </Grid>
-      <Grid item xs={12} sm={6}>
-        <TextField
-          variant="outlined"
-          required
-          fullWidth
-          id="lname"
-          name="lastName"
-          placeholder="Last Name"
-          value={formState.lastName}
-          onChange={handleChange}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          required
-          fullWidth
-          label="Phone"
-          name="phone"
-          value={formState.phone}
-          onChange={handleChange}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          variant="outlined"
-          required
-          fullWidth
-          label="Comments"
-          name="comments"
-          value={formState.comments}
-          onChange={handleChange}
-        />
-      </Grid>
-      {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
-      {step3Check && <Grid item xs={12} className="error-msg">{step3Check}</Grid>}
+    <div className={classes.regSubtitleText}>
+      Please confirm that the information about your agency is correct.
+    </div>,
+    <Grid container spacing={2}>
+      {fields.map((field) => (
+        <>
+          <Grid item container direction="column" align="left" xs={12} sm={9}>
+            <Typography gutterBottom className={classes.underlinedSubtitleText}>
+              {field.heading}
+            </Typography>
+            <Grid container align="left">
+              {field.body.map((info) => (
+                <React.Fragment key={info.name}>
+                  <Grid item xs={5}>
+                    <Typography gutterBottom className={classes.labelText}>{info.name}</Typography>
+                  </Grid>
+                  <Grid item xs={7}>
+                    <Typography gutterBottom className={classes.valueText}>{info.value}</Typography>
+                  </Grid>
+                </React.Fragment>
+              ))}
+            </Grid>
+          </Grid>
+          <Grid item xs={12} sm={3} align="right">
+            <Button className={classes.smallButton} onClick={() => onSelect(field.page)}>
+              Edit
+            </Button>
+          </Grid>
+        </>
+      ))}
       <Grid item xs={12} sm={6}>
         <Button
           type="button"
@@ -654,15 +758,26 @@ function Step3({
         <Button
           className={classes.greenButton}
           type="button"
-          onClick={handleSubmit}
+          onClick={onNext}
           fullWidth
           color="primary"
           variant="contained"
-          disabled={step3IsInvalid || loading}
+          // disabled={step3IsInvalid || loading}
         >
           Finish
         </Button>
       </Grid>
     </Grid>,
+    // <Grid container spacing={1} className={classes.testRoot}>
+    //   <Grid container item xs={12} spacing={3}>
+    //     <HeadingRow classes={classes} />
+    //   </Grid>
+    //   <Grid container item xs={12} spacing={3}>
+    //     <FormRow />
+    //   </Grid>
+    //   <Grid container item xs={12} spacing={3}>
+    //     <FormRow />
+    //   </Grid>
+    // </Grid>,
   ];
 }

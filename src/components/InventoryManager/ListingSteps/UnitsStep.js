@@ -186,7 +186,7 @@ export default function UnitsStep({
           val={listingRecord['grouped produce type per master unit']}
           onButtonClick={onButtonClick}
           placeholder="Quantity"
-          label={`**${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}** per **MASTER** **${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}**`}
+          label={`**${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}** per **MASTER ${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}**`}
         />
         )}
         <Grid item container xs={12}>
@@ -202,7 +202,7 @@ export default function UnitsStep({
           val={listingRecord['master units per pallet']}
           onButtonClick={onButtonClick}
           placeholder="Quantity"
-          label={`**MASTER** **${listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}** PER PALLET`}
+          label={`**MASTER ${listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}** PER PALLET`}
         />
         )}
         <ListingInputField
@@ -238,7 +238,7 @@ export default function UnitsStep({
           val={listingRecord['pallets per master pallet']}
           onButtonClick={onButtonClick}
           placeholder="Quantity"
-          label="**pallets** per **master** **pallet**"
+          label="**pallets** per **master pallet**"
         />
         )}
         <Grid item container xs={12}>

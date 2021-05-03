@@ -147,7 +147,7 @@ function NumberInputField({
 }) {
   const classes = useStyles();
   const boldString = (input) => {
-    const splitInput = input.split(' ');
+    const splitInput = input.split(/(\*\*.*?\*\*)/);
     return splitInput.map((word) => (
       <>
         <Typography

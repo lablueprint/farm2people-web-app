@@ -138,7 +138,7 @@ export default function ProduceCard(props) {
 
 ProduceCard.propTypes = {
   cropName: PropTypes.string.isRequired,
-  farmID: PropTypes.string.isRequired,
+  farmID: PropTypes.arrayOf(PropTypes.string).isRequired,
   unitPrice: PropTypes.number.isRequired,
   unitType: PropTypes.string.isRequired,
 };

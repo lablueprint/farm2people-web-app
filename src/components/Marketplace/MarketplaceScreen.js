@@ -100,7 +100,7 @@ export default function MarketplaceScreen() {
           numResults={numResults}
           setNumResults={setNumResults}
         />
-        <Grid container direction="row" justify="space-between">
+        <Grid container direction="row" justify="flex-start">
           {/* Map each array of produceListing info to render a ProduceCard */
             tabValue === 'all' && produceListings.map((produce, index) => (
               <ProduceCard

@@ -22,10 +22,10 @@ const useStyles = makeStyles({
     width: '22%',
     background: 'white',
     borderWidth: '0px',
-    marginTop: '15px',
-    marginBottom: '15px',
+    margin: '5px 10px 20px 12px',
     borderRadius: '6px',
     fontFamily: 'Work Sans',
+    maxHeight: '318px',
   },
   img: { // Height must be specified for image to appear
     width: '90%',
@@ -37,15 +37,23 @@ const useStyles = makeStyles({
   },
   titleText: {
     fontFamily: 'Work Sans',
-    fontSize: '17.5px',
+    fontSize: '17px',
     marginBottom: '2.5%',
     marginTop: '-4%',
     fontWeight: 'bold',
+    /* Make text hidden if it's too long, mark with ellipsis */
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   farmText: {
     fontFamily: 'Work Sans',
-    fontSize: '13px',
+    fontSize: '12.8px',
     marginBottom: '1.5%',
+    /* Make text hidden if it's too long, mark with ellipsis */
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   priceTextPadding: {
     marginBottom: '-4%',
@@ -58,7 +66,7 @@ const useStyles = makeStyles({
   },
   smallPriceText: {
     fontFamily: 'Work Sans',
-    fontSize: '12px',
+    fontSize: '11.5px',
     fontWeight: 'bolder',
     marginTop: '10px',
     marginBottom: '1px',

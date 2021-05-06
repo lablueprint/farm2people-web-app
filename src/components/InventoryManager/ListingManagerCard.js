@@ -9,7 +9,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import PropTypes from 'prop-types';
 import Divider from '@material-ui/core/Divider';
 import Button from '@material-ui/core/Button';
-import EditListing from './EditListing';
+import EditListingPopup from './EditListingPopup';
 import OrangeCat from '../../assets/images/OrangeCat.jpeg';
 
 const useStyles = makeStyles({
@@ -82,7 +82,7 @@ export default function ListingManagerCard({
             Edit
           </Button>
           <Divider className={classes.divider} orientation="vertical" flexItem />
-          <EditListing
+          <EditListingPopup
             listing={listing}
             edit
             closeDialog={handleClose}

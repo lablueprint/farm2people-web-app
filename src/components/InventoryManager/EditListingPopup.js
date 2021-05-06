@@ -34,8 +34,7 @@ const useStyles = makeStyles({
   },
 });
 
-const today = new Date().toDateString();
-export default function EditListing({
+export default function EditListingPopup({
   listing, closeDialog, isOpen, modifyListings, produceTypes, produceRecord,
 }) {
   const classes = useStyles();
@@ -78,8 +77,8 @@ export default function EditListing({
     modifyListings(listingRecord);
     closeDialog();
   }
-  function onChangeField(e) {
-    const { name, type } = e.target;
+  function onChangeField(e, type) {
+    const { name } = e.target;
     let { value } = e.target;
     if (type === 'number') {
       value = +value;
@@ -116,7 +115,7 @@ export default function EditListing({
       'produce details': {
         label: 'Produce Details',
         name: 'details',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'string'),
         val: listingRecord.details,
         type: 'multiline',
         placeholder: "Enter any details about the produce such as grade cosmetic defects, and overall condition of the produce. Don't worry, you'll input price and sell by dates at a later step",
@@ -152,7 +151,7 @@ export default function EditListing({
         label: `**${listingRecord['individual produce unit']}** per **${listingRecord['grouped produce type']}**`,
         name: 'individual produce units per grouped produce type',
         type: 'number',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'number'),
         val: listingRecord['individual produce units per grouped produce type'],
         placeholder: 'Quantity',
         onButtonClick,
@@ -162,7 +161,7 @@ export default function EditListing({
         id: 'standard-number',
         name: 'lbs per grouped produce type',
         type: 'number',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'number'),
         val: listingRecord['lbs per grouped produce type'],
         placeholder: 'Pounds per Grouped Produce Type',
         onButtonClick,
@@ -173,7 +172,7 @@ export default function EditListing({
         id: 'standard-number',
         name: 'grouped produce type per master unit',
         type: 'number',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'number'),
         val: listingRecord['grouped produce type per master unit'],
         placeholder: 'Grouped Produce Type per Master Unit',
         onButtonClick,
@@ -184,7 +183,7 @@ export default function EditListing({
         id: 'standard-number',
         name: 'master units per pallet',
         type: 'number',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'number'),
         val: listingRecord['master units per pallet'],
         placeholder: 'Master Units per Pallet',
         onButtonClick,
@@ -195,7 +194,7 @@ export default function EditListing({
         id: 'standard-number',
         name: 'pallets per master pallet',
         type: 'number',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'number'),
         val: listingRecord['pallets per master pallet'],
         placeholder: 'Pallets per Master Pallet',
         onButtonClick,
@@ -206,7 +205,7 @@ export default function EditListing({
         id: 'standard-number',
         name: 'pallets per master pallet',
         type: 'number',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'number'),
         val: listingRecord['pallets available'],
         placeholder: 'Number of Master Pallets',
         onButtonClick,
@@ -246,7 +245,7 @@ export default function EditListing({
         label: 'First Available Date',
         name: 'first available date',
         type: 'date',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'date'),
         val: listingRecord['first available date'],
         size: 12,
       },
@@ -255,7 +254,7 @@ export default function EditListing({
         label: 'Sell By Date',
         name: 'sell by date',
         type: 'date',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'date'),
         val: listingRecord['sell by date'],
         size: 12,
       },
@@ -264,7 +263,7 @@ export default function EditListing({
         label: 'Available Until',
         name: 'available until',
         type: 'date',
-        onChange: onChangeField,
+        onChange: (e) => onChangeField(e, 'date'),
         val: listingRecord['available until'],
         size: 12,
       },
@@ -324,44 +323,12 @@ export default function EditListing({
   );
 }
 
-EditListing.defaultProps = {
-  listing: {
-    crop: '',
-    description: '',
-    'unit type': '',
-    'units per pallet': 0,
-    'lbs per unit': 0.0,
-    'standard price per pallet': 0.0,
-    'restricted price per pallet': 0.0,
-    'expiration date': '',
-    'first available date': '',
-    'date entered': today,
-    'available until': '',
-    'growing season': '',
-    'pallets available': 0,
-    'pallets pending': 0,
-    'pallets sold': 0,
-  },
+EditListingPopup.defaultProps = {
   isOpen: false,
 };
 
-EditListing.propTypes = {
-  listing: PropTypes.shape({
-    crop: PropTypes.string,
-    description: PropTypes.string,
-    'unit type': PropTypes.string,
-    'units per pallet': PropTypes.number,
-    'lbs per unit': PropTypes.number,
-    'standard price per pallet': PropTypes.number,
-    'expiration date': PropTypes.string,
-    'first available date': PropTypes.string,
-    'date entered': PropTypes.string,
-    'available until': PropTypes.string,
-    'growing season': PropTypes.string,
-    'pallets available': PropTypes.number,
-    'pallets pending': PropTypes.number,
-    'pallets sold': PropTypes.number,
-  }),
+EditListingPopup.propTypes = {
+  listing: PropTypes.shape({}).isRequired,
   closeDialog: PropTypes.func.isRequired,
   isOpen: PropTypes.bool,
   modifyListings: PropTypes.func.isRequired,

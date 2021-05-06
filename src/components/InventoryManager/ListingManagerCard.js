@@ -40,7 +40,7 @@ const useStyles = makeStyles({
   },
 });
 export default function ListingManagerCard({
-  id, listing, onSelect, selected, editRecord,
+  id, listing, onSelect, selected, editRecord, produceRecord, produceTypes,
 }) {
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
@@ -83,12 +83,13 @@ export default function ListingManagerCard({
           </Button>
           <Divider className={classes.divider} orientation="vertical" flexItem />
           <EditListing
-            id={id}
             listing={listing}
             edit
             closeDialog={handleClose}
             isOpen={editActive}
             modifyListings={editRecord}
+            produceRecord={produceRecord}
+            produceTypes={produceTypes}
           />
           <Checkbox
             checked={selected || false}
@@ -137,4 +138,17 @@ ListingManagerCard.propTypes = {
   onSelect: PropTypes.func.isRequired,
   selected: PropTypes.bool,
   editRecord: PropTypes.func.isRequired,
+  produceRecord: PropTypes.shape({
+    id: PropTypes.string,
+    fields: PropTypes.shape({
+      'produce type': PropTypes.string,
+      'produce picture': PropTypes.arrayOf(PropTypes.shape({
+        url: PropTypes.string,
+      })),
+    }),
+  }).isRequired,
+  produceTypes: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    fields: PropTypes.shape({}),
+  })).isRequired,
 };

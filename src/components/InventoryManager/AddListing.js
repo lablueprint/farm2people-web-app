@@ -153,7 +153,7 @@ const initialListing = {
 };
 
 const initialProduce = {
-  id: 0,
+  id: '',
   fields: {
     'produce type': '',
     'produce picture': [],

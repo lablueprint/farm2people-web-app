@@ -78,26 +78,13 @@ export default function PricesStep({
         </Grid>
         <Grid container item xs={12}>
           <Grid container spacing={1} item xs={12}>
-            <Grid item xs={12}>
-              <Typography className={classes.subheading} variant="h2" component="h2">
-                Standard Price per Grouped Produce Type
-              </Typography>
-            </Grid>
-            <Grid container item xs={12} alignItems="center">
-              <ListingInputField
-                id="standard-number"
-                name="standard price per unit"
-                type="currency"
-                onChange={(event, value) => onChangePrice(event, value, 'standard price per grouped produce type')}
-                val={listingRecord['standard price per grouped produce type']}
-              />
-              <Typography className={classes.unitLabel} variant="h2" component="h2">
-                { '  PER ' }
-                <Typography display="inline" className={classes.labels}>
-                  {listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}
-                </Typography>
-              </Typography>
-            </Grid>
+            <ListingInputField
+              type="currency"
+              onChange={(event, value) => onChangePrice(event, value, 'standard price per grouped produce type')}
+              val={listingRecord['standard price per grouped produce type']}
+              label={`PER **${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}**`}
+              placeholder="Standard Price per Grouped Produce Type"
+            />
             <Grid container item xs={12} spacing={1}>
               <Grid item xs={12}>
                 <Typography className={classes.text}>
@@ -155,11 +142,6 @@ export default function PricesStep({
         </Grid>
         <Grid container item xs={12}>
           <Grid container spacing={1} item xs={12}>
-            <Grid item xs={12}>
-              <Typography className={classes.subheading} variant="h6" component="h6">
-                Agency Price per Grouped Product Type
-              </Typography>
-            </Grid>
             <Grid container item xs={12} alignItems="center">
               <ListingInputField
                 id="standard-number"
@@ -167,13 +149,9 @@ export default function PricesStep({
                 type="currency"
                 onChange={(event, value) => onChangePrice(event, value, 'agency price per grouped produce type')}
                 val={listingRecord['agency price per grouped produce type']}
+                label={`PER **${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}**`}
+                placeholder="Agency Price per Grouped Produce Type"
               />
-              <Typography display="inline" className={classes.unitLabel} variant="h6" component="h6">
-                { '  PER ' }
-                <Typography display="inline" className={classes.labels} variant="h6" component="h6">
-                  {listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}
-                </Typography>
-              </Typography>
             </Grid>
             <Grid container item xs={12} spacing={1}>
               <Grid item xs={12}>

@@ -143,60 +143,26 @@ export default function UnitsStep({
             </Grid>
           ))}
         </Grid>
-        <Grid container item xs={12}>
-          <Grid container spacing={1} item xs={12}>
-            <Grid item xs={12}>
-              <Typography className={classes.subheading}>
-                Quantity
-              </Typography>
-            </Grid>
-            <Grid container item xs={12} alignItems="center">
-              <ListingInputField
-                id="standard-number"
-                name="individual produce units per grouped produce type"
-                type="number"
-                onChange={onChangeField}
-                val={listingRecord['individual produce units per grouped produce type']}
-                onButtonClick={onButtonClick}
-              />
-              <Typography display="inline" className={classes.labels}>
-                {listingRecord['individual produce unit'].toUpperCase() || 'INDIVIDUAL PRODUCE UNIT'}
-              </Typography>
-              &nbsp;
-              <Typography display="inline" className={classes.text}>PER</Typography>
-              &nbsp;
-              <Typography display="inline" className={classes.labels}>
-                {listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
-        <Grid container item xs={12}>
-          <Grid container spacing={1} item xs={12}>
-            <Grid item xs={12}>
-              <Typography className={classes.subheading}>
-                Pounds per Grouped Produce Type
-              </Typography>
-            </Grid>
-            <Grid container item xs={12} alignItems="center">
-              <ListingInputField
-                id="standard-number"
-                name="lbs per grouped produce type"
-                type="number"
-                onChange={onChangeField}
-                val={listingRecord['lbs per grouped produce type']}
-                onButtonClick={onButtonClick}
-              />
-              <Typography display="inline" className={classes.text}>
-                LBS PER
-              </Typography>
-              &nbsp;
-              <Typography display="inline" className={classes.labels}>
-                {listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
+        <ListingInputField
+          id="standard-number"
+          name="individual produce units per grouped produce type"
+          type="number"
+          onChange={onChangeField}
+          val={listingRecord['individual produce units per grouped produce type']}
+          onButtonClick={onButtonClick}
+          placeholder="Quantity"
+          label={`**${listingRecord['individual produce unit'] || 'INDIVIDUAL PRODUCE UNIT'}** PER **${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}**`}
+        />
+        <ListingInputField
+          id="standard-number"
+          name="lbs per grouped produce type"
+          type="number"
+          onChange={onChangeField}
+          val={listingRecord['lbs per grouped produce type']}
+          onButtonClick={onButtonClick}
+          placeholder="Pounds per Grouped Produce Type"
+          label={`lbs per **${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}**`}
+        />
         <Grid item container xs={12}>
           <Typography className={classes.heading}>{questions[1]}</Typography>
         </Grid>
@@ -212,95 +178,43 @@ export default function UnitsStep({
         </Grid>
         {(listingRecord['has master units'])
         && (
-        <Grid container item xs={12}>
-          <Grid container spacing={1} item xs={12}>
-            <Grid item xs={12}>
-              <Typography className={classes.subheading}>
-                Quantity
-              </Typography>
-            </Grid>
-            <Grid container item xs={12} alignItems="center">
-              <ListingInputField
-                id="standard-number"
-                name="grouped produce type per master unit"
-                type="number"
-                onChange={onChangeField}
-                val={listingRecord['grouped produce type per master unit']}
-                onButtonClick={onButtonClick}
-              />
-              <Typography display="inline" className={classes.labels}>
-                {listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}
-              </Typography>
-              &nbsp;
-              <Typography display="inline" className={classes.text}>
-                PER
-              </Typography>
-              &nbsp;
-              <Typography display="inline" className={classes.labels}>
-                {`MASTER ${listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}`}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
+        <ListingInputField
+          id="standard-number"
+          name="grouped produce type per master unit"
+          type="number"
+          onChange={onChangeField}
+          val={listingRecord['grouped produce type per master unit']}
+          onButtonClick={onButtonClick}
+          placeholder="Quantity"
+          label={`**${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}** per **MASTER ${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}**`}
+        />
         )}
         <Grid item container xs={12}>
           <Typography className={classes.heading}>{questions[2]}</Typography>
         </Grid>
         {listingRecord['has master units']
         && (
-        <Grid container item xs={12}>
-          <Grid container spacing={1} item xs={12}>
-            <Grid item xs={12}>
-              <Typography className={classes.subheading}>
-                Quantity
-              </Typography>
-            </Grid>
-            <Grid container item xs={12} alignItems="center">
-              <ListingInputField
-                id="standard-number"
-                name="master units per pallet"
-                type="number"
-                onChange={onChangeField}
-                val={listingRecord['master units per pallet']}
-                onButtonClick={onButtonClick}
-              />
-              <Typography display="inline" className={classes.labels}>
-                {`MASTER ${listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}`}
-              </Typography>
-              &nbsp;
-              <Typography display="inline" className={classes.text}>
-                PER PALLET
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
+        <ListingInputField
+          id="standard-number"
+          name="master units per pallet"
+          type="number"
+          onChange={onChangeField}
+          val={listingRecord['master units per pallet']}
+          onButtonClick={onButtonClick}
+          placeholder="Quantity"
+          label={`**MASTER ${listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}** PER PALLET`}
+        />
         )}
-        <Grid container item xs={12}>
-          <Grid container spacing={1} item xs={12}>
-            <Grid item xs={12}>
-              <Typography className={classes.subheading}>
-                Quantity
-              </Typography>
-            </Grid>
-            <Grid container item xs={12} alignItems="center">
-              <ListingInputField
-                id="standard-number"
-                name="grouped produce type per pallet"
-                type="number"
-                onChange={onChangeField}
-                val={listingRecord['grouped produce type per pallet']}
-                onButtonClick={onButtonClick}
-              />
-              <Typography display="inline" className={classes.labels}>
-                {listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}
-              </Typography>
-              &nbsp;
-              <Typography display="inline" className={classes.text}>
-                PER PALLET
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
+        <ListingInputField
+          id="standard-number"
+          name="grouped produce type per pallet"
+          type="number"
+          onChange={onChangeField}
+          val={listingRecord['grouped produce type per pallet']}
+          onButtonClick={onButtonClick}
+          placeholder="Quantity"
+          label={`**${listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}** PER PALLET`}
+        />
         <Grid item container xs={12}>
           <Typography className={classes.heading}>{questions[3]}</Typography>
         </Grid>
@@ -316,62 +230,30 @@ export default function UnitsStep({
         </Grid>
         {(listingRecord['has master pallets'])
         && (
-        <Grid container item xs={12}>
-          <Grid container spacing={1} item xs={12}>
-            <Grid item xs={12}>
-              <Typography className={classes.subheading}>
-                Quantity
-              </Typography>
-            </Grid>
-            <Grid container item xs={12} alignItems="center">
-              <ListingInputField
-                id="standard-number"
-                name="pallets per master pallet"
-                type="number"
-                onChange={onChangeField}
-                val={listingRecord['pallets per master pallet']}
-                onButtonClick={onButtonClick}
-              />
-              <Typography display="inline" className={classes.labels}>
-                PALLETS
-              </Typography>
-              &nbsp;
-              <Typography display="inline" className={classes.text}>
-                PER
-              </Typography>
-              &nbsp;
-              <Typography display="inline" className={classes.labels}>
-                MASTER PALLET
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
+        <ListingInputField
+          id="standard-number"
+          name="pallets per master pallet"
+          type="number"
+          onChange={onChangeField}
+          val={listingRecord['pallets per master pallet']}
+          onButtonClick={onButtonClick}
+          placeholder="Quantity"
+          label="**pallets** per **master pallet**"
+        />
         )}
         <Grid item container xs={12}>
           <Typography className={classes.heading}>{questions[4]}</Typography>
         </Grid>
-        <Grid container item xs={12}>
-          <Grid container spacing={1} item xs={12}>
-            <Grid item xs={12}>
-              <Typography className={classes.subheading}>
-                Quantity
-              </Typography>
-            </Grid>
-            <Grid container item xs={12} alignItems="center">
-              <ListingInputField
-                id="standard-number"
-                name="pallets available"
-                type="number"
-                onChange={onChangeField}
-                val={listingRecord['pallets available']}
-                onButtonClick={onButtonClick}
-              />
-              <Typography display="inline" className={classes.labels}>
-                PALLETS
-              </Typography>
-            </Grid>
-          </Grid>
-        </Grid>
+        <ListingInputField
+          id="standard-number"
+          name="pallets available"
+          type="number"
+          onChange={onChangeField}
+          val={listingRecord['pallets available']}
+          onButtonClick={onButtonClick}
+          placeholder="Quantity"
+          label="**pallets**"
+        />
       </Grid>
     </>
   );

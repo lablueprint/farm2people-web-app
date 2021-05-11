@@ -57,7 +57,6 @@ function CheckoutTextField({
   useEffect(() => {
     if (updateErrorDisplay === 'reset') { setEdited(false); }
     if (updateErrorDisplay === 'show') { setEdited(true); }
-    console.log(updateErrorDisplay);
   }, [updateErrorDisplay]);
 
   return (

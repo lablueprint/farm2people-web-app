@@ -3,10 +3,18 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import React, { useMemo, useState, useEffect } from 'react';
 import './SignIn.css';
-import { loginUser, logoutUser } from '../../lib/airlock/airlock';
-import { store } from '../../lib/redux/store';
+import PropTypes from 'prop-types';
+import { history, store } from '../../lib/redux/store';
 
-export default function SignInScreen() {
+import { loginUser, logoutUser } from '../../lib/airlock/airlock';
+
+export default function SignInScreen(props) {
+  const {
+    /* authenticated is a boolean and userRole is a string that can be
+    can either be: {'', 'buyer', 'seller', 'agency'} */
+    setAuthAndRefreshNavbar,
+    setUserRoleAndRefreshNavbar,
+  } = props;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,8 +29,11 @@ export default function SignInScreen() {
         setErrorMsg('Incorrect username or password');
         setLoading(false);
       } else {
-        setDisplayName(`Welcome ${store.getState().userData.user.fields.display_name}`);
+        setDisplayName(`Welcome ${store.getState().userData.user.fields['contact name']}`);
         setErrorMsg('');
+        setAuthAndRefreshNavbar(true);
+        setUserRoleAndRefreshNavbar(store.getState().userData.user.fields['user type']);
+        history.push('/');
       }
     } catch (err) {
       setErrorMsg('Incorrect username or password');
@@ -40,6 +51,8 @@ export default function SignInScreen() {
       if (!status) {
         setErrorMsg('Error logging out.');
       } else {
+        setAuthAndRefreshNavbar(false);
+        setUserRoleAndRefreshNavbar('');
         setDisplayName('');
       }
     } catch (err) {
@@ -52,7 +65,7 @@ export default function SignInScreen() {
 
   useEffect(() => {
     if (store.getState().authenticated) {
-      setDisplayName(`Welcome ${store.getState().userData.user.fields.display_name}`);
+      setDisplayName(`Welcome ${store.getState().userData.user.fields['contact name']}`);
     } else {
       setDisplayName('');
     }
@@ -105,3 +118,9 @@ export default function SignInScreen() {
     </form>
   );
 }
+
+SignInScreen.propTypes = {
+  setAuthAndRefreshNavbar: PropTypes.func.isRequired,
+  setUserRoleAndRefreshNavbar: PropTypes.func.isRequired,
+
+};

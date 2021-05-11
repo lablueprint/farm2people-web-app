@@ -22,6 +22,7 @@ import CheckoutPriceDetails from './CheckoutPriceDetails';
 import CheckoutTextField from './CheckoutTextField';
 import Fruit3 from '../../assets/images/Fruit3.svg';
 import Fruit4 from '../../assets/images/Fruit4.svg';
+import { store } from '../../lib/redux/store';
 
 // airtable configuration
 const Airtable = require('airtable');
@@ -52,7 +53,16 @@ const useStyles = makeStyles({
     paddingTop: '2%',
     paddingBottom: '10px',
   },
-  inputCards: {
+  farmTitle: {
+    fontFamily: 'Work Sans',
+    fontWeight: 500,
+    fontSize: '40px',
+    lineHeight: '49px',
+    color: '#373737',
+    paddingTop: '2%',
+    paddingBottom: '10px',
+  },
+  card: {
     paddingLeft: '30px',
     paddingRight: '30px',
     marginBottom: '20px',
@@ -125,10 +135,10 @@ const useStyles = makeStyles({
   green: {
     color: '#53AA48',
   },
-  fieldRow: {
+  textFieldRow: {
     paddingBottom: 10,
   },
-  rowContainer: {
+  buttonRow: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -199,16 +209,16 @@ const useStyles = makeStyles({
     position: 'absolute',
     width: '180px',
     height: 'auto',
-    right: '1%',
-    bottom: '20%',
+    right: '.5vw',
+    top: '60vh',
     zIndex: '-2',
   },
   fruit4: {
     position: 'absolute',
-    width: '180px',
+    width: '160px',
     height: 'auto',
-    right: '0%',
-    bottom: '6%',
+    right: '0vw',
+    top: '79vh',
     zIndex: '-1',
   },
 });
@@ -227,13 +237,16 @@ function Checkout() {
   const history = useHistory();
   const [editing, setEditing] = useState(false); // bool if editing
   const [items, setItems] = useState([]); // items in cart
+  const [farms, setFarms] = useState({}); // dictionary of item's farms in cart in form { id: name}
   const [subtotal, setSubtotal] = useState(0); // subtotal of cart
   const [pastProfiles, setPastProfiles] = useState([]); // array of all profiles related to user
   const [selectedProfile, setSelectedProfile] = useState(''); // id of selected profile
   const [requesting, setRequesting] = useState(false); // bool whether quote is being requested
   const [updating, setUpdating] = useState(true); // bool whether a profile is being updated
-  const [resetErrorDisplay, setResetErrorDisplay] = useState(''); // string used to set error display
+  const [checkoutWithoutSaving, setCheckoutWithoutSaving] = useState(false);
+  const [errorDisplayStatus, setErrorDisplayStatus] = useState(''); // string used to set error display
   // 'reset' doesn't display until errors edited, 'show' shows all the errors, even unedited
+  const [airtableError, setAirtableError] = useState('');
 
   // bools for launching alerts
   const [saveProfileAlert, setSaveProfileAlert] = useState(false);
@@ -267,13 +280,13 @@ function Checkout() {
   const [profile, setProfile] = useState(emptyProfile);
 
   // initial valid settings
-  const emptyValid = {
+  const initializeValid = {
     'first name': false,
     'last name': false,
     phone: false,
     email: false,
     'address line 1': false,
-    'address line 2': true, // always ok, but look into possible validation
+    'address line 2': true, // always valid, but look into possible validation
     city: false,
     state: false,
     country: false,
@@ -281,7 +294,7 @@ function Checkout() {
   };
 
   // valid initializer for loading past profiles (guaranteed to be valid)
-  const allValid = {
+  const initializePastProfileValid = {
     'first name': true,
     'last name': true,
     phone: true,
@@ -295,30 +308,66 @@ function Checkout() {
   };
 
   // validation state of each text field
-  const [valid, setValid] = useState(emptyValid);
+  const [formValid, setFormValid] = useState(initializeValid);
   const paymentValid = [profile['can ACH'], profile['can paypal'], profile['can card'], profile['can check']].filter((v) => v).length > 0;
 
   // Fetches all necessary airtable data on start
-  // TODO: only fetch records related to user
   useEffect(() => {
     // fetch all the items in cart and set the subtotal
     setSubtotal(0);
-    base('Reserved Listings').select({ view: 'Grid view' }).all().then((records) => {
-      records.map((element) => base('Listings').find(element.fields['listing id'][0], (err, record) => {
-        const currCartItemPrice = element.fields.pallets * record.fields['standard price per unit'];
-        setSubtotal(subtotal + currCartItemPrice);
-      }));
-      setItems(records);
-    });
-    // fetch all the checkout profiles
-    base('Checkout Profiles').select({ view: 'Grid view' }).all().then((records) => {
-      setPastProfiles(records);
+
+    base('Users').find(store.getState().userData.user.id, (err, user) => {
+      if (err) { setAirtableError(err); return; }
+      let tempProfiles = [];
+      let tempItems = [];
+      const tempFarms = {};
+
+      // fetch each item in the user's cart
+      if (user.fields.cart) {
+        user.fields.cart.forEach((id) => {
+          base('Reserved Listings').find(id, (e, item) => {
+            if (e) { setAirtableError(e); return; }
+            tempItems = [...tempItems, item];
+            setItems(tempItems);
+
+            // fetch item's farm and add to farms if necessary
+            const farmID = item.fields['farm id'];
+            base('Farms').find(farmID, (error, farm) => {
+              if (error) { setAirtableError(error); }
+              if (!tempFarms[farmID]) {
+                tempFarms[farmID] = farm.fields['farm name'];
+              }
+              setFarms(tempFarms);
+            });
+
+            // fetch price of listing and add to subtotal
+            base('Listings').find(item.fields['listing id'][0], (er, record) => {
+              if (er) { setAirtableError(er); return; }
+              // todo: use agency price if appropriate
+              const currCartItemPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
+              const currCartItemCost = item.fields.pallets * currCartItemPrice;
+              setSubtotal((prevTotal) => (prevTotal + currCartItemCost));
+            });
+          });
+        });
+      }
+
+      // fetch each of the users profiles
+      if (user.fields['checkout profiles']) {
+        user.fields['checkout profiles'].forEach((id) => {
+          base('Checkout Profiles').find(id, (e, p) => {
+            if (e) { setAirtableError(e); return; }
+            tempProfiles = [...tempProfiles, p];
+            setPastProfiles(tempProfiles);
+          });
+        });
+      }
     });
   }, []);
 
   // links to success page
   // runs on successful submission of quote request
-  const toSuccess = () => history.push('/cart/success');
+  const onCheckoutSuccess = () => history.push('/cart/success', { farms: Object.entries(farms).map(([, farm]) => farm).join(' & ') });
 
   // method to handle text field or checkbox input change
   const handleChange = (event) => {
@@ -331,20 +380,23 @@ function Checkout() {
 
   // changes the validation state of a field as specified
   const handleValidation = (name, value) => {
-    setValid({ ...valid, [name]: value });
+    setFormValid({ ...formValid, [name]: value });
   };
 
   // returns whether every field within the profile is valid
-  // TODO: validate fields before creating profile
   function validate() {
-    setResetErrorDisplay('show');
+    setErrorDisplayStatus('show');
     let val = true;
-    Object.entries(valid).forEach(([k, v]) => {
-      console.log(k, ':', v);
+    Object.entries(formValid).forEach(([, v]) => {
       if (!v) { val = false; }
     });
     return val && paymentValid;
   }
+
+  // resets errorDisplayStatus to '' so each change of state is registered correctly
+  useEffect(() => {
+    setErrorDisplayStatus('');
+  }, [errorDisplayStatus]);
 
   // returns error message if field is empty
   // used for simple fields (ex. name, )
@@ -360,7 +412,7 @@ function Checkout() {
     if (profile.phone === '') { return 'This field is required'; }
 
     // return error if incorrect # of digits
-    return (profile.phone && profile.phone.match(/\d/g).length !== 10) ? 'Phone number should have 10 digits' : '';
+    return (profile.phone.match(/\d/g) && profile.phone.match(/\d/g).length === 10) ? '' : 'Phone number should have 10 digits';
   }
 
   // returns error message if the email is improper
@@ -389,6 +441,7 @@ function Checkout() {
     let file = pastProfiles.filter((p) => (p.id === checkoutProfile));
     delete file[0].fields['profile id'];
     delete file[0].fields['quote id'];
+    delete file[0].fields['user id'];
     file = file[0].fields;
     setProfile(file);
   };
@@ -396,16 +449,17 @@ function Checkout() {
   // handles the selection of a checkout profile
   const handlePreload = (event) => {
     setEditing(false);
+    setCheckoutWithoutSaving(false);
     setSelectedProfile(event.target.value);
 
     if (event.target.value === '') {
       // initialize to empty
       setProfile(emptyProfile);
-      setValid(emptyValid);
-      setResetErrorDisplay('reset');
+      setFormValid(initializeValid);
+      setErrorDisplayStatus('reset');
     } else {
       // initialize to filled, load the profile
-      setValid(allValid);
+      setFormValid(initializePastProfileValid);
       loadProfile(event.target.value);
     }
   };
@@ -413,14 +467,19 @@ function Checkout() {
   // creates a new profile and then runs a callback on the new profile id
   // callback used for creating quotes with new profile id
   // or setting as selected profile if not submitting yet
-  function createProfile(callback) {
-    // TODO: link user to profile if needed
+  function createProfile(saveToUser, callback) {
+    if (saveToUser) {
+      profile['user id'] = [store.getState().userData.user.id];
+    }
+
     base('Checkout Profiles').create([{ fields: profile }],
       (err, records) => {
         if (err) {
-          console.err(err);
+          setAirtableError(err);
         } else {
           const p = records[0];
+          // The profile is saved to the past profile array temporarily regardless of whether the
+          // user wants it saved permanently
           setPastProfiles([...pastProfiles, p]); // add to pastProfiles array
           callback(p.id);
         }
@@ -435,7 +494,7 @@ function Checkout() {
       fields: profile,
     }], (err, records) => {
       if (err) {
-        console.err(err);
+        setAirtableError(err);
       }
       // update the profile in the pastProfile array
       const editedProfile = records[0];
@@ -446,12 +505,12 @@ function Checkout() {
 
   // Create a quote with the passed checkoutProfile id
   function createQuote(checkoutProfile) {
-    // TODO: update listing pallets pending
+    // TODO: check that listings are available + update listing pallets pending
     if (checkoutProfile != null) {
       base('Quotes').create([
         {
           fields: {
-            // TODO: add buyer id
+            'buyer id': [store.getState().userData.user.id],
             'reserved listings': items.map((item) => (item.id)),
             'initial cost': subtotal,
             status: 'In Progress',
@@ -461,9 +520,23 @@ function Checkout() {
       ],
       (err) => {
         if (err) {
-          console.log(err);
+          setAirtableError(err);
         } else {
-          toSuccess();
+          // clear the cart
+          base('Users').update([
+            {
+              id: store.getState().userData.user.id,
+              fields: {
+                cart: [],
+              },
+            },
+          ],
+          (er) => {
+            if (er) {
+              setAirtableError(er);
+            }
+          });
+          onCheckoutSuccess();
         }
       });
     }
@@ -473,8 +546,11 @@ function Checkout() {
   function handleSubmit(e) {
     e.preventDefault();
     setRequesting(true);
-    // TODO: do smth else if invalid? send error message?
     if (validate()) {
+      // if the user doesn't want to save the form information, immediately go to checkout
+      if (checkoutWithoutSaving) {
+        createProfile(false, createQuote);
+      }
       // if the user is using a past profile, check that they are done editing else create quote
       if (selectedProfile !== '') {
         if (editing) { setUpdateProfileAlert(true); } else {
@@ -487,7 +563,6 @@ function Checkout() {
       }
     } else {
       // reset requesting if invalid
-      // TODO: set all fields to show errors even if unedited
       setRequesting(false);
     }
   }
@@ -495,6 +570,7 @@ function Checkout() {
   // handles the closing of the profile name dialog (used whenever profile saves/edits made)
   function profileNameDialogClosed() {
     setProfileNameDialog(false);
+    setCheckoutWithoutSaving(false);
     if (updating) {
       // if the user is trying to update a profile, edit
       editProfile();
@@ -502,11 +578,11 @@ function Checkout() {
       if (requesting) { createQuote(selectedProfile); }
     } else if (requesting) {
       // if creating a new profile and requesting a quote, create Profile with the quote callback
-      createProfile(createQuote);
+      createProfile(true, createQuote);
     } else {
       // if just creating a new profile (not updating or requesting), createProfile and set it as
       // selected profile
-      createProfile(setSelectedProfile);
+      createProfile(true, setSelectedProfile);
     }
   }
 
@@ -521,7 +597,6 @@ function Checkout() {
 
   // handles the closing of the saveProfileAlert
   async function saveProfileAlertClosed(value) {
-    // TODO: if false save profile w/o user id
     setSaveProfileAlert(false);
     setUpdating(false);
 
@@ -531,7 +606,7 @@ function Checkout() {
       setProfileNameDialog(true);
     } else if (requesting) {
       // otherwise if requesting a quote, just create a unlinked profile and quote
-      createProfile(createQuote);
+      createProfile(false, createQuote);
     }
   }
 
@@ -554,6 +629,7 @@ function Checkout() {
     setQuitEditingAlert(false);
     if (value) {
       setEditing(false);
+      setCheckoutWithoutSaving(false);
       loadProfile(selectedProfile);
     }
   }
@@ -570,11 +646,14 @@ function Checkout() {
 
   // TODO:
   // state selector
-  // make sure country is always United States?
+  // style airtable error if necessary
   return (
     <div>
       <div className={classes.container}>
         <Typography className={classes.title}> Checkout </Typography>
+        <Typography className={classes.farmTitle}>
+          {Object.entries(farms).map(([, farm]) => farm).join(' & ')}
+        </Typography>
         <div>
           <Select
             value={selectedProfile}
@@ -613,14 +692,14 @@ function Checkout() {
           <Grid container spacing={3}>
             <Grid item xs>
               <Typography className={classes.sectionHeader}> User Information</Typography>
-              <Card className={classes.inputCards}>
+              <Card className={classes.card}>
                 <CardContent>
                   <Typography className={classes.stepNum}>
                     01
                     <span className={classes.stepSlash}>/</span>
                     <span className={classes.stepLabel}>Name</span>
                   </Typography>
-                  <Grid container spacing={2} className={classes.fieldRow}>
+                  <Grid container spacing={2} className={classes.textFieldRow}>
                     <Grid item xs={6}>
                       <CheckoutTextField
                         placeholder="First Name"
@@ -628,10 +707,10 @@ function Checkout() {
                         value={profile['first name']}
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
-                        valid={valid['first name']}
+                        valid={formValid['first name']}
                         setValid={handleValidation}
                         validate={validateFilled}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -641,10 +720,10 @@ function Checkout() {
                         value={profile['last name']}
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
-                        valid={valid['last name']}
+                        valid={formValid['last name']}
                         setValid={handleValidation}
                         validate={validateFilled}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                   </Grid>
@@ -653,7 +732,7 @@ function Checkout() {
                     <span className={classes.stepSlash}>/</span>
                     <span className={classes.stepLabel}>Contact Information</span>
                   </Typography>
-                  <Grid container spacing={2} className={classes.fieldRow}>
+                  <Grid container spacing={2} className={classes.textFieldRow}>
                     <Grid item xs={6}>
                       <CheckoutTextField
                         placeholder="Phone Number"
@@ -661,10 +740,10 @@ function Checkout() {
                         value={profile.phone}
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
-                        valid={valid.phone}
+                        valid={formValid.phone}
                         setValid={handleValidation}
                         validate={validatePhone}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -674,10 +753,10 @@ function Checkout() {
                         value={profile.email}
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
-                        valid={valid.email}
+                        valid={formValid.email}
                         setValid={handleValidation}
                         validate={validateEmail}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                   </Grid>
@@ -704,7 +783,7 @@ function Checkout() {
                 </CardContent>
               </Card>
               <Typography className={classes.sectionHeader}> Billing Information</Typography>
-              <Card className={classes.inputCards}>
+              <Card className={classes.card}>
                 <CardContent>
                   <Typography className={classes.stepNum}>
                     04
@@ -743,7 +822,7 @@ function Checkout() {
                     <span className={classes.stepSlash}>/</span>
                     <span className={classes.stepLabel}>Billing Address</span>
                   </Typography>
-                  <Grid container spacing={2} className={classes.fieldRow}>
+                  <Grid container spacing={2} className={classes.textFieldRow}>
                     <Grid item xs={12}>
                       <CheckoutTextField
                         placeholder="Address Line 1"
@@ -751,10 +830,10 @@ function Checkout() {
                         value={profile['address line 1']}
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
-                        valid={valid['address line 1']}
+                        valid={formValid['address line 1']}
                         validate={validateFilled}
                         setValid={handleValidation}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                     <Grid item xs={12}>
@@ -764,9 +843,9 @@ function Checkout() {
                         value={profile['address line 2']}
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
-                        valid={valid['address line 2']}
+                        valid={formValid['address line 2']}
                         setValid={handleValidation}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -776,10 +855,10 @@ function Checkout() {
                         value={profile.city}
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
-                        valid={valid.city}
+                        valid={formValid.city}
                         validate={validateFilled}
                         setValid={handleValidation}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -789,10 +868,10 @@ function Checkout() {
                         value={profile.state}
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
-                        valid={valid.state}
+                        valid={formValid.state}
                         validate={validateFilled}
                         setValid={handleValidation}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -803,10 +882,10 @@ function Checkout() {
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
                         type="number"
-                        valid={valid.zipcode}
+                        valid={formValid.zipcode}
                         validate={validateZip}
                         setValid={handleValidation}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -816,16 +895,16 @@ function Checkout() {
                         value={profile.country}
                         onChange={handleChange}
                         disabled={selectedProfile !== '' && !editing}
-                        valid={valid.country}
+                        valid={formValid.country}
                         validate={validateFilled}
                         setValid={handleValidation}
-                        updateErrorDisplay={resetErrorDisplay}
+                        updateErrorDisplay={errorDisplayStatus}
                       />
                     </Grid>
                   </Grid>
                 </CardContent>
               </Card>
-              <div className={classes.rowContainer}>
+              <div className={classes.buttonRow}>
                 {(selectedProfile === '' || editing) && (
                 <Button
                   className={editing ? classes.greyOutlineButton : classes.greenButton}
@@ -835,36 +914,51 @@ function Checkout() {
                 </Button>
                 )}
                 {(editing) && (
-                <Button
-                  className={classes.greenButton}
-                  onClick={() => { if (validate()) { setUpdateProfileAlert(true); } }}
-                >
-                  update existing profile
-                </Button>
+                  <Button
+                    className={classes.greenButton}
+                    onClick={() => { if (validate()) { setUpdateProfileAlert(true); } }}
+                  >
+                    update existing profile
+                  </Button>
                 )}
               </div>
+              { (editing) && (
+              <FormControlLabel
+                control={(
+                  <Checkbox
+                    checked={checkoutWithoutSaving}
+                    onChange={(event) => { setCheckoutWithoutSaving(event.target.checked); }}
+                  />
+                    )}
+                label="Checkout with this info without saving"
+                disabled={selectedProfile !== '' && !editing}
+              />
+              )}
             </Grid>
-            <Grid item xs={6} sm={6} md={5}>
+            <Grid item xs={6} md={6} lg={5}>
               <Typography className={classes.sectionHeader}> Your Order</Typography>
-              <Card className={classes.inputCards}>
+              <Card className={classes.card}>
                 <CardContent>
                   <Typography className={classes.stepNum}>
                     06
                     <span className={classes.stepSlash}>/</span>
                     <span className={classes.stepLabel}>Items</span>
                   </Typography>
-                  <Typography className={classes.farmHeader}>
-                    Ryan
-                    {'\''}
-                    s Ronderful Rarm
-                  </Typography>
-                  {items.map((item) => (
-                    <CheckoutItem
-                      key={item.id}
-                      pallets={item.fields.pallets}
-                      listingID={item.fields['listing id']}
-                    />
+                  {Object.entries(farms).map(([id, farm]) => (
+                    <>
+                      <Typography className={classes.farmHeader}>
+                        {farm}
+                      </Typography>
+                      {items.filter((listing) => listing.fields['farm id'][0] === id).map((item) => (
+                        <CheckoutItem
+                          key={item.id}
+                          pallets={item.fields.pallets}
+                          listingID={item.fields['listing id']}
+                        />
+                      ))}
+                    </>
                   ))}
+
                   <Typography className={classes.cost}>
                     <span className={classes.costLabel}>Cart Subtotal: </span>
                     $
@@ -882,7 +976,7 @@ function Checkout() {
                   </Typography>
                 </CardContent>
               </Card>
-              <div className={classes.rowContainer}>
+              <div className={classes.buttonRow}>
                 <Link className={classes.links} to="/cart">
                   <ButtonBase>
                     <ArrowBack className={classes.green} />
@@ -900,6 +994,7 @@ function Checkout() {
             </Grid>
           </Grid>
         </form>
+        {airtableError && <p>{airtableError}</p>}
       </div>
       <CartDialog
         message="Save information as a new checkout profile?"

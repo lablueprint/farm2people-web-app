@@ -2,11 +2,30 @@
 integrate media queries with makeStyles */
 
 .navbar {
+  position: sticky; 
+  top: 0;
+  background: white;
+  z-index:1; 
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
   min-height: 90px;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/* This CSS is currently not being used */
+/* TODO: use this CSS to implement transparent
+navbar styles */
+.navbar-transparent {
+  position: sticky; 
+  top: 0;
+  background: transparent;
+  z-index:1;
+  min-height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
 }
 
 
@@ -49,6 +68,10 @@ color: #373737;
   text-underline-offset: 3px;
 }
 
+.nav-links:hover {
+	cursor: pointer;
+}
+
 .menu-icon {
   display: none;
 }
@@ -57,8 +80,6 @@ color: #373737;
   .NavbarItems {
     position: relative;
   }
-
-  
 
   .nav-menu {
     display: flex;

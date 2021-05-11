@@ -71,16 +71,6 @@ function CheckoutPriceDetails() {
         />
       </div>
       <Divider />
-      <div className={classes.rowContainer}>
-        <Typography className={classes.cost}>
-          <span className={classes.costLabel}>Administration Fees: </span>
-          TBD
-        </Typography>
-        <CostHelp
-          description="Administration fees ..."
-        />
-      </div>
-      <Divider />
       <Typography className={classes.subtext} style={{ paddingTop: 10 }}>
         The agency cost will be TBD.
         F2P will investigate how much money they can save you.

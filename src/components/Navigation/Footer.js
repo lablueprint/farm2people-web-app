@@ -9,7 +9,6 @@ const useStyles = makeStyles({
     display: 'flex',
     lineHeight: 1.75,
     flexWrap: 'wrap',
-    marginTop: '1rem',
     padding: '1rem 0rem 1rem 0rem',
     backgroundColor: '#EBD7D0',
     position: 'relative',
@@ -113,7 +112,6 @@ function Footer() {
           </NavLink>
         </li>
       </ul>
-
       <ul className={classes.footerList}>
         <li className={classes.footerItemTitle}>
           Contact

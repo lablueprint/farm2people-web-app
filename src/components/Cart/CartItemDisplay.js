@@ -21,10 +21,9 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 
 // custom styling
 const useStyles = makeStyles({
-  // TODO: Look into breakpoints/media queries for adaptive styling
   listingImage: {
-    height: '83px',
-    width: '83px',
+    height: '75px',
+    width: '75px',
     backgroundColor: 'white',
     border: '1px solid #E0E0E0',
     boxSizing: 'border-box',
@@ -53,6 +52,35 @@ const useStyles = makeStyles({
     lineHeight: '24px',
     color: '#373737',
   },
+  listingAgencyNumbers: {
+    fontFamily: 'Work Sans',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    fontSize: '20px',
+    lineHeight: '24px',
+    color: '#E81717',
+    textDecorationLine: 'underline',
+  },
+  agencyPrice: {
+    fontFamily: 'Work Sans',
+    fontStyle: 'normal',
+    fontWeight: 'normal',
+    fontSize: '13px',
+    lineHeight: '18px',
+    color: '#FFFFFF',
+
+    padding: 5,
+    paddingInline: 8,
+    marginInline: 8,
+    background: '#E81717',
+    borderRadius: '5px',
+  },
+  quantityBox: {
+    paddingInline: 5,
+    border: '1px solid #C4C4C4',
+    boxSizing: 'border-box',
+    borderRadius: '3px',
+  },
   quantityButtons: {
     color: '#53AA48',
   },
@@ -71,12 +99,13 @@ const useStyles = makeStyles({
 });
 
 export default function CartItemDisplay({
-  id, crop, pallets, unitsPerPallet, unitType, price, maxAvailable, usersInterested,
-  updateSubtotal, removeListing,
+  id, farmID, produce, pallets, unitsPerPallet, unitType, price, maxAvailable, usersInterested,
+  updateSubtotal, removeListing, usingAgencyPrice,
 }) {
   // TODO: integrate photos stored in backend and render them in place of this
   const image = 'https://i.ebayimg.com/images/i/350982650852-0-1/s-l1000.jpg';
 
+  const [produceName, setProduceName] = useState('');
   const [quantity, setQuantity] = useState(pallets);
   const [removeAlert, setRemoveAlert] = useState(false);
   const [maxAlert, setMaxAlert] = useState(false);
@@ -84,6 +113,13 @@ export default function CartItemDisplay({
 
   // TODO: style error message display
   const [errorMessage, setErrorMessage] = useState();
+
+  useEffect(() => {
+    base('Produce Type').find(produce, (err, p) => {
+      if (err) { setErrorMessage(err); }
+      setProduceName(p.fields['produce type']);
+    });
+  }, []);
 
   // updates the airtable quantity whenever it is altered
   function updateQuantity() {
@@ -105,8 +141,8 @@ export default function CartItemDisplay({
 
   // updates the subtotal and airtable when a listing is deleted
   function removeCartListing() {
-    updateSubtotal(-price * quantity);
-    removeListing(id);
+    updateSubtotal(-price * quantity, farmID);
+    removeListing(id, farmID);
   }
 
   // decreases quantity, updates subtotal, and sends an alert if too low
@@ -115,7 +151,7 @@ export default function CartItemDisplay({
       setRemoveAlert(true);
     } else {
       setQuantity(quantity - 1);
-      updateSubtotal(-price);
+      updateSubtotal(-price, farmID);
     }
   }
 
@@ -125,7 +161,7 @@ export default function CartItemDisplay({
       setMaxAlert(true);
     } else {
       setQuantity(quantity + 1);
-      updateSubtotal(price);
+      updateSubtotal(price, farmID);
     }
   }
 
@@ -152,19 +188,18 @@ export default function CartItemDisplay({
         <Grid item xs container direction="column" spacing={2}>
           <Grid item xs>
             <Typography gutterBottom variant="subtitle1" className={classes.listingCrop}>
-              {crop}
+              {produceName}
+              {usingAgencyPrice
+              && <span className={classes.agencyPrice}>Agency Price</span> }
             </Typography>
-            <Typography gutterBottom variant="body2" className={classes.listingDescription}>
+            <Typography gutterBottom variant="body2" className={[classes.listingDescription, classes.boldText]}>
               <span className={classes.boldText}>
-                {' '}
                 {unitsPerPallet}
                 {' '}
-                units/pallet
-                {' '}
+                {unitType}
+                {unitsPerPallet > 1 && 's'}
+                /pallet
               </span>
-              Unit type:
-              {' '}
-              {unitType}
             </Typography>
             {usersInterested > 0
               && (
@@ -182,7 +217,7 @@ export default function CartItemDisplay({
           </Grid>
         </Grid>
         <Grid item xs={2} align="center">
-          <Typography gutterBottom variant="subtitle1" className={classes.listingNumbers}>
+          <Typography gutterBottom variant="subtitle1" className={usingAgencyPrice ? classes.listingAgencyNumbers : classes.listingNumbers}>
             $
             {parseFloat(price).toFixed(2)}
           </Typography>
@@ -191,7 +226,7 @@ export default function CartItemDisplay({
           <IconButton aria-label="decrease" size="small" onClick={decreaseQuantity}>
             <Remove fontSize="inherit" className={classes.quantityButtons} />
           </IconButton>
-          <Typography gutterBottom variant="subtitle1" className={[classes.listingNumbers, classes.boldText]}>
+          <Typography gutterBottom variant="subtitle1" className={[classes.listingNumbers, classes.boldText, classes.quantityBox]}>
             {quantity}
           </Typography>
           <IconButton aria-label="increase" size="small" onClick={increaseQuantity}>
@@ -199,7 +234,7 @@ export default function CartItemDisplay({
           </IconButton>
         </Grid>
         <Grid item xs={2} align="center">
-          <Typography gutterBottom variant="subtitle1" className={classes.listingNumbers}>
+          <Typography gutterBottom variant="subtitle1" className={usingAgencyPrice ? classes.listingAgencyNumbers : classes.listingNumbers}>
             $
             {parseFloat((price * quantity)).toFixed(2)}
           </Typography>
@@ -217,7 +252,7 @@ export default function CartItemDisplay({
         getResponse
       />
       <CartDialog
-        message={`You have the maximum available ${crop} in your cart!`}
+        message={`You have the maximum available ${produceName} in your cart!`}
         alert={maxAlert}
         close={maxAlertClosed}
         getResponse={false}
@@ -228,7 +263,8 @@ export default function CartItemDisplay({
 
 CartItemDisplay.propTypes = {
   id: PropTypes.string.isRequired,
-  crop: PropTypes.string.isRequired,
+  farmID: PropTypes.string.isRequired,
+  produce: PropTypes.arrayOf(PropTypes.string).isRequired,
   pallets: PropTypes.number.isRequired,
   unitsPerPallet: PropTypes.number.isRequired,
   unitType: PropTypes.string.isRequired,
@@ -237,4 +273,5 @@ CartItemDisplay.propTypes = {
   updateSubtotal: PropTypes.func.isRequired,
   removeListing: PropTypes.func.isRequired,
   usersInterested: PropTypes.number.isRequired,
+  usingAgencyPrice: PropTypes.bool.isRequired,
 };

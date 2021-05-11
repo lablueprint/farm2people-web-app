@@ -1,5 +1,4 @@
 /* Container for all Cart Screen display components */
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Airtable from 'airtable';
@@ -9,9 +8,14 @@ import {
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import CartItem from './CartItem';
 import CartCardHeader from './CartCardHeader';
+import CartEmptyScreen from './CartEmptyScreen';
 import Fruit3 from '../../assets/images/Fruit3.svg';
 import Fruit4 from '../../assets/images/Fruit4.svg';
 import '../../styles/fonts.css';
+import { store } from '../../lib/redux/store';
+// import { getUserById } from '../../lib/airtable/request';
+// getReservedListingsByIds
+// deleteReservedListing
 
 // airtable setup
 const airtableConfig = {
@@ -45,6 +49,7 @@ const useStyles = makeStyles({
     paddingTop: '10px',
     paddingLeft: '30px',
     paddingRight: '30px',
+    paddingBottom: '10px',
     margin: 'auto',
     boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
     borderRadius: '15px',
@@ -108,16 +113,16 @@ const useStyles = makeStyles({
     position: 'absolute',
     width: '180px',
     height: 'auto',
-    right: '1%',
-    bottom: '20%',
+    right: '.5vw',
+    top: '50vh',
     zIndex: '-2',
   },
   fruit4: {
     position: 'absolute',
-    width: '180px',
+    width: '160px',
     height: 'auto',
-    right: '0%',
-    bottom: '6%',
+    right: '0vw',
+    top: '69vh',
     zIndex: '-1',
   },
   green: {
@@ -127,6 +132,8 @@ const useStyles = makeStyles({
 
 function CartScreen() {
   const [cartListings, setCartListings] = useState([]);
+  const [farms, setFarms] = useState({});
+  // dictionary of farms in form { id: [name, subtotal]}
   const [subtotal, setSubtotal] = useState(0);
   const [loading, setLoading] = useState(true);
   // TODO: style error message display
@@ -134,31 +141,64 @@ function CartScreen() {
 
   const classes = useStyles();
 
-  // calls airtable on start to fetch listings in cart and calculate a subtotal
-  useEffect(() => {
+  // calls airtable on start to fetch listings in cart, sort by farm, and calculate subtotals
+  useEffect(async () => {
     setSubtotal(0);
-    base('Reserved Listings').select({ view: 'Grid view' }).all().then((records) => {
-      records.map((element) => base('Listings').find(element.fields['listing id'][0], (err, record) => {
-        const currCartItemPrice = element.fields.pallets * record.fields['standard price per unit'];
-        setSubtotal((prevTotal) => (prevTotal + currCartItemPrice));
-      }));
-      setCartListings(records);
-      setLoading(false);
-    })
-      .catch((error) => {
-        setErrorMessage(error.message);
-      });
+
+    base('Users').find(store.getState().userData.user.id, (err, user) => {
+      if (err) { setErrorMessage(err); return; }
+      let items = [];
+      const tempFarms = {};
+
+      // fetch each item in the user's cart
+      if (user.fields.cart) {
+        user.fields.cart.forEach((id) => {
+          base('Reserved Listings').find(id, (e, item) => {
+            if (e) { setErrorMessage(e); return; }
+            items = [...items, item];
+            setCartListings(items);
+
+            // fetch item's farm and add to farms if necessary
+            const farmID = item.fields['farm id'];
+            base('Farms').find(farmID, (error, farm) => {
+              if (error) { setErrorMessage(error); }
+              if (!tempFarms[farmID]) {
+              // this was my solution to needing to store a subtotal for each farm
+                tempFarms[farmID] = { name: farm.fields['farm name'], subtotal: 0 };
+              }
+
+              // fetch price of listing and add to farm subtotal and overall subtotal
+              // this call is nested to ensure it is called after any farm objects are created
+              base('Listings').find(item.fields['listing id'][0], (er, record) => {
+                if (er) { setErrorMessage(er); return; }
+                // todo: use agency price if appropriate
+                const currCartItemPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
+                const currCartItemCost = item.fields.pallets * currCartItemPrice;
+                tempFarms[farmID].subtotal += currCartItemCost;
+                setSubtotal((prevTotal) => (prevTotal + currCartItemCost));
+              });
+            });
+            setFarms(tempFarms);
+          });
+        });
+      }
+    });
+    setLoading(false);
   }, []);
 
+  // todo: update farm subtotals as well
   // update subtotal function that is passed to each listing detail allowing adjustments
   // (ex. on quantity change, or listing is removed)
-  function updateSubtotal(change) {
+  function updateSubtotal(change, farmID) {
+    const newFarms = farms;
+    newFarms[farmID].subtotal += change;
+    setFarms(newFarms);
     setSubtotal((prevTotal) => (prevTotal + change));
   }
 
   // removes reservedListing from airtable and cartListings state
   // is also passed to detail view that has the delete button
-  function removeListing(id) {
+  function removeListing(id, farmID) {
     base('Reserved Listings').destroy([id],
       (err) => {
         if (err) {
@@ -166,7 +206,15 @@ function CartScreen() {
         }
       });
 
-    setCartListings(cartListings.filter((listing) => listing.id !== id));
+    // update the listings in the cartListings array
+    // remove the farm if it has no remaining listings
+    setCartListings((prevListings) => {
+      const newListings = prevListings.filter((listing) => listing.id !== id);
+      if (newListings.filter((listing) => listing.fields['farm id'][0] === farmID).length === 0) {
+        delete farms[farmID];
+      }
+      return newListings;
+    });
   }
 
   return (
@@ -175,54 +223,85 @@ function CartScreen() {
         <Typography className={classes.cartHeader}>
           Cart
         </Typography>
-        <Typography className={classes.farmLabel}>
-          Shopping from Farm
-        </Typography>
+        {!loading && cartListings.length !== 0 ? (
+          <>
+            { Object.entries(farms).map(([id, farm]) => (
+              <>
+                <Typography className={classes.farmLabel}>
+                  Shopping from
+                  {' '}
+                  {farm.name}
+                </Typography>
 
-        {!loading && (
-          <Card className={classes.cartCard}>
-            <CardContent>
-              <CartCardHeader />
-              { cartListings.map((cartListing) => (
-                <CartItem
-                  key={cartListing.id}
-                  reservedListingID={cartListing.id}
-                  pallets={cartListing.fields.pallets}
-                  listingID={cartListing.fields['listing id']}
-                  updateSubtotal={updateSubtotal}
-                  removeListing={removeListing}
-                />
-              ))}
-              <Grid container alignItems="center" justify="flex-end">
-                <Grid item xs />
-                <Grid item xs={3} md={2}>
-                  <Typography gutterBottom className={classes.subtotalLabel} align="center">
-                    SUBTOTAL:
-                  </Typography>
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography gutterBottom className={classes.subtotal} align="center">
-                    $
-                    {parseFloat(subtotal).toFixed(2)}
-                  </Typography>
-                </Grid>
+                <Card className={classes.cartCard}>
+                  <CardContent>
+                    <CartCardHeader />
+                    { cartListings.filter((listing) => listing.fields['farm id'][0] === id).map((cartListing) => (
+                      <CartItem
+                        key={cartListing.id}
+                        reservedListingID={cartListing.id}
+                        pallets={cartListing.fields.pallets}
+                        listingID={cartListing.fields['listing id']}
+                        farmID={cartListing.fields['farm id'][0]}
+                        updateSubtotal={updateSubtotal}
+                        removeListing={removeListing}
+                      />
+                    ))}
+                    <Grid container alignItems="center" justify="flex-end">
+                      <Grid item xs />
+                      <Grid item>
+                        <Typography gutterBottom className={classes.subtotalLabel} align="center">
+                          SUBTOTAL:
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3} s={2} lg={2}>
+                        <Typography gutterBottom className={classes.subtotal} align="right">
+                          $
+                          {parseFloat(farm.subtotal).toFixed(2)}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </CardContent>
+                </Card>
+              </>
+            ))}
+
+            {Object.entries(farms).length > 1 && (
+            <Grid container alignItems="center" justify="flex-end" style={{ paddingTop: 24 }}>
+              <Grid item xs />
+              <Grid item>
+                <Typography gutterBottom className={classes.subtotalLabel} align="center">
+                  OVERALL SUBTOTAL:
+                </Typography>
               </Grid>
-            </CardContent>
-          </Card>
-        )}
-        <span className={classes.buttonContainer}>
-          <ButtonBase>
-            <ArrowBack className={classes.green} />
-            <div className={classes.continueShoppingButton}>Continue shopping</div>
-          </ButtonBase>
-          <Link className={classes.checkoutButton} to="/cart/checkout">
-            Checkout
-          </Link>
-        </span>
+              <Grid item xs={3} s={2} md={2}>
+                <Typography gutterBottom className={classes.subtotal} align="center">
+                  $
+                  {parseFloat(subtotal).toFixed(2)}
+                </Typography>
+              </Grid>
+            </Grid>
+            )}
+            <span className={classes.buttonContainer}>
+              <ButtonBase>
+                <ArrowBack className={classes.green} />
+                <div className={classes.continueShoppingButton}>Continue shopping</div>
+              </ButtonBase>
+              <Link className={classes.checkoutButton} to="/cart/checkout">
+                Proceed
+              </Link>
+            </span>
+          </>
+        ) : (<CartEmptyScreen />)}
         {errorMessage && <p>{errorMessage}</p>}
       </div>
-      <img src={Fruit3} alt="" className={classes.fruit3} />
-      <img src={Fruit4} alt="" className={classes.fruit4} />
+      {!loading && cartListings.length !== 0 && (
+        <>
+          <img src={Fruit3} alt="" className={classes.fruit3} />
+          <img src={Fruit4} alt="" className={classes.fruit4} />
+        </>
+      )}
+
     </div>
 
   );

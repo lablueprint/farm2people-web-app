@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 import { Typography, Button, makeStyles } from '@material-ui/core';
 import './WorkSans.css';
 import Asset1 from '../../assets/images/Asset1.svg';
@@ -76,8 +76,9 @@ const useStyles = makeStyles({
   },
 });
 
-function CheckoutSuccess({ farms = "Ryan's Ronderful Rarm" }) {
+function CheckoutSuccess() {
   const classes = useStyles();
+  const { farms } = useLocation().state;
 
   return (
     <div className={classes.root}>
@@ -108,7 +109,3 @@ function CheckoutSuccess({ farms = "Ryan's Ronderful Rarm" }) {
 }
 
 export default CheckoutSuccess;
-
-CheckoutSuccess.propTypes = {
-  farms: PropTypes.string.isRequired,
-};

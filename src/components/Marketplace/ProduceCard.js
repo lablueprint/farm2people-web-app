@@ -25,7 +25,6 @@ const useStyles = makeStyles({
     margin: '5px 10px 20px 12px',
     borderRadius: '6px',
     fontFamily: 'Work Sans',
-    maxHeight: '318px',
   },
   img: { // Height must be specified for image to appear
     width: '90%',

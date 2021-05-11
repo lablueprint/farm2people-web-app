@@ -39,7 +39,7 @@ export default function EditListingPopup({
 }) {
   const classes = useStyles();
   const [listingRecord, setListingRecord] = useState(listing);
-  const [localProduceRecord, setLocalProduceRecord] = useState(produceTypes);
+  const [localProduceRecord, setLocalProduceRecord] = useState(produceRecord);
   useEffect(() => {
     setListingRecord(listing);
     setLocalProduceRecord(produceRecord);
@@ -201,12 +201,23 @@ export default function EditListingPopup({
         label: '**PALLETS** per **MASTER PALLET**',
         size: 12,
       },
-      'pallets available': {
+      pallets: {
         id: 'standard-number',
-        name: 'pallets per master pallet',
+        name: 'pallets available',
         type: 'number',
         onChange: (e) => onChangeField(e, 'number'),
         val: listingRecord['pallets available'],
+        placeholder: 'Number of Pallets',
+        onButtonClick,
+        label: '**PALLETS**',
+        size: 12,
+      },
+      'master pallets': {
+        id: 'standard-number',
+        name: 'master pallets',
+        type: 'number',
+        onChange: (e) => onChangeField(e, 'number'),
+        val: listingRecord['master pallets'],
         placeholder: 'Number of Master Pallets',
         onButtonClick,
         label: '**MASTER PALLETS**',

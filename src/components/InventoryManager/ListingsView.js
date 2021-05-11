@@ -8,7 +8,7 @@ export default function ListingsView({
 }) {
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={6}>
         {
         cardListings.map((listing) => (
           <Grid item xs={3} key={listing.id}>

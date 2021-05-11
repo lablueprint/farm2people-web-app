@@ -114,8 +114,7 @@ export default function InventoryManagerScreen() {
     <>
       <div className={classes.root}>
         <Grid container spacing={0} className={classes.dashboard}>
-          <Grid item xs={1} />
-          <Grid container item spacing={3} xs={9} alignItems="center">
+          <Grid container item spacing={3} xs={10} alignItems="center">
             <Grid item xs={12}>
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard

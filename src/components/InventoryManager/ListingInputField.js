@@ -10,6 +10,7 @@ import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles({
   root: {
@@ -56,8 +57,14 @@ const useStyles = makeStyles({
     textUnderlinePosition: 'under',
     textUnderlineOffset: '0.1rem',
   },
-  button: {
+  numberButton: {
     color: '#53AA48',
+  },
+  calendarButton: {
+    color: '#000000',
+  },
+  paddingLeft: {
+    paddingLeft: '.5rem',
   },
 });
 
@@ -77,7 +84,7 @@ function AutoCompleteInputField({
           options={options}
           getOptionLabel={getLabel}
           onChange={onChange}
-          value={val}
+          defaultValue={val}
           renderInput={(params) => (
             <TextField
               name={name}
@@ -95,10 +102,37 @@ function AutoCompleteInputField({
 }
 
 function CurrencyInputField({
-  val, onChange,
+  val, onChange, placeholder, label,
 }) {
+  const classes = useStyles();
+  const boldString = (input) => {
+    const splitInput = input.split(/(\*\*.*?\*\*)/).filter((word) => (
+      word.length > 0
+    ));
+
+    return (
+      <Box className={classes.paddingLeft}>
+        {splitInput.map((word) => (
+          <Typography
+            display="inline"
+            className={word.startsWith('**') && word.endsWith('**')
+              ? classes.labels
+              : classes.plainText}
+            key={word}
+          >
+            {word.startsWith('**') && word.endsWith('**')
+              ? word.slice(2, -2).toUpperCase()
+              : word.toUpperCase()}
+          </Typography>
+        ))}
+      </Box>
+    );
+  };
   return (
-    <>
+    <Grid item container xs={12} spacing={1} alignItems="center">
+      <Grid item xs={12}>
+        <Typography className={classes.subheading}>{placeholder}</Typography>
+      </Grid>
       <CurrencyTextField
         variant="outlined"
         placeholder="0.00"
@@ -109,7 +143,8 @@ function CurrencyInputField({
         textAlign="left"
         size="small"
       />
-    </>
+      {boldString(label)}
+    </Grid>
   );
 }
 
@@ -147,29 +182,35 @@ function NumberInputField({
 }) {
   const classes = useStyles();
   const boldString = (input) => {
-    const splitInput = input.split(/(\*\*.*?\*\*)/);
-    return splitInput.map((word) => (
-      <>
-        <Typography
-          display="inline"
-          className={word.startsWith('**') && word.endsWith('**')
-            ? classes.labels
-            : classes.plainText}
-        >
-          {word.startsWith('**') && word.endsWith('**')
-            ? word.slice(2, -2).toUpperCase()
-            : word.toUpperCase()}
-        </Typography>
-        &nbsp;
-      </>
+    const splitInput = input.split(/(\*\*.*?\*\*)/).filter((word) => (
+      word.length > 0
     ));
+    return (
+      <Box className={classes.paddingLeft}>
+        {
+          splitInput.map((word) => (
+            <Typography
+              display="inline"
+              className={word.startsWith('**') && word.endsWith('**')
+                ? classes.labels
+                : classes.plainText}
+              key={`${word}-number`}
+            >
+              {word.startsWith('**') && word.endsWith('**')
+                ? word.slice(2, -2).toUpperCase()
+                : word.toUpperCase()}
+            </Typography>
+          ))
+        }
+      </Box>
+    );
   };
   return (
     <Grid item container xs={12} spacing={1} alignItems="center">
       <Grid item xs={12}>
         <Typography className={classes.subheading}>{placeholder}</Typography>
       </Grid>
-      <IconButton className={classes.button} onClick={() => onButtonClick(name, -1)}>
+      <IconButton className={classes.numberButton} onClick={() => onButtonClick(name, -1)}>
         <RemoveIcon fontSize="small" />
       </IconButton>
       <TextField
@@ -187,7 +228,7 @@ function NumberInputField({
         variant="outlined"
         size="small"
       />
-      <IconButton className={classes.button} onClick={() => onButtonClick(name, 1)}>
+      <IconButton className={classes.numberButton} onClick={() => onButtonClick(name, 1)}>
         <AddIcon fontSize="small" />
       </IconButton>
       {boldString(label)}
@@ -225,7 +266,7 @@ function DateInputField({
           size="small"
           inputRef={textFieldRef}
         />
-        <IconButton color="primary" onClick={focusTextField}>
+        <IconButton className={classes.calendarButton} onClick={focusTextField}>
           <CalendarTodayIcon />
         </IconButton>
       </Grid>
@@ -244,7 +285,12 @@ export default function ListingInputField({
   switch (type) {
     case 'currency':
       return (
-        <CurrencyInputField val={val} onChange={onChange} />
+        <CurrencyInputField
+          val={val}
+          onChange={onChange}
+          label={label}
+          placeholder={placeholder}
+        />
       );
     case 'autoComplete':
       return (
@@ -300,14 +346,16 @@ export default function ListingInputField({
 CurrencyInputField.propTypes = {
   onChange: PropTypes.func.isRequired,
   val: PropTypes.number.isRequired,
+  placeholder: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
 };
 
 AutoCompleteInputField.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   val: PropTypes.oneOfType([
+    PropTypes.shape({}),
     PropTypes.string,
-    PropTypes.number,
   ]).isRequired,
   onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.oneOfType([
@@ -373,6 +421,7 @@ ListingInputField.propTypes = {
   val: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number,
+    PropTypes.shape({}),
   ]).isRequired,
   onChange: PropTypes.func.isRequired,
   options: PropTypes.arrayOf(PropTypes.oneOfType([

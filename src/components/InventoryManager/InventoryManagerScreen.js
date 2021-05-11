@@ -46,10 +46,11 @@ export default function InventoryManagerScreen() {
       });
     });
   }
-  function editRecord(id, rec) {
+  function editRecord(rec) {
+    const { 'listing id': id, ...fields } = rec;
     const record = {
       id,
-      fields: rec,
+      fields,
     };
     base('Listings').update([record], (err, records) => {
       if (err) {
@@ -136,6 +137,7 @@ export default function InventoryManagerScreen() {
                 selectedCards={selectedCards}
                 updateSelectedCards={updateSelectedCards}
                 editRecord={editRecord}
+                produceTypes={produceTypes}
               />
             </Grid>
           </Grid>

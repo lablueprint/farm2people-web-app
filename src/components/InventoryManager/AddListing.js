@@ -153,7 +153,7 @@ const initialListing = {
 };
 
 const initialProduce = {
-  id: 0,
+  id: '',
   fields: {
     'produce type': '',
     'produce picture': [],
@@ -211,8 +211,7 @@ export default function AddListing({
     }
   }
   const onChangeField = (e, type) => {
-    const { name } = e.target;
-    const { value } = e.target;
+    const { name, value } = e.target;
     if (type === 'number') {
       setListingRecord({ ...listingRecord, [name]: +value });
     } else {

@@ -20,6 +20,7 @@ const useStyles = makeStyles({
   text: {
     fontFamily: 'Work Sans',
     fontColor: '#000000',
+    whiteSpace: 'nowrap',
   },
 });
 

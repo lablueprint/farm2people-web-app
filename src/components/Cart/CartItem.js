@@ -26,6 +26,7 @@ export default function CartItem({
       if (err) { setErrorMessage(err); return; }
       setListingDetails(record);
       setLoading(false);
+      // should the agency tag only be used if the agency price is different than the standard?
       setUsingAgencyPrice(store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type']);
     });
   }, []);

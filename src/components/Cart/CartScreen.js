@@ -171,7 +171,6 @@ function CartScreen() {
               // this call is nested to ensure it is called after any farm objects are created
               base('Listings').find(item.fields['listing id'][0], (er, record) => {
                 if (er) { setErrorMessage(er); return; }
-                // todo: use agency price if appropriate
                 const currCartItemPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
                 const currCartItemCost = item.fields.pallets * currCartItemPrice;
                 tempFarms[farmID].subtotal += currCartItemCost;
@@ -223,7 +222,7 @@ function CartScreen() {
         <Typography className={classes.cartHeader}>
           Cart
         </Typography>
-        {!loading && cartListings.length !== 0 ? (
+        {!loading && (cartListings.length !== 0 ? (
           <>
             { Object.entries(farms).map(([id, farm]) => (
               <>
@@ -292,16 +291,15 @@ function CartScreen() {
               </Link>
             </span>
           </>
-        ) : (<CartEmptyScreen />)}
-        {errorMessage && <p>{errorMessage}</p>}
+        ) : (<CartEmptyScreen />))}
       </div>
+      {errorMessage && <p>{errorMessage}</p>}
       {!loading && cartListings.length !== 0 && (
         <>
           <img src={Fruit3} alt="" className={classes.fruit3} />
           <img src={Fruit4} alt="" className={classes.fruit4} />
         </>
       )}
-
     </div>
 
   );

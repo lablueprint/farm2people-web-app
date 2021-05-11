@@ -66,7 +66,7 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '12.5px',
     color: '#373737',
-    marginLeft: '-20%',
+    marginLeft: '-15%',
   },
   filterNumText: {
     fontFamily: 'Work Sans',

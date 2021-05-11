@@ -44,7 +44,7 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '12.4px',
     color: '#373737',
-    marginLeft: '-22%',
+    marginLeft: '-12%',
   },
   filterNumText: {
     fontFamily: 'Work Sans',

@@ -88,18 +88,32 @@ const useStyles = makeStyles({
 
 export default function ProduceCard(props) {
   const {
-    cropName, farmID, unitPrice, unitType,
+    produceID, farmID, unitPrice, unitType,
   } = props;
   const [farmName, setFarmName] = useState('');
+  const [produceName, setProduceName] = useState('');
 
   // Get farm name from Airtable if produce has farm id linked to it
   useEffect(() => {
-    if (farmID === null) {
+    if (farmID === null || farmID[0].length < 5) {
       setFarmName('Unnamed farm');
     } else {
       const farmArr = farmID.toString().split(',');
       base('Farms').find(farmArr[0]).then((farmObj) => {
         setFarmName(farmObj.fields['farm name'] || 'Farm not found');
+      });
+    }
+  }, []);
+
+  // Get produce name + image (TODO) from Airtable using produceID
+  useEffect(() => {
+    if (produceID === null || produceID.length < 5) {
+      setProduceName('Unnamed produce');
+    } else {
+      base('Farms').find(produceID).then((produceObj) => {
+        // TODO: also get image
+        const name = produceObj.fields['produce type'];
+        setProduceName(name || 'Produce not found');
       });
     }
   }, []);
@@ -114,7 +128,7 @@ export default function ProduceCard(props) {
       />
       <CardContent>
         <Typography className={classes.titleText}>
-          {cropName}
+          {produceName}
         </Typography>
         <Typography className={classes.farmText}>
           {farmName}
@@ -145,7 +159,7 @@ export default function ProduceCard(props) {
 }
 
 ProduceCard.propTypes = {
-  cropName: PropTypes.string.isRequired,
+  produceID: PropTypes.string.isRequired,
   farmID: PropTypes.arrayOf(PropTypes.string).isRequired,
   unitPrice: PropTypes.number.isRequired,
   unitType: PropTypes.string.isRequired,

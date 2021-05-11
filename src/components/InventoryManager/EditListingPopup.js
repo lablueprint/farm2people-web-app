@@ -168,6 +168,17 @@ export default function EditListingPopup({
         label: `lbs per **${listingRecord['grouped produce type']}**`,
         size: 12,
       },
+      'grouped produce type per pallet': {
+        id: 'standard-number',
+        name: 'grouped produce type per pallet',
+        type: 'number',
+        onChange: (e) => onChangeField(e, 'number'),
+        val: listingRecord['grouped produce type per pallet'],
+        placeholder: 'Grouped Produce Type per Pallet',
+        onButtonClick,
+        label: `**${listingRecord['grouped produce type']}** per **PALLET**`,
+        size: 12,
+      },
       'grouped produce type per master unit': {
         id: 'standard-number',
         name: 'grouped produce type per master unit',

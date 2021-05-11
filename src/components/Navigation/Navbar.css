@@ -35,9 +35,6 @@ navbar styles */
   align-items: center;
 }
 
-.navbar-logo {
-  margin-left: 2%;
-}
 
 .nav-menu {
   display: grid;

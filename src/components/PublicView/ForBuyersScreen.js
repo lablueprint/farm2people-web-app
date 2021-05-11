@@ -18,6 +18,7 @@ const useStyles = makeStyles({
     paddingBottom: '10%',
   },
   blueContainer: {
+    overflow: 'hidden',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -105,6 +106,7 @@ const useStyles = makeStyles({
   },
   quoteBoldText: {
     width: '1000px',
+    minWidth: 0,
     fontFamily: 'Work Sans',
     fontStyle: 'normal',
     fontWeight: 'bold',

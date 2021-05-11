@@ -1,6 +1,5 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-// import { Typography } from '@material-ui/core';
 import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import headerBanner from '../../assets/images/HeaderBanner.svg';

@@ -19,6 +19,7 @@ export default function App() {
   // setUserRole keeps track of the user's role on the top of our app
   // setAuthenticad keeps track of the user's login status on the
   // top level of our app
+  const publicPermission = ['']; /* only for users who are not logged in */
   const sellingPermissions = ['vendor'];
   const purchasingPermissions = ['buyer', 'agency'];
   const allPermissions = ['buyer', 'agency', 'vendor'];
@@ -60,11 +61,11 @@ export default function App() {
               />
             )}
           />
-          <Route path="/signup" exact component={SignUpScreen} />
-          <Route path="/landing" exact component={LandingScreen} />
-          <Route path="/forbuyers" exact component={ForBuyersScreen} />
-          <Route path="/forsellers" exact component={ForSellersScreen} />
-          <Route path="/about" exact component={AboutScreen} />
+          <PrivateRoute allowedRoles={publicPermission} path="/signup" exact component={SignUpScreen} />
+          <PrivateRoute allowedRoles={publicPermission} path="/landing" exact component={LandingScreen} />
+          <PrivateRoute allowedRoles={publicPermission} path="/forbuyers" exact component={ForBuyersScreen} />
+          <PrivateRoute allowedRoles={publicPermission} path="/forsellers" exact component={ForSellersScreen} />
+          <PrivateRoute allowedRoles={publicPermission} path="/about" exact component={AboutScreen} />
         </Switch>
         <Footer />
       </Router>

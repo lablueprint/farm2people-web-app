@@ -53,6 +53,7 @@ export default function MarketplaceScreen() {
             farmID: record.fields['farm id'],
             unitType: record.fields['grouped produce type'] || 'pallet',
             unitPrice: record.fields['standard price per grouped produce type'] || -1,
+            season: record.fields['growing season'] || 'No season',
           };
           filteredProduceRecords.push(recordInfo);
         });
@@ -94,6 +95,7 @@ export default function MarketplaceScreen() {
                 farmID={produce.farmID || null}
                 unitPrice={produce.unitPrice || -1}
                 unitType={produce.unitType || 'pallet'}
+                season={produce.season}
               />
             ))
           }

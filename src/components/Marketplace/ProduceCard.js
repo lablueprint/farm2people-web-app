@@ -88,10 +88,13 @@ const useStyles = makeStyles({
 
 export default function ProduceCard(props) {
   const {
-    produceID, farmID, unitPrice, unitType,
+    // eslint-disable-next-line no-unused-vars
+    produceID, farmID, unitPrice, unitType, season, // (TODO: remove later when season is used)
   } = props;
   const [farmName, setFarmName] = useState('');
   const [produceName, setProduceName] = useState('');
+  // eslint-disable-next-line no-unused-vars
+  const [produceCategory, setProduceCategory] = useState(''); // (TODO: remove later when used)
 
   // Get farm name from Airtable if produce has farm id linked to it
   useEffect(() => {
@@ -105,15 +108,16 @@ export default function ProduceCard(props) {
     }
   }, []);
 
-  // Get produce name + image (TODO) from Airtable using produceID
+  // Get produce name, img (TODO), + produce type using produceID
   useEffect(() => {
     if (produceID === null || produceID.length < 5) {
       setProduceName('Unnamed produce');
     } else {
       base('Farms').find(produceID).then((produceObj) => {
-        // TODO: also get image
-        const name = produceObj.fields['produce type'];
-        setProduceName(name || 'Produce not found');
+        // TODO: get image
+        setProduceName(produceObj.fields['produce type'] || 'Produce not found');
+        const category = produceObj.fields['produce category'];
+        setProduceCategory(category || 'No category');
       });
     }
   }, []);
@@ -163,4 +167,5 @@ ProduceCard.propTypes = {
   farmID: PropTypes.arrayOf(PropTypes.string).isRequired,
   unitPrice: PropTypes.number.isRequired,
   unitType: PropTypes.string.isRequired,
+  season: PropTypes.string.isRequired,
 };

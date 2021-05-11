@@ -1,57 +1,78 @@
-/* eslint-disable no-unused-vars */
-// NOTES:
-// 1. I think its better if we just replace all the location fields
-// with explicitly labeled zipcode fields.
-// 2. I think you can use InputLabel from MUI to actually label your text boxes etc.
-import React, { useMemo, useState, useCallback } from 'react';
+import React, {
+  useMemo,
+  useState,
+  useCallback,
+  useEffect,
+} from 'react';
 import { ThemeProvider } from '@material-ui/styles';
-import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme, useTheme } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import PropTypes from 'prop-types';
 import {
   Button,
   Typography,
   Grid,
   TextField,
   Container,
-  Paper,
-  // CardMedia,
-  // CardContent,
-  // CardActionArea,
-  // Card,
+  Input,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
   Box,
 } from '@material-ui/core';
+import Airtable from 'airtable';
+import { history, store } from '../../lib/redux/store';
 
-// const ROLE_TITLES = ['buyer', 'nonprofit', 'seller'];
+import Fruit2 from '../../assets/images/Fruit2.svg';
+import Fruit3 from '../../assets/images/Fruit3.svg';
+
+const airtableConfig = {
+  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
+};
+const base = new Airtable({ apiKey: airtableConfig.apiKey })
+  .base(airtableConfig.baseKey);
 
 const theme = createMuiTheme({
   spacing: 4,
 });
-const useStyles = makeStyles({
-  formGroup: {
-    alignItems: 'center',
-    position: 'absolute',
-    height: '100%',
-    width: '100%',
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 500,
+    },
   },
+};
+
+// The spaces before the terms, are for formatting purposes
+const POPULATIONS = [
+  ' Black Owned',
+  ' BIPOC Owned',
+  ' Women Owned',
+  ' Non-Binary/LGBTQIA Owned',
+  ' First Generation Owned',
+  ' Latinx Owned',
+  ' Other',
+];
+
+const useStyles = makeStyles({
   form: {
     width: '100%',
   },
-  pageButtons: {
-    marginTop: '50%',
-  },
-  backButton: {
-    marginRight: theme.spacing(1),
-  },
-  instructions: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
+  titleText: {
+    fontWeight: 'bold',
+    fontSize: '35px',
+    color: '#2D5496',
   },
   underlinedSubtitleText: {
     textDecoration: 'underline',
-    textDecorationColor: '#53AA48',
+    textDecorationColor: '#2D5496',
     fontWeight: 'bold',
     marginBottom: '5%',
     marginTop: '5%',
@@ -64,8 +85,6 @@ const useStyles = makeStyles({
   },
   regSubtitleText: {
     textAlign: 'left',
-    // paddingLeft: '10%',
-    // fontSize: '30px',
     marginBottom: '7%',
   },
   cenSubtitleText: {
@@ -82,86 +101,86 @@ const useStyles = makeStyles({
   },
   labelText: {
     fontWeight: 'bold',
+    paddingBottom: '3%',
   },
   valueText: {
     paddingLeft: '10%',
   },
-  grayButton: {
-    backgroundColor: '#5e5e5e',
-    color: '#fff',
-    '&:hover': {
-      backgroundColor: '#5e5e5e',
-    },
-  },
   blackButton: {
-    backgroundColor: '#373737',
-    color: '#fff',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#2D5496',
+    border: '#2D5496',
+    color: '#2D5496',
     '&:hover': {
-      backgroundColor: '#373737',
+      backgroundColor: '#FFFFFF',
     },
     marginTop: '10%',
   },
   greenButton: {
-    backgroundColor: '#53AA48',
+    backgroundColor: '#2D5496',
     '&:hover': {
-      backgroundColor: '#53AA48',
+      backgroundColor: '#2D5496',
     },
     marginTop: '10%',
   },
-  submitButton: {
-    backgroundColor: '#53AA48',
+  greenButtonSmall: {
+    backgroundColor: '#2D5496',
     '&:hover': {
-      backgroundColor: '#53AA48',
+      backgroundColor: '#2D5496',
     },
+    marginTop: '10%',
     width: '50%',
   },
-  textBox: {
-    width: '70%',
-  },
-  card: {
-    margin: 16,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    background: 'FFFFFF',
-    borderRadius: '15px',
-    boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
+  submitButton: {
+    backgroundColor: '#2D5496',
+    '&:hover': {
+      backgroundColor: '#2D5496',
+    },
+    width: '50%',
   },
   stepper: {
     margin: 'auto',
     width: '60%',
   },
-  icon: {
-    color: 'red !important',
-  },
-  testRoot: {
-    flexGrow: 1,
-  },
-  paper: {
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  },
-  listItem: {
-    padding: theme.spacing(1, 0),
-  },
-  total: {
-    fontWeight: 700,
-  },
-  title: {
-    marginTop: theme.spacing(2),
-  },
   smallButton: {
-    // position: 'absolute',
-    // width: '104px',
-    // height: '33px',
-    // left: '1195px',
-    // top: '557px',
-    // width: '30px',
-    /* Web/Navy Blue Accent */
     color: 'white',
     background: '#2D5496',
     borderRadius: '6px',
+  },
+  formControl: {
+    margin: 1,
+    width: 550,
+  },
+  registrationFruit2: {
+    position: 'absolute',
+    right: '-10px',
+    top: '160px',
+    transform: 'matrix(0.7, 0.47, -0.42, 0.7, 0, 0)',
+  },
+  registrationFruit3: {
+    position: 'absolute',
+    right: '0px',
+    top: '60px',
+    transform: 'scale(0.6)',
+  },
+  confirmationFruit2: {
+    position: 'absolute',
+    right: '150px',
+    top: '100px',
+    transform: 'matrix(0.7, 0.47, -0.42, 0.7, 0, 0)',
+  },
+  confirmationFruit3: {
+    position: 'absolute',
+    right: '170px',
+    top: '0px',
+    transform: 'scale(0.6)',
+  },
+  picContainer: {
+    position: 'relative',
+  },
+  emptyGrid: {
+    height: '200px',
+    position: 'relative',
   },
 });
 
@@ -182,21 +201,38 @@ const INITIAL_FORM_STATE = {
   org: '',
   zipcode: '',
   comments: '',
+  popServed: [],
+  userID: '',
 };
 
 function getSteps() {
   return ['Step 1', 'Step 2', 'Confirmation'];
 }
 
-// TODO: Implement popup so when the user presses 'next' at step 3, there is a confirmation message
 export default function RegistrationScreen() {
+  const reactTheme = useTheme();
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
-  // Role mappings: 0 -> Buyer, 1 -> Agency, 2 -> Seller
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
 
   const classes = useStyles();
+
+  useEffect(() => {
+    base('Users').find(store.getState().userData.user.fields['user id']).then((record) => {
+      setFormState(
+        {
+          ...formState,
+          agencyName: record.fields.organization,
+          zipcode: record.fields.zipcode,
+          contactName: record.fields['contact name'],
+          phone: record.fields.phone,
+          email: record.fields.username,
+          userID: record.fields['user id'],
+        },
+      );
+    });
+  }, []);
 
   const handleChange = useCallback((event) => {
     event.preventDefault();
@@ -208,20 +244,45 @@ export default function RegistrationScreen() {
     );
   }, [formState, setFormState]);
 
+  const handleSelect = useCallback((event) => {
+    event.preventDefault();
+    setFormState(
+      {
+        ...formState,
+        [event.target.name]: event.target.value,
+      },
+    );
+  }, [formState, setFormState]);
+
   const handleSubmit = useCallback((event) => {
     event.preventDefault();
     setLoading(true);
     try {
-      // res = signupUser(formState.email, formState.password,
-      //   ROLE_NAMES[role],
-      //   formState.org, parseInt(formState.zipcode, 10),
-      // `${formState.firstName} ${formState.lastName}`,
-      //   formState.phone, formState.comments);
-      setErrorMsg('');
+      base('Agencies').create([
+        {
+          fields: {
+            'farm name': formState.organization,
+            EIN: Number(formState.taxID),
+            'user id': [formState.userID],
+            phone: formState.phone,
+            email: formState.email,
+            website: formState.website,
+            address: `${formState.addOne},${formState.addTWo}`,
+            'zip code': Number(formState.zipcode),
+            'social media': formState.socials,
+            notes: formState.additionalComments,
+            'population served': formState.popServed.join(),
+          },
+        },
+      ], (err) => {
+        if (err) {
+          setErrorMsg(errorMsg.length === 0 ? err : `${errorMsg}`);
+        } else {
+          setErrorMsg('');
+        }
+      });
     } catch (err) {
-      console.log('error 1');
       if (err) {
-        console.log('error 2');
         setErrorMsg(err);
       }
     }
@@ -230,10 +291,14 @@ export default function RegistrationScreen() {
       setErrorMsg('Please choose a different email!');
       setLoading(false);
     } else {
-      setFormState(INITIAL_FORM_STATE);
       setCurrentStep(currentStep + 1);
     }
   }, [formState, currentStep]);
+
+  const routeChange = () => {
+    const path = '/';
+    history.push(path);
+  };
 
   const onNext = useCallback(() => {
     if (currentStep >= 3) {
@@ -257,116 +322,41 @@ export default function RegistrationScreen() {
     }
   }, [currentStep]);
 
-  // const isMatchingPasswordInputs = useMemo(() => (
-  //   formState.password !== formState.confirmPassword
-  //     || formState.password === ''
-  //     || formState.email === ''
-  // ),
-  // [formState]);
-
-  function validateEmail(email) {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  }
-
-  const repeatPwdCheck = useMemo(() => {
-    let msg = '';
-    if (formState.password === '' && formState.confirmPassword === '') {
-      msg = '';
-    } else if (formState.password !== '' && formState.confirmPassword !== '') {
-      if (formState.password !== formState.confirmPassword) {
-        msg = "Passwords don't match!";
-      }
-    }
-    if (formState.email !== '' && !validateEmail(formState.email)) {
-      msg = 'Email is not valid';
-    }
-    return msg;
-  },
-  [formState]);
-
-  function isNumeric(str) {
-    if (typeof str !== 'string') return false;
-    return !Number.isNaN(str)
-    && !Number.isNaN(parseFloat(str));
-  }
-
   const step3IsInvalid = useMemo(() => (
     formState.addOne === '' || formState.addTwo === ''
       || formState.additonalContact === '' || formState.socials === ''
   ),
   [formState]);
 
-  const step3Check = useMemo(() => {
-    let msg = '';
-    if (formState.zipcode !== '' && (!isNumeric(formState.zipcode) || formState.zipcode.length !== 5)) {
-      msg = 'Location (zipcode) should hold a five digit number!';
+  const Step1Check = useMemo(() => {
+    if (formState.taxID !== '' && !Number(formState.taxID)) {
+      return 'Make sure your Tax ID is a number!';
     }
-    if (formState.phone !== '' && !isNumeric(formState.phone)) {
-      msg = 'Phone should be a number!';
-    }
-    // console.log(loading);
-    // console.log(step3IsInvalid);
-    // console.log(isNumeric('12'));
-    // console.log(isNumeric('hello'));
-    // console.log(formState.zipcode);
-    // console.log(isNumeric(formState.zipcode));
-    return msg;
+    return '';
   },
   [formState]);
 
-  function Step4() {
-    if (currentStep !== 4) {
-      return null;
-    }
-    return [
-      <div>
-        <div className={classes.cenSubtitleText}>
-          Account Created!
-        </div>
-        <div className={classes.cenRegSubtitleText}>
-          Farm2People will be in touch with you shortly.
-        </div>
-      </div>,
-      <Grid
-        container
-        spacing={2}
-        alignItems="center"
-      >
-        <Grid item xs={12}>
-          <Box mt={5}>
-            <Button
-              type="button"
-              className={classes.submitButton}
-              color="primary"
-              variant="contained"
-              style={{ backgroundColor: '#53AA48' }}
-              onClick={onPrev}
-            >
-              Done
-            </Button>
-          </Box>
-        </Grid>
-      </Grid>,
-    ];
-  }
+  const step1IsInvalid = useMemo(() => (
+    formState.taxID === '' || !Number(formState.taxID)
+  ),
+  [formState]);
 
   const steps = getSteps();
   return [
-    <Box mt={5} mb={5}>
+    <Box my={5}>
       <Container component="main" maxWidth="md">
+        {(currentStep < 4) && (
+        <div className={classes.picContainer}>
+          <img src={Fruit2} className={classes.registrationFruit2} aria-hidden alt="" />
+          <img src={Fruit3} className={classes.registrationFruit3} aria-hidden alt="" />
+
+        </div>
+        )}
         <div>
           <ThemeProvider theme={theme}>
-            {(currentStep === 1 || currentStep === 4) && (
-            <Typography className={classes.labelText} color="textPrimary" gutterBottom variant="h4" align="center">
-              Sign Up
-            </Typography>
-            )}
-            {(currentStep === 2 || currentStep === 3) && (
-            <Typography color="textPrimary" gutterBottom variant="h4" align="center">
+            <Typography className={classes.titleText} align="center">
               Agency Registration Form
             </Typography>
-            )}
           </ThemeProvider>
           <Stepper activeStep={currentStep - 1} alternativeLabel className={classes.stepper}>
             {steps.map((label) => (
@@ -391,12 +381,15 @@ export default function RegistrationScreen() {
                   <Step1
                     currentStep={currentStep}
                     formState={formState}
+                    Step1Check={Step1Check}
+                    step1IsInvalid={step1IsInvalid}
                     classes={classes}
                     handleChange={handleChange}
                     onPrev={onPrev}
                     onNext={onNext}
                     errorMsg={errorMsg}
-                    repeatPwdCheck={repeatPwdCheck}
+                    reactTheme={reactTheme}
+                    handleSelect={handleSelect}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -409,7 +402,6 @@ export default function RegistrationScreen() {
                     onNext={onNext}
                     handleSubmit={handleSubmit}
                     errorMsg={errorMsg}
-                    step3Check={step3Check}
                     step3IsInvalid={step3IsInvalid}
                     loading={loading}
                   />
@@ -425,13 +417,16 @@ export default function RegistrationScreen() {
                     onSelect={onSelect}
                     handleSubmit={handleSubmit}
                     errorMsg={errorMsg}
-                    step3Check={step3Check}
                     step3IsInvalid={step3IsInvalid}
                     loading={loading}
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <Step4 />
+                  <Step4
+                    currentStep={currentStep}
+                    routeChange={routeChange}
+                    classes={classes}
+                  />
                 </Grid>
               </Container>
             </Grid>
@@ -443,7 +438,8 @@ export default function RegistrationScreen() {
 }
 
 function Step1({
-  currentStep, formState, classes, handleChange, onNext, errorMsg,
+  currentStep, formState, classes, handleChange, onNext, errorMsg, handleSelect,
+  Step1Check, step1IsInvalid,
 }) {
   if (currentStep !== 1) {
     return null;
@@ -460,12 +456,12 @@ function Step1({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="agencyname"
           label="Agency Name"
           name="agencyname"
           disabled
+          value={formState.agencyName}
         >
           {formState.agencyName}
         </TextField>
@@ -473,11 +469,11 @@ function Step1({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
-          name="location"
+          name="zipcode"
           label="Location"
           id="location"
+          value={formState.zipcode}
           disabled
         >
           {formState.zipcode}
@@ -486,11 +482,11 @@ function Step1({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="fullname"
           label="Contact Name"
-          name="agencyname"
+          name="contactName"
+          value={formState.contactName}
           disabled
         >
           {formState.contactName}
@@ -511,7 +507,6 @@ function Step1({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="website"
           label="Website"
@@ -520,16 +515,42 @@ function Step1({
           onChange={handleChange}
         />
       </Grid>
+      <Grid item xs={12}>
+        <FormControl className={classes.formControl} variant="outlined">
+          <InputLabel id="mutiple-name-label">Population Served</InputLabel>
+          <Select
+            id="demo-mutiple-name"
+            multiple
+            value={formState.popServed}
+            onChange={handleSelect}
+            input={<Input />}
+            MenuProps={MenuProps}
+            name="popServed"
+            label="Population Served"
+          >
+            {POPULATIONS.map((peoples) => (
+              <MenuItem
+                key={peoples}
+                value={peoples}
+              >
+                {peoples}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Grid>
       {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
-      <Grid item xs={12} sm={6}>
+      {Step1Check && <Grid item xs={12} className="error-msg">{Step1Check}</Grid>}
+
+      <Grid item xs={12}>
         <Button
-          className={classes.greenButton}
+          className={classes.greenButtonSmall}
           type="button"
           onClick={onNext}
-          fullWidth
           color="primary"
           variant="contained"
-          // disabled={}
+          center
+          disabled={step1IsInvalid}
         >
           Next
         </Button>
@@ -539,8 +560,8 @@ function Step1({
 }
 
 function Step2({
-  currentStep, formState, classes, handleChange, onPrev, handleSubmit, errorMsg,
-  step3Check, step3IsInvalid, loading, onNext,
+  currentStep, formState, classes, handleChange, onPrev, errorMsg,
+  step3IsInvalid, loading, onNext,
 }) {
   if (currentStep !== 2) {
     return null;
@@ -643,7 +664,6 @@ function Step2({
         />
       </Grid>
       {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
-      {step3Check && <Grid item xs={12} className="error-msg">{step3Check}</Grid>}
 
       <Grid item xs={12} sm={6}>
         <Button
@@ -675,7 +695,7 @@ function Step2({
 }
 
 function Step3({
-  currentStep, formState, classes, handleChange, onNext, errorMsg, onPrev,
+  currentStep, formState, classes, onNext, onPrev,
   onSelect,
 }) {
   if (currentStep !== 3) {
@@ -691,6 +711,7 @@ function Step3({
         { name: 'Contact Name', value: formState.contactName },
         { name: 'EIN', value: formState.taxID },
         { name: 'Website', value: formState.website },
+        { name: 'Population Served', value: formState.popServed.join() },
       ],
     },
     {
@@ -762,22 +783,55 @@ function Step3({
           fullWidth
           color="primary"
           variant="contained"
-          // disabled={step3IsInvalid || loading}
         >
           Finish
         </Button>
       </Grid>
     </Grid>,
-    // <Grid container spacing={1} className={classes.testRoot}>
-    //   <Grid container item xs={12} spacing={3}>
-    //     <HeadingRow classes={classes} />
-    //   </Grid>
-    //   <Grid container item xs={12} spacing={3}>
-    //     <FormRow />
-    //   </Grid>
-    //   <Grid container item xs={12} spacing={3}>
-    //     <FormRow />
-    //   </Grid>
-    // </Grid>,
+  ];
+}
+
+function Step4({
+  currentStep, routeChange, classes,
+}) {
+  if (currentStep !== 4) {
+    return null;
+  }
+  return [
+    <div>
+      <div className={classes.cenSubtitleText}>
+        Registration Completed!
+      </div>
+      <div>
+        We have set up your profile linked to your account.
+      </div>
+    </div>,
+    <Grid
+      container
+      spacing={2}
+      alignItems="center"
+    >
+      <Grid item xs={12}>
+        <div className={classes.emptyGrid}>
+          <img src={Fruit2} className={classes.confirmationFruit2} aria-hidden alt="" />
+          <img src={Fruit3} className={classes.confirmationFruit3} aria-hidden alt="" />
+        </div>
+      </Grid>
+
+      <Grid item xs={12}>
+        <Box mt={5}>
+          <Button
+            type="button"
+            className={classes.submitButton}
+            color="primary"
+            variant="contained"
+            style={{ backgroundColor: '#2D5496' }}
+            onClick={routeChange}
+          >
+            Back To Home
+          </Button>
+        </Box>
+      </Grid>
+    </Grid>,
   ];
 }

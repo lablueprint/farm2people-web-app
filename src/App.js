@@ -65,8 +65,6 @@ export default function App() {
           <Route path="/forbuyers" exact component={ForBuyersScreen} />
           <Route path="/forsellers" exact component={ForSellersScreen} />
           <Route path="/about" exact component={AboutScreen} />
-          {/* REMOVE BEFORE PUSHING */}
-          <Route path="/marketplacetesting" exact component={MarketplaceScreen} />
         </Switch>
         <Footer />
       </Router>

@@ -13,6 +13,9 @@ const PrivateRoute = ({ component: Component, allowedRoles, ...rest }) => (
         && allowedRoles.includes(store.getState().userData.user.fields['user type'])) {
         return <Component {...props} />;
       }
+      if (!store.getState().authenticated && allowedRoles.includes('')) {
+        return <Component {...props} />;
+      }
       /* If user is authenticated and not part of the allowedRules, they are
       taken to their home page */
       if (store.getState().authenticated) {

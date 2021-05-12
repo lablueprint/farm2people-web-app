@@ -121,7 +121,7 @@ export default function SignInScreen(props) {
   }, [setDisplayName]);
 
   return (
-    <form className={classes.root}>
+    <form className={classes.root} onSubmit={onSubmit}>
       <div>
         <Grid container spacing={2}>
           {!displayName && <Grid item xs={12} align="center" className={classes.title}> Sign In</Grid>}
@@ -157,7 +157,7 @@ export default function SignInScreen(props) {
           <Grid container justify="center">
             <div className={classes.horizontalContainer}>
               <img src={fruitImg} alt="" />
-              <Button disabled={isInvalid || loading || displayName} className={classes.signinButton} variant="contained" color="primary" type="button" onClick={onSubmit}>
+              <Button disabled={isInvalid || loading || displayName} className={classes.signinButton} variant="contained" color="primary" type="submit">
                 Sign In
               </Button>
             </div>

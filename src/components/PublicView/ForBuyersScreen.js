@@ -155,7 +155,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function LandingScreen() {
+export default function ForBuyersScreen() {
   const classes = useStyles();
   const handleContactClick = () => { history.push('/contact'); };
   return (

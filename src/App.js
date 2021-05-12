@@ -5,7 +5,6 @@ import { Navbar, Footer, PrivateRoute } from './components/Navigation';
 import InventoryManagerScreen from './components/InventoryManager';
 import MarketplaceScreen from './components/Marketplace';
 import ContactScreen from './components/Contact';
-import NotificationsScreen from './components/Notifications';
 import CartScreen from './components/Cart';
 import ProfileScreen from './components/Profile';
 import SignInScreen from './components/SignIn';
@@ -47,7 +46,6 @@ export default function App() {
           <Route path="/" exact component={getHomeComponent()} />
           <PrivateRoute allowedRoles={sellingPermissions} path="/inventorymanager" exact component={InventoryManagerScreen} />
           <PrivateRoute allowedRoles={purchasingPermissions} path="/marketplace" exact component={MarketplaceScreen} />
-          <PrivateRoute allowedRoles={allPermissions} path="/notifications" exact component={NotificationsScreen} />
           <PrivateRoute allowedRoles={allPermissions} path="/profile" exact component={ProfileScreen} />
           <PrivateRoute allowedRoles={purchasingPermissions} path="/cart" exact component={CartScreen} />
           <Route path="/contact" exact component={ContactScreen} />

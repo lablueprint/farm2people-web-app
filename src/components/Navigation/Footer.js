@@ -91,15 +91,6 @@ function Footer() {
                   </li>
                   <li className={classes.footerItem}>
                     <NavLink
-                      to="/notifications"
-                      className={classes.footerLink}
-                      activeClassName={classes.navLinksActive}
-                    >
-                      Notifications
-                    </NavLink>
-                  </li>
-                  <li className={classes.footerItem}>
-                    <NavLink
                       to="/profile"
                       className={classes.footerLink}
                       activeClassName={classes.navLinksActive}
@@ -140,15 +131,6 @@ function Footer() {
                       activeClassName={classes.navLinksActive}
                     >
                       Contact
-                    </NavLink>
-                  </li>
-                  <li className={classes.footerItem}>
-                    <NavLink
-                      to="/notifications"
-                      className={classes.footerLink}
-                      activeClassName={classes.navLinksActive}
-                    >
-                      Notifications
                     </NavLink>
                   </li>
                   <li className={classes.footerItem}>

@@ -49,13 +49,12 @@ export default function MarketplaceScreen() {
         produceRecords.forEach((record) => {
           const pricePerGroup = record.fields['standard price per grouped produce type'] || 0;
           const groupPerPallet = record.fields['grouped produce type per pallet'] || 0;
-          const unitPrice = pricePerGroup * groupPerPallet;
+          const palletPrice = pricePerGroup * groupPerPallet;
           const recordInfo = {
             listingID: record.fields['listing id'],
             produceID: record.fields.produce ? record.fields.produce[0] : -1,
             farmID: record.fields['farm id'],
-            unitType: record.fields['grouped produce type'] || 'pallet',
-            unitPrice: unitPrice !== 0 ? unitPrice : -1,
+            palletPrice: palletPrice !== 0 ? palletPrice : -1,
             season: record.fields['growing season'] || 'No season',
           };
           filteredProduceRecords.push(recordInfo);
@@ -96,8 +95,7 @@ export default function MarketplaceScreen() {
                 /* ProduceCard will get produce name, photo, + farm name by ids */
                 produceID={produce.produceID || null}
                 farmID={produce.farmID || null}
-                unitPrice={produce.unitPrice}
-                unitType={produce.unitType || 'pallet'}
+                palletPrice={produce.palletPrice}
                 season={produce.season}
               />
             ))

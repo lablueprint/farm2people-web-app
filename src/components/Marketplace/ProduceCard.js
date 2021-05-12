@@ -88,7 +88,7 @@ const useStyles = makeStyles({
 export default function ProduceCard(props) {
   const {
     // eslint-disable-next-line no-unused-vars
-    produceID, farmID, unitPrice, unitType, season, // (TODO: remove later when season is used)
+    produceID, farmID, palletPrice, season, // (TODO: remove later when season is used)
   } = props;
   const [farmName, setFarmName] = useState('');
   const [produceName, setProduceName] = useState('');
@@ -144,10 +144,10 @@ export default function ProduceCard(props) {
           className={classes.priceTextPadding}
         >
           <Typography className={classes.priceText}>
-            {`$${unitPrice}/`}
+            {`$${palletPrice}/`}
           </Typography>
           <Typography className={classes.smallPriceText}>
-            {unitType}
+            pallet
           </Typography>
         </Grid>
       </CardContent>
@@ -164,7 +164,6 @@ export default function ProduceCard(props) {
 ProduceCard.propTypes = {
   produceID: PropTypes.string.isRequired,
   farmID: PropTypes.arrayOf(PropTypes.string).isRequired,
-  unitPrice: PropTypes.number.isRequired,
-  unitType: PropTypes.string.isRequired,
+  palletPrice: PropTypes.number.isRequired,
   season: PropTypes.string.isRequired,
 };

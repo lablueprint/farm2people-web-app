@@ -15,12 +15,20 @@ const useStyles = makeStyles({
   root: {
     position: 'relative',
     minHeight: '100vh',
+    maxWidth: '100%',
   },
   dashboard: {
-    marginTop: '1%',
+    marginTop: '2%',
+    marginBottom: '2%',
   },
   text: {
     fontFamily: 'Work Sans',
+  },
+  listings: {
+    border: '1px solid #F1F2F2',
+    boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
+    borderRadius: '10px',
+    marginTop: '3%',
   },
 });
 
@@ -46,10 +54,11 @@ export default function InventoryManagerScreen() {
       });
     });
   }
-  function editRecord(id, rec) {
+  function editRecord(rec) {
+    const { 'listing id': id, ...fields } = rec;
     const record = {
       id,
-      fields: rec,
+      fields,
     };
     base('Listings').update([record], (err, records) => {
       if (err) {
@@ -114,13 +123,14 @@ export default function InventoryManagerScreen() {
     <>
       <div className={classes.root}>
         <Grid container spacing={0} className={classes.dashboard}>
-          <Grid container item spacing={3} xs={10} alignItems="center">
+          <Grid item xs={1} />
+          <Grid container item spacing={3} xs={9} alignItems="center">
             <Grid item xs={12}>
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
               </Typography>
             </Grid>
-            <Grid container item direction="row" justify="space-between" alignItems="center" spacing={1} xs={12}>
+            <Grid container item direction="row" spacing={1} xs={12}>
               <Grid item xs={8} />
               <Grid item xs={2}>
                 <AddListingButton createRecord={createRecord} produceTypes={produceTypes} />
@@ -129,12 +139,13 @@ export default function InventoryManagerScreen() {
                 <DeleteButton deleteRecords={deleteSelectedRecords} />
               </Grid>
             </Grid>
-            <Grid item xs={12}>
+            <Grid container item xs={12} className={classes.listings}>
               <ListingsView
                 cardListings={cardListings}
                 selectedCards={selectedCards}
                 updateSelectedCards={updateSelectedCards}
                 editRecord={editRecord}
+                produceTypes={produceTypes}
               />
             </Grid>
           </Grid>

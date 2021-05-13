@@ -153,7 +153,7 @@ const initialListing = {
 };
 
 const initialProduce = {
-  id: 0,
+  id: '',
   fields: {
     'produce type': '',
     'produce picture': [],
@@ -171,7 +171,7 @@ function getSteps() {
   ];
 }
 
-export default function AddListing({
+export default function AddListingPopup({
   closeDialog, isOpen, modifyListings, produceTypes,
 }) {
   const classes = useStyles();
@@ -312,11 +312,11 @@ export default function AddListing({
   );
 }
 
-AddListing.defaultProps = {
+AddListingPopup.defaultProps = {
   isOpen: false,
 };
 
-AddListing.propTypes = {
+AddListingPopup.propTypes = {
   closeDialog: PropTypes.func.isRequired,
   isOpen: PropTypes.bool,
   modifyListings: PropTypes.func.isRequired,

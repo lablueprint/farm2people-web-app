@@ -54,17 +54,13 @@ export default function PhotoStep({
         <Grid item xs={3}>
           <Image
           // TODO : add placeholder image, right now it just loads forever if no image
-            src={produceRecord.fields['produce picture'][0].url}
+            src={produceRecord.fields ? produceRecord.fields['produce picture'][0].url : ''}
           />
         </Grid>
       </Grid>
     </>
   );
 }
-
-PhotoStep.defaultTypes = {
-  produceId: '',
-};
 
 PhotoStep.propTypes = {
   produceRecord: PropTypes.shape({

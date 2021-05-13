@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { green } from '@material-ui/core/colors';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
-import AddListing from './AddListing';
+import AddListingPopup from './AddListingPopup';
 
 const useStyles = makeStyles({
   button: {
@@ -17,6 +17,7 @@ const useStyles = makeStyles({
   },
   text: {
     fontFamily: 'Work Sans',
+    whiteSpace: 'nowrap',
   },
 });
 
@@ -40,7 +41,7 @@ export default function AddListingButton({
           Add Listing
         </Typography>
       </Button>
-      <AddListing
+      <AddListingPopup
         closeDialog={handleClose}
         isOpen={editActive}
         modifyListings={createRecord}

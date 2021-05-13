@@ -83,8 +83,15 @@ function AutoCompleteInputField({
           autoComplete
           options={options}
           getOptionLabel={getLabel}
-          onChange={onChange}
-          defaultValue={val}
+          getOptionSelected={(option, value) => (
+            value === '' || value === option
+          )}
+          onChange={(e, selectedObject) => {
+            if (selectedObject !== null) {
+              onChange(e, selectedObject);
+            }
+          }}
+          value={val}
           renderInput={(params) => (
             <TextField
               name={name}
@@ -105,6 +112,7 @@ function CurrencyInputField({
   val, onChange, placeholder, label,
 }) {
   const classes = useStyles();
+  // function to take a string and bold any words that are surrounded by ** **
   const boldString = (input) => {
     const splitInput = input.split(/(\*\*.*?\*\*)/).filter((word) => (
       word.length > 0

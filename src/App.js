@@ -10,7 +10,7 @@ import CartScreen from './components/Cart';
 import ProfileScreen from './components/Profile';
 import SignInScreen from './components/SignIn';
 import SignUpScreen from './components/SignUp';
-import Registration from './components/Registration';
+import RegistrationScreen from './components/Registration';
 import {
   LandingScreen, ForBuyersScreen, ForSellersScreen, AboutScreen,
 } from './components/PublicView';
@@ -66,7 +66,7 @@ export default function App() {
           <Route path="/forbuyers" exact component={ForBuyersScreen} />
           <Route path="/forsellers" exact component={ForSellersScreen} />
           <Route path="/about" exact component={AboutScreen} />
-          <Route path="/r" exact component={Registration} />
+          <Route path="/registration" exact component={RegistrationScreen} />
         </Switch>
         <Footer />
       </Router>

@@ -52,13 +52,13 @@ const MenuProps = {
 
 // The spaces before the terms, are for formatting purposes
 const POPULATIONS = [
-  ' Black Owned',
-  ' BIPOC Owned',
-  ' Women Owned',
-  ' Non-Binary/LGBTQIA Owned',
-  ' First Generation Owned',
-  ' Latinx Owned',
-  ' Other',
+  'Serves Black',
+  'Serves BIPOC',
+  'Serves LGBTQIA+',
+  'Serves Senior',
+  'Serves Latinx',
+  'Serves Asian and Pacific Islander',
+  'Serves Unhoused',
 ];
 
 const useStyles = makeStyles({
@@ -271,24 +271,26 @@ export default function RegistrationScreen() {
             'zip code': Number(formState.zipcode),
             'social media': formState.socials,
             notes: formState.additionalComments,
-            'population served': formState.popServed.join(),
+            'population served': formState.popServed,
           },
         },
       ], (err) => {
         if (err) {
           setErrorMsg(errorMsg.length === 0 ? err : `${errorMsg}`);
+          console.log(err);
         } else {
           setErrorMsg('');
         }
       });
     } catch (err) {
+      console.log(err);
       if (err) {
         setErrorMsg(err);
       }
     }
 
     if (errorMsg) {
-      setErrorMsg('Please choose a different email!');
+      setErrorMsg(errorMsg);
       setLoading(false);
     } else {
       setCurrentStep(currentStep + 1);
@@ -400,7 +402,6 @@ export default function RegistrationScreen() {
                     handleChange={handleChange}
                     onPrev={onPrev}
                     onNext={onNext}
-                    handleSubmit={handleSubmit}
                     errorMsg={errorMsg}
                     step3IsInvalid={step3IsInvalid}
                     loading={loading}
@@ -695,7 +696,7 @@ function Step2({
 }
 
 function Step3({
-  currentStep, formState, classes, onNext, onPrev,
+  currentStep, formState, classes, onPrev, handleSubmit,
   onSelect,
 }) {
   if (currentStep !== 3) {
@@ -779,7 +780,7 @@ function Step3({
         <Button
           className={classes.greenButton}
           type="button"
-          onClick={onNext}
+          onClick={handleSubmit}
           fullWidth
           color="primary"
           variant="contained"

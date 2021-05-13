@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from 'prop-types';
 import Typography from '@material-ui/core/Typography';
@@ -8,7 +8,6 @@ import CurrencyTextField from '@unicef/material-ui-currency-textfield';
 import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 
@@ -32,6 +31,15 @@ const useStyles = makeStyles({
   text: {
     fontFamily: 'Work Sans',
     fontSize: '1.2rem',
+  },
+  numberInput: {
+    fontFamily: 'Work Sans',
+    fontSize: '1.2rem',
+    MozAppearance: 'textfield',
+    '&::-webkit-outer-spin-button, &::-webkit-inner-spin-button': {
+      '-webkit-appearance': 'none',
+      display: 'none',
+    },
   },
   numberInputField: {
     maxWidth: '3.6em',
@@ -150,6 +158,7 @@ function CurrencyInputField({
         onChange={onChange}
         textAlign="left"
         size="small"
+        minimumValue="0"
       />
       {boldString(label)}
     </Grid>
@@ -167,7 +176,6 @@ function MultilineInputField({
       </Grid>
       <Grid item xs={12}>
         <TextField
-          required
           multiline
           rows={3}
           id={id}
@@ -226,15 +234,17 @@ function NumberInputField({
         name={name}
         value={val}
         InputProps={{
-          classes: { input: classes.text },
+          classes: { input: classes.numberInput },
           inputProps: {
             style: { textAlign: 'center' },
+            min: 1,
           },
         }}
         onChange={onChange}
         className={classes.numberInputField}
         variant="outlined"
         size="small"
+        type="number"
       />
       <IconButton className={classes.numberButton} onClick={() => onButtonClick(name, 1)}>
         <AddIcon fontSize="small" />
@@ -247,11 +257,7 @@ function NumberInputField({
 function DateInputField({
   id, name, label, val, onChange, placeholder,
 }) {
-  const textFieldRef = useRef();
   const classes = useStyles();
-  const focusTextField = () => {
-    textFieldRef.current.click();
-  };
   return (
     <Grid container item xs={12} spacing={1}>
       <Grid item xs={12}>
@@ -272,11 +278,7 @@ function DateInputField({
           variant="outlined"
           placeholder={placeholder}
           size="small"
-          inputRef={textFieldRef}
         />
-        <IconButton className={classes.calendarButton} onClick={focusTextField}>
-          <CalendarTodayIcon />
-        </IconButton>
       </Grid>
     </Grid>
   );

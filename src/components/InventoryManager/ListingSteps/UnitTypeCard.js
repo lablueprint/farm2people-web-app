@@ -6,21 +6,26 @@ import CardMedia from '@material-ui/core/CardMedia';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import Typography from '@material-ui/core/Typography';
 import PropTypes from 'prop-types';
-import OrangeCat from '../../../assets/images/OrangeCat.jpeg';
 
 const useStyles = makeStyles({
   listingCard: {
     maxWidth: '90%',
+    height: '235px',
   },
   selectedCard: {
     maxWidth: '90%',
+    height: '235px',
     border: '2px solid gray',
   },
   listingCardPicture: {
-    height: '100%',
+    height: '180px',
+    objectFit: 'cover',
+    width: '100%',
+    display: 'flex',
   },
   listingCardContent: {
     textAlign: 'center',
+    alignItems: 'flex-end',
   },
   text: {
     fontFamily: 'Work Sans',
@@ -28,7 +33,7 @@ const useStyles = makeStyles({
 });
 
 export default function UnitTypeCard({
-  onSelect, label, selected,
+  onSelect, label, selected, url,
 }) {
   const classes = useStyles();
   const setCardSelected = () => {
@@ -39,7 +44,7 @@ export default function UnitTypeCard({
       <CardActionArea>
         <CardMedia
           className={classes.listingCardPicture}
-          image={OrangeCat}
+          src={url}
           title="orange-cat"
           component="img"
         />
@@ -57,4 +62,5 @@ UnitTypeCard.propTypes = {
   onSelect: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
   selected: PropTypes.bool.isRequired,
+  url: PropTypes.string.isRequired,
 };

@@ -6,6 +6,14 @@ import PropTypes from 'prop-types';
 import Checkbox from '@material-ui/core/Checkbox';
 import UnitTypeCard from './UnitTypeCard';
 import ListingInputField from '../ListingInputField';
+import Bag from '../../../assets/images/bag.svg';
+import Box from '../../../assets/images/box.svg';
+import Bunch from '../../../assets/images/bunch.svg';
+import Bushel from '../../../assets/images/bushel.svg';
+import Cartons from '../../../assets/images/cartons.svg';
+import Case from '../../../assets/images/case.svg';
+import Crate from '../../../assets/images/crate.svg';
+import Each from '../../../assets/images/each.svg';
 
 const useStyles = makeStyles({
   heading: {
@@ -47,6 +55,10 @@ const GreenCheckbox = withStyles({
   checked: {},
 })((props) => <Checkbox color="default" {...props} />);
 
+const toPlural = (input) => (
+  input === 'box' ? input.concat('es') : input.concat('s')
+);
+
 export default function UnitsStep({
   onChangeField, listingRecord, setListingRecord,
 }) {
@@ -58,50 +70,57 @@ export default function UnitsStep({
     const currentValue = listingRecord[field];
     setListingRecord({ ...listingRecord, [field]: currentValue + value });
   };
-  const UnitTypes1 = [
+  const IndividualProduceUnits = [
     {
       value: 'bunches',
       label: 'bunches',
+      url: Bunch,
     },
     {
       value: 'bushels',
       label: 'bushels',
+      url: Bushel,
     },
     {
       value: 'each',
       label: 'each',
+      url: Each,
     },
   ];
-  const UnitTypes2 = [
+  const GroupedProduceTypes = [
     {
       value: 'case',
       label: 'Case',
+      url: Case,
     },
     {
       value: 'crate',
       label: 'Crate',
+      url: Crate,
     },
     {
       value: 'bag',
       label: 'Bag',
+      url: Bag,
     },
     {
       value: 'box',
       label: 'Box',
+      url: Box,
     },
     {
-      value: 'sack',
-      label: 'Sack',
+      value: 'carton',
+      label: 'Carton',
+      url: Cartons,
     },
   ];
   const questions = [
     '1. How is your produce packed?',
     '2. Do you have master units?',
-    '3. How many unit type 2/master units of produce do you have?',
+    '3. How many grouped produce type units of produce do you have?',
     '4. Do you have master pallets?',
     '5. Lastly, enter the number of pallets or master pallets you have.',
   ];
-  // TODO : Add form validation for number fields (min: 1)
   return (
     <>
       <Grid spacing={2} container>
@@ -117,12 +136,13 @@ export default function UnitsStep({
               Individual Produce Unit
             </Typography>
           </Grid>
-          {UnitTypes1.map((name) => (
+          {IndividualProduceUnits.map((name) => (
             <Grid item xs={2} key={name.value}>
               <UnitTypeCard
                 onSelect={() => onSelect('individual produce unit', name.value)}
                 label={name.value}
                 selected={name.value === listingRecord['individual produce unit']}
+                url={name.url}
               />
             </Grid>
           ))}
@@ -133,12 +153,13 @@ export default function UnitsStep({
               Grouped Produce Type
             </Typography>
           </Grid>
-          {UnitTypes2.map((name) => (
+          {GroupedProduceTypes.map((name) => (
             <Grid item xs={2} key={name.value}>
               <UnitTypeCard
                 onSelect={() => onSelect('grouped produce type', name.value)}
                 label={name.value}
                 selected={name.value === listingRecord['grouped produce type']}
+                url={name.url}
               />
             </Grid>
           ))}
@@ -186,7 +207,7 @@ export default function UnitsStep({
           val={listingRecord['grouped produce type per master unit']}
           onButtonClick={onButtonClick}
           placeholder="Quantity"
-          label={`**${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}** per **MASTER ${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}**`}
+          label={`**${toPlural(listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE')}** per **MASTER ${listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE'}**`}
         />
         )}
         <Grid item container xs={12}>
@@ -202,7 +223,7 @@ export default function UnitsStep({
           val={listingRecord['master units per pallet']}
           onButtonClick={onButtonClick}
           placeholder="Quantity"
-          label={`**MASTER ${listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}** PER PALLET`}
+          label={`**MASTER ${toPlural(listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE')}** PER PALLET`}
         />
         )}
         <ListingInputField
@@ -213,7 +234,7 @@ export default function UnitsStep({
           val={listingRecord['grouped produce type per pallet']}
           onButtonClick={onButtonClick}
           placeholder="Quantity"
-          label={`**${listingRecord['grouped produce type'].toUpperCase() || 'GROUPED PRODUCE TYPE'}** PER PALLET`}
+          label={`**${toPlural(listingRecord['grouped produce type'] || 'GROUPED PRODUCE TYPE')}** PER PALLET`}
         />
         <Grid item container xs={12}>
           <Typography className={classes.heading}>{questions[3]}</Typography>
@@ -254,6 +275,19 @@ export default function UnitsStep({
           placeholder="Quantity"
           label="**pallets**"
         />
+        {(listingRecord['has master pallets'])
+        && (
+        <ListingInputField
+          id="standard-number"
+          name="master pallets"
+          type="number"
+          onChange={onChangeField}
+          val={listingRecord['master pallets']}
+          onButtonClick={onButtonClick}
+          placeholder="Quantity"
+          label="**master pallets**"
+        />
+        )}
       </Grid>
     </>
   );
@@ -272,6 +306,7 @@ UnitsStep.propTypes = {
     'has master pallets': PropTypes.bool,
     'pallets per master pallet': PropTypes.number,
     'pallets available': PropTypes.number,
+    'master pallets': PropTypes.number,
   }).isRequired,
   onChangeField: PropTypes.func.isRequired,
   setListingRecord: PropTypes.func.isRequired,

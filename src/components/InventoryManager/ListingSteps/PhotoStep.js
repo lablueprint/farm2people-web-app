@@ -39,12 +39,7 @@ export default function PhotoStep({
     <>
       <Grid spacing={3} container>
         <Grid item container xs={12}>
-          <Typography variant="h5" component="h5" className={classes.title}>Step 5: Photo</Typography>
-        </Grid>
-        <Grid item container xs={12}>
-          <Typography className={classes.heading}>
-            Upload a photo for your produce.
-          </Typography>
+          <Typography variant="h5" component="h5" className={classes.title}>Step 5: Photo Preview</Typography>
         </Grid>
         <Grid item container xs={12}>
           <Typography className={classes.text}>

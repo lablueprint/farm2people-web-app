@@ -16,6 +16,7 @@ const useStyles = makeStyles({
 export default function BasicInfoStep({
   listingRecord, produceTypes, onChangeField, setListingRecord, produceRecord, setProduceRecord,
 }) {
+  // TODO : Load options from airtable
   const Seasons = [
     'Summer',
     'Fall',

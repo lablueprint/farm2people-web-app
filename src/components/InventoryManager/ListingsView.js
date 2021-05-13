@@ -19,7 +19,7 @@ export default function ListingsView({
   const classes = useStyles();
   return (
     <>
-      <Grid item container spacing={6} justify="flex-start" className={classes.listings}>
+      <Grid item container spacing={4} justify="flex-start" className={classes.listings}>
         {
         cardListings.map((listing) => {
           const produceRecord = getProduceRecord(listing.fields.produce[0]);

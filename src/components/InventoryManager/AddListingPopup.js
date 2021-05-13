@@ -11,11 +11,10 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import StepConnector from '@material-ui/core/StepConnector';
-import Check from '@material-ui/icons/Check';
-import clsx from 'clsx';
+import AddListingConnector from './AddListingConnector';
+import AddListingStepIcons from './AddListingStepIcons';
 import BasicInfoStep from './ListingSteps/BasicInfoStep';
 import UnitsStep from './ListingSteps/UnitsStep';
 import PricesStep from './ListingSteps/PricesStep';
@@ -55,74 +54,6 @@ const useStyles = makeStyles({
   },
 });
 
-const Connector = withStyles({
-  alternativeLabel: {
-    top: 10,
-    left: 'calc(-50%)',
-    right: 'calc(50%)',
-  },
-  active: {
-    '& $line': {
-      borderColor: '#53AA48',
-    },
-  },
-  completed: {
-    '& $line': {
-      borderColor: '#53AA48',
-    },
-  },
-  line: {
-    borderColor: '#F1F2F2',
-    borderRadius: 1,
-    borderWidth: '8px',
-  },
-})(StepConnector);
-
-const useIconStyles = makeStyles({
-  root: {
-    color: '#F1F2F2',
-    display: 'flex',
-    height: 32,
-    alignItems: 'center',
-  },
-  active: {
-    color: '#53AA48',
-  },
-  circle: {
-    width: 21,
-    height: 21,
-    borderRadius: '50%',
-    backgroundColor: 'currentColor',
-    border: 'currentColor solid 6px',
-    zIndex: 1,
-  },
-  completed: {
-    color: '#F1F2F2',
-    fontSize: 18,
-    width: 21,
-    height: 21,
-    borderRadius: '50%',
-    backgroundColor: '#53AA48',
-    border: '#53AA48 solid 6px',
-    zIndex: 1,
-  },
-});
-
-function Icons(props) {
-  const classes = useIconStyles();
-  const { active, completed } = props;
-
-  return (
-    <div
-      className={clsx(classes.root, {
-        [classes.active]: active,
-      })}
-    >
-      {completed ? <Check className={classes.completed} /> : <div className={classes.circle} />}
-    </div>
-  );
-}
-
 const today = (new Date()).toISOString().split('T')[0];
 // TODO : add finished screen
 const initialListing = {
@@ -139,6 +70,7 @@ const initialListing = {
   'grouped produce type per pallet': 0.0,
   'has master pallets': false,
   'pallets per master pallet': 0,
+  'master pallets': 0,
   'standard price per grouped produce type': 0.0,
   'agency price per grouped produce type': 0.0,
   'date entered': today,
@@ -150,6 +82,7 @@ const initialListing = {
   'pallets sold': 0,
   'listing picture': [],
   privatized: false,
+  'users interested': 0,
 };
 
 const initialProduce = {
@@ -180,7 +113,7 @@ export default function AddListingPopup({
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
   const steps = getSteps();
-  const handleComplete = () => {
+  const handleStepComplete = () => {
     const newCompleted = completed;
     newCompleted[activeStep] = true;
     setCompleted(newCompleted);
@@ -203,7 +136,7 @@ export default function AddListingPopup({
   function handleNext(e) {
     e.preventDefault();
     if (activeStep < 5) {
-      handleComplete(activeStep);
+      handleStepComplete(activeStep);
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } else {
       modifyListings(listingRecord);
@@ -218,7 +151,6 @@ export default function AddListingPopup({
       setListingRecord({ ...listingRecord, [name]: value });
     }
   };
-  // TODO: Dynamically load these options from Airtable
   function getStepContent(index) {
     switch (index) {
       case 0:
@@ -279,13 +211,13 @@ export default function AddListingPopup({
         <Stepper
           alternativeLabel
           activeStep={activeStep}
-          connector={<Connector />}
+          connector={<AddListingConnector />}
         >
           {steps.map((label, index) => (
             <Step key={label}>
               <StepLabel
                 completed={completed[index]}
-                StepIconComponent={Icons}
+                StepIconComponent={AddListingStepIcons}
               >
                 {label}
               </StepLabel>
@@ -324,9 +256,4 @@ AddListingPopup.propTypes = {
     id: PropTypes.string,
     fields: PropTypes.shape({}),
   })).isRequired,
-};
-
-Icons.propTypes = {
-  active: PropTypes.bool.isRequired,
-  completed: PropTypes.bool.isRequired,
 };

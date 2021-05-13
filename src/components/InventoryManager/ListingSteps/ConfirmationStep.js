@@ -23,11 +23,10 @@ export default function ConfirmationStep({
     if (listingRecord['has master units']) {
       info['grouped produce type per master unit'] = listingRecord['grouped produce type per master unit'];
     }
+    info.Pallets = listingRecord['pallets available'];
     if (listingRecord['has master pallets']) {
       info['pallets per master pallet'] = listingRecord['pallets per master pallet'];
       info['Master Pallets'] = listingRecord['pallets available'];
-    } else {
-      info.Pallets = listingRecord['pallets available'];
     }
     return info;
   };

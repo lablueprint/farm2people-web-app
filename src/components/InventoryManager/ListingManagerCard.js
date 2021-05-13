@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createMuiTheme, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -19,7 +19,6 @@ import OrangeCat from '../../assets/images/OrangeCat.jpeg';
 const useStyles = makeStyles({
   loading: {
     height: '100%',
-    padding: '5px',
   },
   listingCard: {
     height: '100%',
@@ -28,10 +27,10 @@ const useStyles = makeStyles({
     boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
     borderRadius: '8px',
     width: '100%',
-    maxWidth: '450px',
+    maxWidth: '425px',
   },
   listingCardPicture: {
-    height: '55%',
+    height: '200px',
     objectFit: 'cover',
     width: '100%',
   },
@@ -96,14 +95,17 @@ const useStyles = makeStyles({
   },
 });
 
-const checkboxTheme = createMuiTheme({
-  palette: {
-    secondary: {
-      main: '#53AA48',
+const GreenCheckbox = withStyles({
+  root: {
+    color: '#53AA48',
+    '&$checked': {
+      color: '#53AA48',
     },
   },
-});
+  checked: {},
+})((props) => <Checkbox color="default" {...props} />);
 
+// TODO : validation for unit type selection
 export default function ListingManagerCard({
   id, listing, onSelect, selected, editRecord, produceRecord, produceTypes,
 }) {
@@ -152,16 +154,14 @@ export default function ListingManagerCard({
               <IconButton>
                 { listing.privatized ? <LockOutlinedIcon /> : <LockOpenOutlinedIcon /> }
               </IconButton>
-              <ThemeProvider theme={checkboxTheme}>
-                <Checkbox
-                  checked={selected || false}
-                  onChange={() => {
-                    onSelect(id, !selected);
-                  }}
-                  name="selected"
-                  className={classes.listingCardActionButton}
-                />
-              </ThemeProvider>
+              <GreenCheckbox
+                checked={selected || false}
+                onChange={() => {
+                  onSelect(id, !selected);
+                }}
+                name="selected"
+                className={classes.listingCardActionButton}
+              />
               <EditListingPopup
                 listing={listing}
                 edit

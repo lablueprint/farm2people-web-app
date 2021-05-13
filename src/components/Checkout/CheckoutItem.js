@@ -19,13 +19,27 @@ const airtableConfig = {
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 const useStyles = makeStyles({
-  listingImage: {
+  listingRow: {
+    paddingBottom: 10,
+  },
+  listingImageBox: {
+    position: 'relative',
     height: '80px',
     width: '80px',
     backgroundColor: 'white',
     border: '1px solid #E0E0E0',
     boxSizing: 'border-box',
     borderRadius: '6px',
+    overflow: 'hidden',
+  },
+  listingImage: {
+    position: 'absolute',
+    maxWidth: '100%',
+    width: '100%',
+    height: 'auto',
+    top: '50%',
+    left: '50%',
+    transform: 'translate( -50%, -50%)',
   },
   listingCrop: {
     fontFamily: 'Work Sans',
@@ -65,6 +79,8 @@ const useStyles = makeStyles({
     fontSize: '10px',
     lineHeight: '13px',
     color: '#FFFFFF',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
 
     padding: 5,
     paddingInline: 8,
@@ -75,9 +91,7 @@ const useStyles = makeStyles({
 });
 
 function CheckoutItem({ listingID, pallets }) {
-  // TODO: integrate photos stored in backend and render them in place of this
-  const image = 'https://i.ebayimg.com/images/i/350982650852-0-1/s-l1000.jpg';
-
+  const [imageURL, setImageURL] = useState('');
   const [produceName, setProduceName] = useState('');
   const [listingDetails, setListingDetails] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -92,24 +106,27 @@ function CheckoutItem({ listingID, pallets }) {
     base('Listings').find(listingID[0], (err, record) => {
       if (err) { setErrorMessage(err); return; }
       setListingDetails(record);
-      setUsingAgencyPrice(store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type']);
+      setUsingAgencyPrice(store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type']);
       base('Produce Type').find(record.fields.produce, (er, p) => {
         if (err) { setErrorMessage(er); }
         setProduceName(p.fields['produce type']);
+        setImageURL((p.fields['produce picture'] ? p.fields['produce picture'][0].url : ''));
       });
       setLoading(false);
     });
   });
 
   return (
-    <>
+    <div className={classes.listingRow}>
       {errorMessage && <p>{errorMessage}</p>}
       {!loading
         && (
         <>
           <Grid container spacing={2} justify="flex-start" alignItems="flex-start">
             <Grid item>
-              <img src={image} alt="random produce" className={classes.listingImage} />
+              <div className={classes.listingImageBox}>
+                <img src={imageURL} alt="produce" className={classes.listingImage} />
+              </div>
             </Grid>
             <Grid item xs container direction="column" spacing={0} justify="space-evenly">
               <Grid item xs>
@@ -131,16 +148,15 @@ function CheckoutItem({ listingID, pallets }) {
                 <Typography gutterBottom variant="subtitle1" className={classes.listingDescription}>
                   <span className={classes.listingDetail}>Price: </span>
                   $
-                  {usingAgencyPrice
-                    ? parseFloat((listingDetails.fields['agency price per grouped produce type'] * pallets)).toFixed(2)
-                    : parseFloat((listingDetails.fields['standard price per grouped produce type'] * pallets)).toFixed(2)}
+                  {parseFloat(pallets * listingDetails.fields['grouped produce type per pallet']
+                    * (usingAgencyPrice ? listingDetails.fields['agency price per grouped produce type'] : listingDetails.fields['standard price per grouped produce type'])).toFixed(2)}
                 </Typography>
               </Grid>
             </Grid>
           </Grid>
         </>
         )}
-    </>
+    </div>
   );
 }
 

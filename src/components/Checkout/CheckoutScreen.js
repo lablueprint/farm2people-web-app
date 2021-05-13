@@ -43,23 +43,22 @@ const useStyles = makeStyles({
     minWidth: '700px',
     position: 'relative',
     minHeight: '100vh',
+    marginBottom: 60,
   },
   title: {
     fontFamily: 'Work Sans',
-    fontWeight: 800,
-    fontSize: '50px',
-    lineHeight: '59px',
+    fontWeight: 'bolder',
+    fontSize: 50,
     color: '#373737',
     paddingTop: '2%',
     paddingBottom: '10px',
   },
   farmTitle: {
     fontFamily: 'Work Sans',
-    fontWeight: 500,
-    fontSize: '40px',
-    lineHeight: '49px',
+    fontWeight: '500',
+    fontSize: '32px',
+    lineHeight: '140%',
     color: '#373737',
-    paddingTop: '2%',
     paddingBottom: '10px',
   },
   card: {
@@ -95,7 +94,6 @@ const useStyles = makeStyles({
     fontStyle: 'normal',
     fontWeight: '600',
     fontSize: '18px',
-    lineHeight: '140%',
     color: '#373737',
     textDecoration: 'underline',
     textDecorationColor: '#53AA48',
@@ -205,6 +203,14 @@ const useStyles = makeStyles({
     textDecorationLine: 'underline',
     color: '#373737',
   },
+  checkoutWithoutSavingCheckBox: {
+    fontFamily: 'Work Sans',
+    fontStyle: 'normal',
+    fontWeight: '700',
+    fontSize: '15px',
+    lineHeight: '19px',
+    color: '#373737',
+  },
   fruit3: {
     position: 'absolute',
     width: '180px',
@@ -232,12 +238,12 @@ const GreenCheckbox = withStyles({
   checked: {},
 })((props) => <Checkbox color="default" {...props} />);
 
-function Checkout() {
+function CheckoutScreen() {
   const classes = useStyles();
   const history = useHistory();
   const [editing, setEditing] = useState(false); // bool if editing
   const [items, setItems] = useState([]); // items in cart
-  const [farms, setFarms] = useState({}); // dictionary of item's farms in cart in form { id: name}
+  const [farmsDict, setFarmsDict] = useState({}); // dictionary of item's farms in cart { id: name}
   const [subtotal, setSubtotal] = useState(0); // subtotal of cart
   const [pastProfiles, setPastProfiles] = useState([]); // array of all profiles related to user
   const [selectedProfile, setSelectedProfile] = useState(''); // id of selected profile
@@ -337,15 +343,15 @@ function Checkout() {
               if (!tempFarms[farmID]) {
                 tempFarms[farmID] = farm.fields['farm name'];
               }
-              setFarms(tempFarms);
             });
+            setFarmsDict(tempFarms);
 
             // fetch price of listing and add to subtotal
             base('Listings').find(item.fields['listing id'][0], (er, record) => {
               if (er) { setAirtableError(er); return; }
-              // todo: use agency price if appropriate
-              const currCartItemPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
-              const currCartItemCost = item.fields.pallets * currCartItemPrice;
+              const useAgencyPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type'];
+              const currCartItemPrice = useAgencyPrice ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
+              const currCartItemCost = item.fields.pallets * record.fields['grouped produce type per pallet'] * currCartItemPrice;
               setSubtotal((prevTotal) => (prevTotal + currCartItemCost));
             });
           });
@@ -367,7 +373,7 @@ function Checkout() {
 
   // links to success page
   // runs on successful submission of quote request
-  const onCheckoutSuccess = () => history.push('/cart/success', { farms: Object.entries(farms).map(([, farm]) => farm).join(' & ') });
+  const onCheckoutSuccess = () => history.push('/cart/success', { farms: Object.entries(farmsDict).map(([, farm]) => farm).join(' & ') });
 
   // method to handle text field or checkbox input change
   const handleChange = (event) => {
@@ -652,7 +658,7 @@ function Checkout() {
       <div className={classes.container}>
         <Typography className={classes.title}> Checkout </Typography>
         <Typography className={classes.farmTitle}>
-          {Object.entries(farms).map(([, farm]) => farm).join(' & ')}
+          {Object.entries(farmsDict).map(([, farm]) => farm).join(' & ')}
         </Typography>
         <div>
           <Select
@@ -699,7 +705,7 @@ function Checkout() {
                     <span className={classes.stepSlash}>/</span>
                     <span className={classes.stepLabel}>Name</span>
                   </Typography>
-                  <Grid container spacing={2} className={classes.textFieldRow}>
+                  <Grid container spacing={1} className={classes.textFieldRow}>
                     <Grid item xs={6}>
                       <CheckoutTextField
                         placeholder="First Name"
@@ -732,7 +738,7 @@ function Checkout() {
                     <span className={classes.stepSlash}>/</span>
                     <span className={classes.stepLabel}>Contact Information</span>
                   </Typography>
-                  <Grid container spacing={2} className={classes.textFieldRow}>
+                  <Grid container spacing={1} className={classes.textFieldRow}>
                     <Grid item xs={6}>
                       <CheckoutTextField
                         placeholder="Phone Number"
@@ -792,7 +798,7 @@ function Checkout() {
                       Which payment methods are you comfortable with using?
                     </span>
                   </Typography>
-                  <FormControl required error={!paymentValid}>
+                  <FormControl error={!paymentValid}>
                     <FormLabel className={classes.subtext}>Choose one or more</FormLabel>
                     <FormGroup>
                       <FormControlLabel
@@ -822,7 +828,7 @@ function Checkout() {
                     <span className={classes.stepSlash}>/</span>
                     <span className={classes.stepLabel}>Billing Address</span>
                   </Typography>
-                  <Grid container spacing={2} className={classes.textFieldRow}>
+                  <Grid container spacing={1} className={classes.textFieldRow}>
                     <Grid item xs={12}>
                       <CheckoutTextField
                         placeholder="Address Line 1"
@@ -928,10 +934,20 @@ function Checkout() {
                   <Checkbox
                     checked={checkoutWithoutSaving}
                     onChange={(event) => { setCheckoutWithoutSaving(event.target.checked); }}
+                    classes={{
+                      root: {
+                        color: '#373737',
+                        '&$checked': {
+                          color: '#373737',
+                        },
+                      },
+                    }}
+                    color="default"
                   />
                     )}
                 label="Checkout with this info without saving"
                 disabled={selectedProfile !== '' && !editing}
+                classes={{ label: classes.checkoutWithoutSavingCheckBox }}
               />
               )}
             </Grid>
@@ -944,7 +960,7 @@ function Checkout() {
                     <span className={classes.stepSlash}>/</span>
                     <span className={classes.stepLabel}>Items</span>
                   </Typography>
-                  {Object.entries(farms).map(([id, farm]) => (
+                  {Object.entries(farmsDict).map(([id, farm]) => (
                     <>
                       <Typography className={classes.farmHeader}>
                         {farm}
@@ -1028,4 +1044,4 @@ function Checkout() {
     </div>
   );
 }
-export default Checkout;
+export default CheckoutScreen;

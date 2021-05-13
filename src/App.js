@@ -7,7 +7,7 @@ import MarketplaceScreen from './components/Marketplace';
 import ContactScreen from './components/Contact';
 import NotificationsScreen from './components/Notifications';
 import CartScreen from './components/Cart';
-import { Checkout, CheckoutSuccess } from './components/Checkout';
+import { CheckoutScreen, CheckoutSuccess } from './components/Checkout';
 import ProfileScreen from './components/Profile';
 import SignInScreen from './components/SignIn';
 import SignUpScreen from './components/SignUp';
@@ -51,10 +51,8 @@ export default function App() {
           <PrivateRoute allowedRoles={allPermissions} path="/notifications" exact component={NotificationsScreen} />
           <PrivateRoute allowedRoles={allPermissions} path="/profile" exact component={ProfileScreen} />
           <PrivateRoute allowedRoles={purchasingPermissions} path="/cart" exact component={CartScreen} />
-          {/** used for checkout transitions b/w pages */}
-          <Route allowedRoles={purchasingPermissions} path="/cart/checkout" exact component={Checkout} />
-          <Route allowedRoles={purchasingPermissions} path="/cart/success" exact component={CheckoutSuccess} />
-          {/** not sure if it is the best possible method */}
+          <PrivateRoute allowedRoles={purchasingPermissions} path="/cart/checkout" exact component={CheckoutScreen} />
+          <PrivateRoute allowedRoles={purchasingPermissions} path="/cart/success" exact component={CheckoutSuccess} />
           <Route path="/contact" exact component={ContactScreen} />
           <Route
             path="/signin"

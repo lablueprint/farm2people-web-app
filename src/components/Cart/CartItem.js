@@ -26,12 +26,11 @@ export default function CartItem({
       if (err) { setErrorMessage(err); return; }
       setListingDetails(record);
       setLoading(false);
-      // should the agency tag only be used if the agency price is different than the standard?
-      setUsingAgencyPrice(store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type']);
+      setUsingAgencyPrice(store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type']);
+      console.log(record.fields['agency price per grouped produce type']);
     });
   }, []);
 
-  // TODO: talk to ryan about which fields to use here
   if (!loading && reservedListingID) {
     return (
       <>
@@ -39,11 +38,11 @@ export default function CartItem({
         <CartItemDisplay
           id={reservedListingID}
           farmID={farmID}
-          produce={listingDetails.fields.produce}
+          produceID={listingDetails.fields.produce}
           pallets={pallets}
           unitsPerPallet={listingDetails.fields['grouped produce type per pallet']}
           unitType={listingDetails.fields['grouped produce type']}
-          price={usingAgencyPrice ? listingDetails.fields['agency price per grouped produce type'] : listingDetails.fields['standard price per grouped produce type']}
+          price={listingDetails.fields['grouped produce type per pallet'] * (usingAgencyPrice ? listingDetails.fields['agency price per grouped produce type'] : listingDetails.fields['standard price per grouped produce type'])}
           updateSubtotal={updateSubtotal}
           removeListing={removeListing}
           maxAvailable={listingDetails.fields['pallets available']}

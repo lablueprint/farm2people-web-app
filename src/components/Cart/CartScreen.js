@@ -13,9 +13,6 @@ import Fruit3 from '../../assets/images/Fruit3.svg';
 import Fruit4 from '../../assets/images/Fruit4.svg';
 import '../../styles/fonts.css';
 import { store } from '../../lib/redux/store';
-// import { getUserById } from '../../lib/airtable/request';
-// getReservedListingsByIds
-// deleteReservedListing
 
 // airtable setup
 const airtableConfig = {
@@ -132,7 +129,7 @@ const useStyles = makeStyles({
 
 function CartScreen() {
   const [cartListings, setCartListings] = useState([]);
-  const [farms, setFarms] = useState({});
+  const [farmsDict, setFarmsDict] = useState({});
   // dictionary of farms in form { id: [name, subtotal]}
   const [subtotal, setSubtotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -171,13 +168,14 @@ function CartScreen() {
               // this call is nested to ensure it is called after any farm objects are created
               base('Listings').find(item.fields['listing id'][0], (er, record) => {
                 if (er) { setErrorMessage(er); return; }
-                const currCartItemPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
-                const currCartItemCost = item.fields.pallets * currCartItemPrice;
+                const useAgencyPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type'];
+                const currCartItemPrice = useAgencyPrice ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
+                const currCartItemCost = item.fields.pallets * record.fields['grouped produce type per pallet'] * currCartItemPrice;
                 tempFarms[farmID].subtotal += currCartItemCost;
                 setSubtotal((prevTotal) => (prevTotal + currCartItemCost));
               });
             });
-            setFarms(tempFarms);
+            setFarmsDict(tempFarms);
           });
         });
       }
@@ -189,9 +187,9 @@ function CartScreen() {
   // update subtotal function that is passed to each listing detail allowing adjustments
   // (ex. on quantity change, or listing is removed)
   function updateSubtotal(change, farmID) {
-    const newFarms = farms;
+    const newFarms = farmsDict;
     newFarms[farmID].subtotal += change;
-    setFarms(newFarms);
+    setFarmsDict(newFarms);
     setSubtotal((prevTotal) => (prevTotal + change));
   }
 
@@ -210,7 +208,7 @@ function CartScreen() {
     setCartListings((prevListings) => {
       const newListings = prevListings.filter((listing) => listing.id !== id);
       if (newListings.filter((listing) => listing.fields['farm id'][0] === farmID).length === 0) {
-        delete farms[farmID];
+        delete farmsDict[farmID];
       }
       return newListings;
     });
@@ -224,7 +222,7 @@ function CartScreen() {
         </Typography>
         {!loading && (cartListings.length !== 0 ? (
           <>
-            { Object.entries(farms).map(([id, farm]) => (
+            { Object.entries(farmsDict).map(([id, farm]) => (
               <>
                 <Typography className={classes.farmLabel}>
                   Shopping from
@@ -265,7 +263,7 @@ function CartScreen() {
               </>
             ))}
 
-            {Object.entries(farms).length > 1 && (
+            {Object.entries(farmsDict).length > 1 && (
             <Grid container alignItems="center" justify="flex-end" style={{ paddingTop: 24 }}>
               <Grid item xs />
               <Grid item>

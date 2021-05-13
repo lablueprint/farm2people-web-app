@@ -21,13 +21,24 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 
 // custom styling
 const useStyles = makeStyles({
-  listingImage: {
+  listingImageBox: {
+    position: 'relative',
     height: '75px',
     width: '75px',
     backgroundColor: 'white',
     border: '1px solid #E0E0E0',
     boxSizing: 'border-box',
     borderRadius: '6px',
+    overflow: 'hidden',
+  },
+  listingImage: {
+    position: 'absolute',
+    maxWidth: '100%',
+    width: '100%',
+    height: 'auto',
+    top: '50%',
+    left: '50%',
+    transform: 'translate( -50%, -50%)',
   },
   listingCrop: {
     fontFamily: 'Work Sans',
@@ -68,7 +79,6 @@ const useStyles = makeStyles({
     fontSize: '13px',
     lineHeight: '18px',
     color: '#FFFFFF',
-
     padding: 5,
     paddingInline: 8,
     marginInline: 8,
@@ -99,12 +109,10 @@ const useStyles = makeStyles({
 });
 
 export default function CartItemDisplay({
-  id, farmID, produce, pallets, unitsPerPallet, unitType, price, maxAvailable, usersInterested,
+  id, farmID, produceID, pallets, unitsPerPallet, unitType, price, maxAvailable, usersInterested,
   updateSubtotal, removeListing, usingAgencyPrice,
 }) {
-  // TODO: integrate photos stored in backend and render them in place of this
-  const image = 'https://i.ebayimg.com/images/i/350982650852-0-1/s-l1000.jpg';
-
+  const [imageURL, setImageURL] = useState('');
   const [produceName, setProduceName] = useState('');
   const [quantity, setQuantity] = useState(pallets);
   const [removeAlert, setRemoveAlert] = useState(false);
@@ -115,9 +123,10 @@ export default function CartItemDisplay({
   const [errorMessage, setErrorMessage] = useState();
 
   useEffect(() => {
-    base('Produce Type').find(produce, (err, p) => {
+    base('Produce Type').find(produceID, (err, p) => {
       if (err) { setErrorMessage(err); }
       setProduceName(p.fields['produce type']);
+      setImageURL((p.fields['produce picture'] ? p.fields['produce picture'][0].url : ''));
     });
   }, []);
 
@@ -183,7 +192,9 @@ export default function CartItemDisplay({
       <Grid container spacing={2} justify="flex-start" alignItems="flex-start">
         {errorMessage && <p>{errorMessage}</p>}
         <Grid item>
-          <img src={image} alt="random produce" className={classes.listingImage} />
+          <div className={classes.listingImageBox}>
+            <img src={imageURL} alt="produce" className={classes.listingImage} />
+          </div>
         </Grid>
         <Grid item xs container direction="column" spacing={2}>
           <Grid item xs>
@@ -216,24 +227,29 @@ export default function CartItemDisplay({
               )}
           </Grid>
         </Grid>
-        <Grid item xs={2} align="center">
+        <Grid item xs={2} lg={1.5} align="center">
           <Typography gutterBottom variant="subtitle1" className={usingAgencyPrice ? classes.listingAgencyNumbers : classes.listingNumbers}>
             $
             {parseFloat(price).toFixed(2)}
           </Typography>
         </Grid>
-        <Grid item container xs={2} alignItems="baseline" align="center" justify="center">
-          <IconButton aria-label="decrease" size="small" onClick={decreaseQuantity}>
-            <Remove fontSize="inherit" className={classes.quantityButtons} />
-          </IconButton>
-          <Typography gutterBottom variant="subtitle1" className={[classes.listingNumbers, classes.boldText, classes.quantityBox]}>
-            {quantity}
+        <Grid item xs={2} lg={1.5} align="center" justify="center">
+          <Grid item container alignItems="baseline" align="center" justify="center">
+            <IconButton aria-label="decrease" size="small" onClick={decreaseQuantity}>
+              <Remove fontSize="inherit" className={classes.quantityButtons} />
+            </IconButton>
+            <Typography gutterBottom variant="subtitle1" className={[classes.listingNumbers, classes.boldText, classes.quantityBox]}>
+              {quantity}
+            </Typography>
+            <IconButton aria-label="increase" size="small" onClick={increaseQuantity}>
+              <Add fontSize="inherit" className={classes.quantityButtons} />
+            </IconButton>
+          </Grid>
+          <Typography className={classes.listingDescription}>
+            pallets
           </Typography>
-          <IconButton aria-label="increase" size="small" onClick={increaseQuantity}>
-            <Add fontSize="inherit" className={classes.quantityButtons} />
-          </IconButton>
         </Grid>
-        <Grid item xs={2} align="center">
+        <Grid item xs={2} lg={1.5} align="center">
           <Typography gutterBottom variant="subtitle1" className={usingAgencyPrice ? classes.listingAgencyNumbers : classes.listingNumbers}>
             $
             {parseFloat((price * quantity)).toFixed(2)}
@@ -264,7 +280,7 @@ export default function CartItemDisplay({
 CartItemDisplay.propTypes = {
   id: PropTypes.string.isRequired,
   farmID: PropTypes.string.isRequired,
-  produce: PropTypes.arrayOf(PropTypes.string).isRequired,
+  produceID: PropTypes.arrayOf(PropTypes.string).isRequired,
   pallets: PropTypes.number.isRequired,
   unitsPerPallet: PropTypes.number.isRequired,
   unitType: PropTypes.string.isRequired,

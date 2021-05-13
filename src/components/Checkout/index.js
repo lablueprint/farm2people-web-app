@@ -1,4 +1,4 @@
-import Checkout from './Checkout';
+import CheckoutScreen from './CheckoutScreen';
 import CheckoutSuccess from './CheckoutSuccess';
 
-export { Checkout, CheckoutSuccess };
+export { CheckoutScreen, CheckoutSuccess };

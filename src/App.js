@@ -9,6 +9,7 @@ import CartScreen from './components/Cart';
 import ProfileScreen from './components/Profile';
 import SignInScreen from './components/SignIn';
 import SignUpScreen from './components/SignUp';
+import OrdersScreen from './components/Orders';
 import {
   LandingScreen, ForBuyersScreen, ForSellersScreen, AboutScreen,
 } from './components/PublicView';
@@ -47,6 +48,7 @@ export default function App() {
           <PrivateRoute allowedRoles={sellingPermissions} path="/inventorymanager" exact component={InventoryManagerScreen} />
           <PrivateRoute allowedRoles={purchasingPermissions} path="/marketplace" exact component={MarketplaceScreen} />
           <PrivateRoute allowedRoles={allPermissions} path="/profile" exact component={ProfileScreen} />
+          <PrivateRoute allowedRoles={allPermissions} path="/orders" exact component={OrdersScreen} />
           <PrivateRoute allowedRoles={purchasingPermissions} path="/cart" exact component={CartScreen} />
           <Route path="/contact" exact component={ContactScreen} />
           <Route

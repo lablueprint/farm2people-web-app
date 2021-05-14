@@ -60,7 +60,7 @@ export default function PricesStep({
     } else {
       prices.masterUnitPrice = 0;
     }
-    prices.palletPrice = prices.masterUnitPrice * listingRecord['master units per pallet'] + basePrice * listingRecord['grouped produce type per pallet'];
+    prices.palletPrice = basePrice * listingRecord['grouped produce type per pallet'];
     prices.masterPalletPrice = prices.palletPrice * listingRecord['pallets per master pallet'];
     return prices;
   };

@@ -198,6 +198,7 @@ ListingManagerCard.propTypes = {
     'master units per pallet': PropTypes.number,
     'grouped produce type per pallet': PropTypes.number,
     'has master pallets': PropTypes.bool,
+    'master pallets': PropTypes.number,
     'pallets per master pallet': PropTypes.number,
     'standard price per grouped produce type': PropTypes.number,
     'agency price per grouped produce type': PropTypes.number,

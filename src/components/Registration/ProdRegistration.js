@@ -5,10 +5,12 @@ import React, {
   useEffect,
 } from 'react';
 import { ThemeProvider } from '@material-ui/styles';
-import { makeStyles, createMuiTheme, useTheme } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
+import VisibilityIcon from '@material-ui/icons/Visibility';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
 import {
   Button,
   Typography,
@@ -112,23 +114,22 @@ const FARMSIZE = [
 const INITIAL_FORM_STATE = {
   contactName: '',
   farmName: '',
+  hideFarm: false,
   email: '',
   phone: '',
   county: '',
   website: '',
   addOne: '',
   addTwo: '',
+  hideAddress: false,
   additionalContact: '',
   market: [],
   additionalComments: '',
-  password: '',
-  confirmPassword: '',
-  org: '',
   zipcode: '',
-  comments: '',
   userID: '',
   farmSize: '',
   farmPractices: [],
+  hidePractices: false,
   opDemographic: [],
   farmDesc: '',
   pickup: [],
@@ -266,7 +267,6 @@ function getSteps() {
 }
 
 export default function RegistrationScreen() {
-  const reactTheme = useTheme();
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -279,7 +279,7 @@ export default function RegistrationScreen() {
       setFormState(
         {
           ...formState,
-          agencyName: record.fields.organization,
+          farmName: record.fields.organization,
           zipcode: record.fields.zipcode,
           contactName: record.fields['contact name'],
           phone: record.fields.phone,
@@ -325,26 +325,30 @@ export default function RegistrationScreen() {
       base('Farms').create([
         {
           fields: {
+            'legal name': formState.farmName,
             'farm name': formState.farmName,
+            'farm name privatized': formState.hideFarm,
             'user id': [formState.userID],
             'contact name': formState.contactName,
             description: formState.farmDesc,
             email: formState.email,
             county: formState.county,
-
             'call during': `${formState.startTime}-${formState.endTime}`,
             website: formState.website,
-            'phone string': Number(formState.phone),
+            phone: formState.phone,
             'address line 1': formState.addOne,
             'address line 2': formState.addTwo,
+            'address privatized': formState.hideAddress,
             'additional contact information': formState.additionalContact,
-            'zip code': Number(formState.zipcode),
+            zipcode: Number(formState.zipcode),
             market: formState.market,
             'farm size': formState.farmSize,
             'pick up options': formState.pickup,
             'PACA (Perishable Agricultural Commodities Act)': formState.paca,
+            'paca privatized': formState.hidePaca,
             'operation type': formState.opDemographic,
             'farming practice type': formState.farmPractices,
+            'farm practices privatized': formState.hidePractices,
             'able to deliver': formState.delivery,
             'cold chain capabilities': formState.coldChain,
             'additional comments': formState.additionalComments,
@@ -465,8 +469,8 @@ export default function RegistrationScreen() {
                     onPrev={onPrev}
                     onNext={onNext}
                     errorMsg={errorMsg}
-                    reactTheme={reactTheme}
                     handleSelect={handleSelect}
+                    handleBool={handleBool}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -480,6 +484,7 @@ export default function RegistrationScreen() {
                     errorMsg={errorMsg}
                     step2IsInvalid={step2IsInvalid}
                     loading={loading}
+                    handleBool={handleBool}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -529,7 +534,7 @@ export default function RegistrationScreen() {
 }
 
 function Step1({
-  currentStep, formState, classes, handleChange, onNext, errorMsg,
+  currentStep, formState, classes, handleChange, onNext, errorMsg, handleBool,
 }) {
   if (currentStep !== 1) {
     return null;
@@ -548,13 +553,19 @@ function Step1({
           variant="outlined"
           fullWidth
           id="farmname"
-          label="Farm Name"
+          label="Legal Farm Name"
           name="farmName"
           disabled
           value={formState.farmName}
         >
           {formState.farmName}
         </TextField>
+      </Grid>
+      <Grid container item xs={12} justify="flex-start">
+        <FormControlLabel
+          control={<Checkbox icon={<VisibilityIcon />} checkedIcon={<VisibilityOffIcon />} name="hideFarm" value={formState.hideFarm} onChange={handleBool} />}
+          label="Hide farm name on marketplace"
+        />
       </Grid>
       <Grid item xs={12}>
         <TextField
@@ -679,7 +690,7 @@ function Step1({
 
 function Step2({
   currentStep, formState, classes, handleChange, onPrev, errorMsg,
-  step2IsInvalid, loading, onNext,
+  step2IsInvalid, loading, onNext, handleBool,
 }) {
   if (currentStep !== 2) {
     return null;
@@ -729,6 +740,12 @@ function Step2({
           onChange={handleChange}
         />
       </Grid>
+      <Grid container item xs={12} justify="flex-start">
+        <FormControlLabel
+          control={<Checkbox icon={<VisibilityIcon />} checkedIcon={<VisibilityOffIcon />} name="hideAddress" value={formState.hideAddress} onChange={handleBool} />}
+          label="Hide address on marketplace"
+        />
+      </Grid>
       <Grid item xs={12}>
         <TextField
           variant="outlined"
@@ -742,7 +759,6 @@ function Step2({
         />
       </Grid>
       {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
-
       <Grid item xs={12} sm={6}>
         <Button
           type="button"
@@ -823,7 +839,6 @@ function Step3({
             onChange={handleSelect}
             name="farmSize"
             label="Farm Size"
-            placeholder="Farm Size"
             required
             fullWidth
           >
@@ -862,6 +877,12 @@ function Step3({
             ))}
           </Select>
         </FormControl>
+      </Grid>
+      <Grid container item xs={12} justify="flex-start">
+        <FormControlLabel
+          control={<Checkbox icon={<VisibilityIcon />} checkedIcon={<VisibilityOffIcon />} name="hidePractices" value={formState.hidePractices} onChange={handleBool} />}
+          label="Hide farming practices on marketplace"
+        />
       </Grid>
       <Grid item xs={12}>
         <FormControl className={classes.formControl} variant="outlined">
@@ -927,12 +948,22 @@ function Step3({
           </Select>
         </FormControl>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={6}>
         <FormGroup>
           <FormControlLabel
             control={<Checkbox name="paca" value={formState.paca} onChange={handleBool} />}
             label="PACA"
           />
+        </FormGroup>
+      </Grid>
+      <Grid container item xs={6} justify="flex-start">
+        <FormControlLabel
+          control={<Checkbox icon={<VisibilityIcon />} checkedIcon={<VisibilityOffIcon />} name="hidePaca" value={formState.hidePaca} onChange={handleBool} />}
+          label="Hide on marketplace"
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <FormGroup>
           <FormControlLabel
             control={<Checkbox name="delivery" value={formState.delivery} onChange={handleBool} />}
             label="Able to Deliver Products"

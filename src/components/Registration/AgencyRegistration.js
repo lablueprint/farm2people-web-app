@@ -5,7 +5,7 @@ import React, {
   useEffect,
 } from 'react';
 import { ThemeProvider } from '@material-ui/styles';
-import { makeStyles, createMuiTheme, useTheme } from '@material-ui/core/styles';
+import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
@@ -196,11 +196,7 @@ const INITIAL_FORM_STATE = {
   additionalContact: '',
   socials: '',
   additionalComments: '',
-  password: '',
-  confirmPassword: '',
-  org: '',
   zipcode: '',
-  comments: '',
   popServed: [],
   userID: '',
 };
@@ -210,7 +206,6 @@ function getSteps() {
 }
 
 export default function RegistrationScreen() {
-  const reactTheme = useTheme();
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -261,17 +256,21 @@ export default function RegistrationScreen() {
       base('Agencies').create([
         {
           fields: {
-            'farm name': formState.organization,
-            EIN: Number(formState.taxID),
+            'contact name': formState.contactName,
+            'legal name': formState.agencyName,
+            'federal tax id': Number(formState.taxID),
             'user id': [formState.userID],
             phone: formState.phone,
             email: formState.email,
             website: formState.website,
+            'address line 1': formState.addOne,
+            'address line 2': formState.addTwo,
             address: `${formState.addOne},${formState.addTWo}`,
-            'zip code': Number(formState.zipcode),
+            zipcode: Number(formState.zipcode),
             'social media': formState.socials,
-            notes: formState.additionalComments,
+            'additional comments': formState.additionalComments,
             'population served': formState.popServed,
+            'additional contact information': formState.additionalContact,
           },
         },
       ], (err) => {
@@ -283,17 +282,12 @@ export default function RegistrationScreen() {
         }
       });
     } catch (err) {
-      console.log(err);
-      if (err) {
-        setErrorMsg(err);
-      }
+      setErrorMsg(err);
     }
 
-    if (errorMsg) {
-      setErrorMsg(errorMsg);
-      setLoading(false);
-    } else {
+    if (!errorMsg) {
       setCurrentStep(currentStep + 1);
+      setLoading(false);
     }
   }, [formState, currentStep]);
 
@@ -390,7 +384,6 @@ export default function RegistrationScreen() {
                     onPrev={onPrev}
                     onNext={onNext}
                     errorMsg={errorMsg}
-                    reactTheme={reactTheme}
                     handleSelect={handleSelect}
                   />
                 </Grid>
@@ -459,7 +452,7 @@ function Step1({
           variant="outlined"
           fullWidth
           id="agencyname"
-          label="Agency Name"
+          label="Legal Agency Name"
           name="agencyname"
           disabled
           value={formState.agencyName}

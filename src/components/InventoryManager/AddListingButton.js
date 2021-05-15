@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { green } from '@material-ui/core/colors';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
-import AddListing from './AddListing';
+import AddListingPopup from './AddListingPopup';
 
 const useStyles = makeStyles({
   button: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 });
 
 export default function AddListingButton({
-  createRecord,
+  createRecord, produceTypes,
 }) {
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
@@ -41,11 +41,20 @@ export default function AddListingButton({
           Add Listing
         </Typography>
       </Button>
-      <AddListing closeDialog={handleClose} isOpen={editActive} modifyListings={createRecord} />
+      <AddListingPopup
+        closeDialog={handleClose}
+        isOpen={editActive}
+        modifyListings={createRecord}
+        produceTypes={produceTypes}
+      />
     </>
   );
 }
 
 AddListingButton.propTypes = {
   createRecord: PropTypes.func.isRequired,
+  produceTypes: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    fields: PropTypes.shape({}),
+  })).isRequired,
 };

@@ -6,6 +6,31 @@ import useStyles from './ChangePasswordStyles';
 import ChangePasswordForm from './ChangePasswordForm';
 import ChangePasswordSuccess from './ChangePasswordSuccess';
 
+// const bcrypt = require('bcryptjs');
+
+// const handlePassword = async (p, e) => {
+//   e.preventDefault();
+//   const salt = bcrypt.genSaltSync(10);
+//   const hash = bcrypt.hashSync('B4c0/', salt);
+//   console.log(hash);
+//   // Load hash from your password DB.
+//   const val1 = bcrypt.compareSync('B4c0/', hash); // true
+//   const val2 =
+//   bcrypt.compareSync(p, '$2b$05$4f.ByS6lAOUc5qwRvG8KqOP.oesYlpLyrk2gzLa3LHqX.e1xrDwDG'); // false
+//   console.log(val1);
+//   console.log(val2);
+//   // try {
+//   //  const status = await logoutUser();
+//   //  if (!status) {
+//   //   setErrorMsg(‘Error logging out.‘);
+//   //  } else {
+//   //   setDisplayName(‘’);
+//   //  }
+//   // } catch (err) {
+//   //  setErrorMsg(‘Error logging out.’);
+//   // }
+// };
+
 export default function ChangePasswordWindow() {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
@@ -34,7 +59,7 @@ export default function ChangePasswordWindow() {
   };
 
   // TODO: Add validation details (confirm password matching, etc.)
-  const validate = () => false;
+  const validate = () => true;
 
   return (
     <Box m={2} p={2} className={classes.box}>

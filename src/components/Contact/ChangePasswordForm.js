@@ -34,6 +34,7 @@ export default function ChangePasswordForm({
 
   // TODO: Make validateForm work somehow
   const buttonEnabled = passwords.newP === passwords.confirmP && passwords.newP !== '' && validateForm;
+  const noMatch = passwords.newP !== passwords.confirmP && passwords.newP !== '' && passwords.confirmP !== '';
 
   return (
     <Box p={3}>
@@ -99,6 +100,9 @@ export default function ChangePasswordForm({
                 required
               />
             </FormControl>
+            <Typography className={classes.errorText}>
+              {noMatch && 'Confirm password does not match your new password!'}
+            </Typography>
           </Box>
         </DialogContent>
         <DialogActions classes={{ root: classes.centerAlignDialogActions }}>

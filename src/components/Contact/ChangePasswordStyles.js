@@ -8,6 +8,14 @@ const useStyles = makeStyles({
     color: '#373737',
     textAlign: 'left',
   },
+  errorText: {
+    fontFamily: 'Work Sans',
+    fontSize: '14px',
+    color: '#ff0000',
+    textAlign: 'center',
+    marginTop: '10px',
+    margin: '0px',
+  },
   form: {
     width: '400px',
     fontFamily: 'Work Sans',

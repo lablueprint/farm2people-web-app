@@ -1,3 +1,5 @@
-import ProfileScreen from './ProfileScreen';
+// import ProfileScreen from './ProfileScreen';
+import ChangePasswordWindow from './ChangePasswordWindow';
 
-export default ProfileScreen;
+// export default ProfileScreen;
+export default ChangePasswordWindow;

@@ -5,7 +5,7 @@ import { InventoryManagerScreen, MarketplaceScreen } from './components/Marketpl
 import ContactScreen from './components/Contact';
 import NotificationsScreen from './components/Notifications';
 import CartScreen from './components/Cart';
-import AddFarmScreen from './components/AddFarm';
+import ProfileScreen from './components/Profile';
 
 export default function App() {
   return (
@@ -17,7 +17,7 @@ export default function App() {
           <Route path="/marketplace" exact component={MarketplaceScreen} />
           <Route path="/contact" exact component={ContactScreen} />
           <Route path="/notifications" exact component={NotificationsScreen} />
-          <Route path="/profile" exact component={AddFarmScreen} />
+          <Route path="/profile" exact component={ProfileScreen} />
           <Route path="/cart" exact component={CartScreen} />
         </Switch>
         <Footer />

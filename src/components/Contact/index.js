@@ -1,6 +1,3 @@
-// import ContactScreen from './ContactScreen';
-import ChangePasswordWindow from './ChangePasswordWindow';
+import ContactScreen from './ContactScreen';
 
-export default ChangePasswordWindow;
-
-// export default ContactScreen;
+export default ContactScreen;

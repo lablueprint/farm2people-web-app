@@ -17,6 +17,7 @@ export default function ListingsView({
     produceTypes.find((record) => record.id === id)
   );
   const classes = useStyles();
+  // TODO: Add a message for when user has no listings
   return (
     <>
       <Grid item container spacing={4} justify="flex-start" className={classes.listings}>

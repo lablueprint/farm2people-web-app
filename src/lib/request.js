@@ -1,3 +1,4 @@
+/* eslint-disable */ 
 /* eslint no-restricted-imports: 0 */
 /* eslint-disable no-unused-vars */
 
@@ -103,51 +104,6 @@ export const createManyCheckoutProfiles = async (records) => {
   return Promise.all(createPromises);
 };
 
-export const createProduceType = async (record) => {
-  return createRecord(Tables.ProduceType, record);
-};
-
-export const createManyProduceTypes = async (records) => {
-  const createPromises = [];
-  const numCalls = Math.ceil(records.length / 10);
-  for (let i = 0; i < numCalls; i += 1) {
-    const subset = records.slice(i * 10, (i + 1) * 10);
-    if (subset.length > 0)
-      createPromises.push(createRecords(Tables.ProduceType, subset));
-  }
-  return Promise.all(createPromises);
-};
-
-export const createListing = async (record) => {
-  return createRecord(Tables.Listings, record);
-};
-
-export const createManyListings = async (records) => {
-  const createPromises = [];
-  const numCalls = Math.ceil(records.length / 10);
-  for (let i = 0; i < numCalls; i += 1) {
-    const subset = records.slice(i * 10, (i + 1) * 10);
-    if (subset.length > 0)
-      createPromises.push(createRecords(Tables.Listings, subset));
-  }
-  return Promise.all(createPromises);
-};
-
-export const createReservedListing = async (record) => {
-  return createRecord(Tables.ReservedListings, record);
-};
-
-export const createManyReservedListings = async (records) => {
-  const createPromises = [];
-  const numCalls = Math.ceil(records.length / 10);
-  for (let i = 0; i < numCalls; i += 1) {
-    const subset = records.slice(i * 10, (i + 1) * 10);
-    if (subset.length > 0)
-      createPromises.push(createRecords(Tables.ReservedListings, subset));
-  }
-  return Promise.all(createPromises);
-};
-
 export const createNotification = async (record) => {
   return createRecord(Tables.Notifications, record);
 };
@@ -178,6 +134,66 @@ export const createManyEmails = async (records) => {
   return Promise.all(createPromises);
 };
 
+export const createReservedListing = async (record) => {
+  return createRecord(Tables.ReservedListings, record);
+};
+
+export const createManyReservedListings = async (records) => {
+  const createPromises = [];
+  const numCalls = Math.ceil(records.length / 10);
+  for (let i = 0; i < numCalls; i += 1) {
+    const subset = records.slice(i * 10, (i + 1) * 10);
+    if (subset.length > 0)
+      createPromises.push(createRecords(Tables.ReservedListings, subset));
+  }
+  return Promise.all(createPromises);
+};
+
+export const createListing = async (record) => {
+  return createRecord(Tables.Listings, record);
+};
+
+export const createManyListings = async (records) => {
+  const createPromises = [];
+  const numCalls = Math.ceil(records.length / 10);
+  for (let i = 0; i < numCalls; i += 1) {
+    const subset = records.slice(i * 10, (i + 1) * 10);
+    if (subset.length > 0)
+      createPromises.push(createRecords(Tables.Listings, subset));
+  }
+  return Promise.all(createPromises);
+};
+
+export const createListingUPDATED = async (record) => {
+  return createRecord(Tables.ListingUPDATED, record);
+};
+
+export const createManyListingUPDATEDs = async (records) => {
+  const createPromises = [];
+  const numCalls = Math.ceil(records.length / 10);
+  for (let i = 0; i < numCalls; i += 1) {
+    const subset = records.slice(i * 10, (i + 1) * 10);
+    if (subset.length > 0)
+      createPromises.push(createRecords(Tables.ListingUPDATED, subset));
+  }
+  return Promise.all(createPromises);
+};
+
+export const createProduceType = async (record) => {
+  return createRecord(Tables.ProduceType, record);
+};
+
+export const createManyProduceTypes = async (records) => {
+  const createPromises = [];
+  const numCalls = Math.ceil(records.length / 10);
+  for (let i = 0; i < numCalls; i += 1) {
+    const subset = records.slice(i * 10, (i + 1) * 10);
+    if (subset.length > 0)
+      createPromises.push(createRecords(Tables.ProduceType, subset));
+  }
+  return Promise.all(createPromises);
+};
+
 /*
  ******* READ RECORDS *******
  */
@@ -189,7 +205,7 @@ export const getUserById = async (id) => {
 export const getUsersByIds = async ( ids, filterByFormula = '', sort = []
 ) => {
   let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
+    (f, id) => `${f} RECORD_ID()='${id}',`,
     ''
   )} 1 < 0)`;
   formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
@@ -207,7 +223,7 @@ export const getFarmById = async (id) => {
 export const getFarmsByIds = async ( ids, filterByFormula = '', sort = []
 ) => {
   let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
+    (f, id) => `${f} RECORD_ID()='${id}',`,
     ''
   )} 1 < 0)`;
   formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
@@ -225,7 +241,7 @@ export const getAgencieById = async (id) => {
 export const getAgenciesByIds = async ( ids, filterByFormula = '', sort = []
 ) => {
   let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
+    (f, id) => `${f} RECORD_ID()='${id}',`,
     ''
   )} 1 < 0)`;
   formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
@@ -243,7 +259,7 @@ export const getQuoteById = async (id) => {
 export const getQuotesByIds = async ( ids, filterByFormula = '', sort = []
 ) => {
   let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
+    (f, id) => `${f} RECORD_ID()='${id}',`,
     ''
   )} 1 < 0)`;
   formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
@@ -261,7 +277,7 @@ export const getCheckoutProfileById = async (id) => {
 export const getCheckoutProfilesByIds = async ( ids, filterByFormula = '', sort = []
 ) => {
   let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
+    (f, id) => `${f} RECORD_ID()='${id}',`,
     ''
   )} 1 < 0)`;
   formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
@@ -272,60 +288,6 @@ export const getAllCheckoutProfiles = async (filterByFormula = '', sort = []) =>
   return getAllRecords(Tables.CheckoutProfiles, filterByFormula, sort);
 };
 
-export const getProduceTypeById = async (id) => {
-  return getRecordById(Tables.ProduceType, id);
-};
-
-export const getProduceTypesByIds = async ( ids, filterByFormula = '', sort = []
-) => {
-  let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
-    ''
-  )} 1 < 0)`;
-  formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
-  return getAllRecords(Tables.ProduceType, formula, sort);
-};
-
-export const getAllProduceTypes = async (filterByFormula = '', sort = []) => {
-  return getAllRecords(Tables.ProduceType, filterByFormula, sort);
-};
-
-export const getListingById = async (id) => {
-  return getRecordById(Tables.Listings, id);
-};
-
-export const getListingsByIds = async ( ids, filterByFormula = '', sort = []
-) => {
-  let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
-    ''
-  )} 1 < 0)`;
-  formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
-  return getAllRecords(Tables.Listings, formula, sort);
-};
-
-export const getAllListings = async (filterByFormula = '', sort = []) => {
-  return getAllRecords(Tables.Listings, filterByFormula, sort);
-};
-
-export const getReservedListingById = async (id) => {
-  return getRecordById(Tables.ReservedListings, id);
-};
-
-export const getReservedListingsByIds = async ( ids, filterByFormula = '', sort = []
-) => {
-  let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
-    ''
-  )} 1 < 0)`;
-  formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
-  return getAllRecords(Tables.ReservedListings, formula, sort);
-};
-
-export const getAllReservedListings = async (filterByFormula = '', sort = []) => {
-  return getAllRecords(Tables.ReservedListings, filterByFormula, sort);
-};
-
 export const getNotificationById = async (id) => {
   return getRecordById(Tables.Notifications, id);
 };
@@ -333,7 +295,7 @@ export const getNotificationById = async (id) => {
 export const getNotificationsByIds = async ( ids, filterByFormula = '', sort = []
 ) => {
   let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
+    (f, id) => `${f} RECORD_ID()='${id}',`,
     ''
   )} 1 < 0)`;
   formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
@@ -351,7 +313,7 @@ export const getEmailById = async (id) => {
 export const getEmailsByIds = async ( ids, filterByFormula = '', sort = []
 ) => {
   let formula = `OR(${ids.reduce(
-    (f, id) => `${f} {ID}='${id}',`,
+    (f, id) => `${f} RECORD_ID()='${id}',`,
     ''
   )} 1 < 0)`;
   formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
@@ -360,6 +322,78 @@ export const getEmailsByIds = async ( ids, filterByFormula = '', sort = []
 
 export const getAllEmails = async (filterByFormula = '', sort = []) => {
   return getAllRecords(Tables.Email, filterByFormula, sort);
+};
+
+export const getReservedListingById = async (id) => {
+  return getRecordById(Tables.ReservedListings, id);
+};
+
+export const getReservedListingsByIds = async ( ids, filterByFormula = '', sort = []
+) => {
+  let formula = `OR(${ids.reduce(
+    (f, id) => `${f} RECORD_ID()='${id}',`,
+    ''
+  )} 1 < 0)`;
+  formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
+  return getAllRecords(Tables.ReservedListings, formula, sort);
+};
+
+export const getAllReservedListings = async (filterByFormula = '', sort = []) => {
+  return getAllRecords(Tables.ReservedListings, filterByFormula, sort);
+};
+
+export const getListingById = async (id) => {
+  return getRecordById(Tables.Listings, id);
+};
+
+export const getListingsByIds = async ( ids, filterByFormula = '', sort = []
+) => {
+  let formula = `OR(${ids.reduce(
+    (f, id) => `${f} RECORD_ID()='${id}',`,
+    ''
+  )} 1 < 0)`;
+  formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
+  return getAllRecords(Tables.Listings, formula, sort);
+};
+
+export const getAllListings = async (filterByFormula = '', sort = []) => {
+  return getAllRecords(Tables.Listings, filterByFormula, sort);
+};
+
+export const getListingUPDATEDById = async (id) => {
+  return getRecordById(Tables.ListingUPDATED, id);
+};
+
+export const getListingUPDATEDsByIds = async ( ids, filterByFormula = '', sort = []
+) => {
+  let formula = `OR(${ids.reduce(
+    (f, id) => `${f} RECORD_ID()='${id}',`,
+    ''
+  )} 1 < 0)`;
+  formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
+  return getAllRecords(Tables.ListingUPDATED, formula, sort);
+};
+
+export const getAllListingUPDATEDs = async (filterByFormula = '', sort = []) => {
+  return getAllRecords(Tables.ListingUPDATED, filterByFormula, sort);
+};
+
+export const getProduceTypeById = async (id) => {
+  return getRecordById(Tables.ProduceType, id);
+};
+
+export const getProduceTypesByIds = async ( ids, filterByFormula = '', sort = []
+) => {
+  let formula = `OR(${ids.reduce(
+    (f, id) => `${f} RECORD_ID()='${id}',`,
+    ''
+  )} 1 < 0)`;
+  formula = filterByFormula ? `AND(${filterByFormula}, ${formula})` : formula;
+  return getAllRecords(Tables.ProduceType, formula, sort);
+};
+
+export const getAllProduceTypes = async (filterByFormula = '', sort = []) => {
+  return getAllRecords(Tables.ProduceType, filterByFormula, sort);
 };
 
 /*
@@ -441,51 +475,6 @@ export const updateManyCheckoutProfiles = async (recordUpdates) => {
   return Promise.all(updatePromises);
 };
 
-export const updateProduceType = async (id, recordUpdates) => {
-  return updateRecord(Tables.ProduceType, id, recordUpdates);
-};
-
-export const updateManyProduceTypes = async (recordUpdates) => {
-  const updatePromises = [];
-  const numCalls = Math.ceil(recordUpdates.length / 10);
-  for (let i = 0; i < numCalls; i += 1) {
-    const subset = recordUpdates.slice(i * 10, (i + 1) * 10);
-    if (subset.length > 0)
-      updatePromises.push(updateRecords(Tables.ProduceType, subset));
-  }
-  return Promise.all(updatePromises);
-};
-
-export const updateListing = async (id, recordUpdates) => {
-  return updateRecord(Tables.Listings, id, recordUpdates);
-};
-
-export const updateManyListings = async (recordUpdates) => {
-  const updatePromises = [];
-  const numCalls = Math.ceil(recordUpdates.length / 10);
-  for (let i = 0; i < numCalls; i += 1) {
-    const subset = recordUpdates.slice(i * 10, (i + 1) * 10);
-    if (subset.length > 0)
-      updatePromises.push(updateRecords(Tables.Listings, subset));
-  }
-  return Promise.all(updatePromises);
-};
-
-export const updateReservedListing = async (id, recordUpdates) => {
-  return updateRecord(Tables.ReservedListings, id, recordUpdates);
-};
-
-export const updateManyReservedListings = async (recordUpdates) => {
-  const updatePromises = [];
-  const numCalls = Math.ceil(recordUpdates.length / 10);
-  for (let i = 0; i < numCalls; i += 1) {
-    const subset = recordUpdates.slice(i * 10, (i + 1) * 10);
-    if (subset.length > 0)
-      updatePromises.push(updateRecords(Tables.ReservedListings, subset));
-  }
-  return Promise.all(updatePromises);
-};
-
 export const updateNotification = async (id, recordUpdates) => {
   return updateRecord(Tables.Notifications, id, recordUpdates);
 };
@@ -516,6 +505,66 @@ export const updateManyEmails = async (recordUpdates) => {
   return Promise.all(updatePromises);
 };
 
+export const updateReservedListing = async (id, recordUpdates) => {
+  return updateRecord(Tables.ReservedListings, id, recordUpdates);
+};
+
+export const updateManyReservedListings = async (recordUpdates) => {
+  const updatePromises = [];
+  const numCalls = Math.ceil(recordUpdates.length / 10);
+  for (let i = 0; i < numCalls; i += 1) {
+    const subset = recordUpdates.slice(i * 10, (i + 1) * 10);
+    if (subset.length > 0)
+      updatePromises.push(updateRecords(Tables.ReservedListings, subset));
+  }
+  return Promise.all(updatePromises);
+};
+
+export const updateListing = async (id, recordUpdates) => {
+  return updateRecord(Tables.Listings, id, recordUpdates);
+};
+
+export const updateManyListings = async (recordUpdates) => {
+  const updatePromises = [];
+  const numCalls = Math.ceil(recordUpdates.length / 10);
+  for (let i = 0; i < numCalls; i += 1) {
+    const subset = recordUpdates.slice(i * 10, (i + 1) * 10);
+    if (subset.length > 0)
+      updatePromises.push(updateRecords(Tables.Listings, subset));
+  }
+  return Promise.all(updatePromises);
+};
+
+export const updateListingUPDATED = async (id, recordUpdates) => {
+  return updateRecord(Tables.ListingUPDATED, id, recordUpdates);
+};
+
+export const updateManyListingUPDATEDs = async (recordUpdates) => {
+  const updatePromises = [];
+  const numCalls = Math.ceil(recordUpdates.length / 10);
+  for (let i = 0; i < numCalls; i += 1) {
+    const subset = recordUpdates.slice(i * 10, (i + 1) * 10);
+    if (subset.length > 0)
+      updatePromises.push(updateRecords(Tables.ListingUPDATED, subset));
+  }
+  return Promise.all(updatePromises);
+};
+
+export const updateProduceType = async (id, recordUpdates) => {
+  return updateRecord(Tables.ProduceType, id, recordUpdates);
+};
+
+export const updateManyProduceTypes = async (recordUpdates) => {
+  const updatePromises = [];
+  const numCalls = Math.ceil(recordUpdates.length / 10);
+  for (let i = 0; i < numCalls; i += 1) {
+    const subset = recordUpdates.slice(i * 10, (i + 1) * 10);
+    if (subset.length > 0)
+      updatePromises.push(updateRecords(Tables.ProduceType, subset));
+  }
+  return Promise.all(updatePromises);
+};
+
 /*
  ******* DELETE RECORDS *******
  */
@@ -535,18 +584,21 @@ export const deleteQuote = async (id) => {
 export const deleteCheckoutProfile = async (id) => {
   return deleteRecord(Tables.CheckoutProfiles, id);
 };
-export const deleteProduceType = async (id) => {
-  return deleteRecord(Tables.ProduceType, id);
-};
-export const deleteListing = async (id) => {
-  return deleteRecord(Tables.Listings, id);
-};
-export const deleteReservedListing = async (id) => {
-  return deleteRecord(Tables.ReservedListings, id);
-};
 export const deleteNotification = async (id) => {
   return deleteRecord(Tables.Notifications, id);
 };
 export const deleteEmail = async (id) => {
   return deleteRecord(Tables.Email, id);
+};
+export const deleteReservedListing = async (id) => {
+  return deleteRecord(Tables.ReservedListings, id);
+};
+export const deleteListing = async (id) => {
+  return deleteRecord(Tables.Listings, id);
+};
+export const deleteListingUPDATED = async (id) => {
+  return deleteRecord(Tables.ListingUPDATED, id);
+};
+export const deleteProduceType = async (id) => {
+  return deleteRecord(Tables.ProduceType, id);
 };

@@ -13,7 +13,7 @@ import FB from '../../assets/images/FB.svg';
 import LI from '../../assets/images/LI.svg';
 import IG from '../../assets/images/IG.svg';
 import TW from '../../assets/images/TW.svg';
-import farmerSideImg from '../../assets/images/FarmerContact.svg';
+import farmerSideImg from '../../assets/images/FarmerContact.png';
 
 const useStyles = makeStyles({
   root: {

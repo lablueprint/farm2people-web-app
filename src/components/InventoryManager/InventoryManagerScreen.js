@@ -2,34 +2,37 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Airtable from 'airtable';
+import { store } from '../../lib/redux/store';
+import { base } from '../../lib/airtable/airtable';
 import ListingsView from './ListingsView';
 import AddListingButton from './AddListingButton';
 import DeleteButton from './DeleteButton';
 
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
 const useStyles = makeStyles({
   root: {
     position: 'relative',
     minHeight: '100vh',
+    maxWidth: '100%',
   },
   dashboard: {
-    marginTop: '1%',
+    marginTop: '2%',
+    marginBottom: '2%',
   },
   text: {
     fontFamily: 'Work Sans',
   },
+  listings: {
+    border: '1px solid #F1F2F2',
+    boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
+    borderRadius: '10px',
+    marginTop: '3%',
+  },
 });
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey })
-  .base(airtableConfig.baseKey);
 
 let initialCardSelect = {};
 export default function InventoryManagerScreen() {
   const classes = useStyles();
+  const [produceTypes, setProduceTypes] = useState([]);
   const [cardListings, setCardListings] = useState([]);
   const [selectedCards, setSelectedCards] = useState({});
   function createRecord(rec) {
@@ -45,10 +48,11 @@ export default function InventoryManagerScreen() {
       });
     });
   }
-  function editRecord(id, rec) {
+  function editRecord(rec) {
+    const { 'listing id': id, user, ...fields } = rec;
     const record = {
       id,
-      fields: rec,
+      fields,
     };
     base('Listings').update([record], (err, records) => {
       if (err) {
@@ -93,7 +97,10 @@ export default function InventoryManagerScreen() {
   }
   useEffect(() => {
     base('Listings')
-      .select({ view: 'Grid view' })
+      .select({
+        view: 'Grid view',
+        filterByFormula: `{user} = "${store.getState().userData.user.id}"`,
+      })
       .all().then((records) => {
         setCardListings(records);
         records.forEach((listing) => {
@@ -102,32 +109,40 @@ export default function InventoryManagerScreen() {
         setSelectedCards(initialCardSelect);
       });
   }, []);
+  useEffect(() => {
+    base('Produce Type')
+      .select({ view: 'Grid view' })
+      .all().then((records) => {
+        setProduceTypes(records);
+      });
+  }, []);
   return (
     <>
       <div className={classes.root}>
         <Grid container spacing={0} className={classes.dashboard}>
           <Grid item xs={1} />
-          <Grid container item spacing={3} xs={9} alignItems="center" justify="left">
+          <Grid container item spacing={3} xs={9} alignItems="center">
             <Grid item xs={12}>
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
               </Typography>
             </Grid>
-            <Grid container item direction="row" justify="space-between" alignItems="center" spacing={1} xs={12}>
+            <Grid container item direction="row" spacing={1} xs={12}>
               <Grid item xs={8} />
               <Grid item xs={2}>
-                <AddListingButton createRecord={createRecord} />
+                <AddListingButton createRecord={createRecord} produceTypes={produceTypes} />
               </Grid>
               <Grid item xs={2}>
                 <DeleteButton deleteRecords={deleteSelectedRecords} />
               </Grid>
             </Grid>
-            <Grid item xs={12}>
+            <Grid container item xs={12} className={classes.listings}>
               <ListingsView
                 cardListings={cardListings}
                 selectedCards={selectedCards}
                 updateSelectedCards={updateSelectedCards}
                 editRecord={editRecord}
+                produceTypes={produceTypes}
               />
             </Grid>
           </Grid>

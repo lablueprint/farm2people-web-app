@@ -155,9 +155,15 @@ const useStyles = makeStyles({
   },
 });
 
-export default function LandingScreen() {
+export default function ForBuyersScreen() {
   const classes = useStyles();
   const handleContactClick = () => { history.push('/contact'); };
+  const handleSignInClick = () => {
+    history.push('/signin');
+  };
+  const handleSignUpClick = () => {
+    history.push('/signup');
+  };
   return (
     <div>
       <div className={classes.headerContainer}>
@@ -167,7 +173,7 @@ export default function LandingScreen() {
             Shop organically grown,
             local produce and support farmers who feed us
           </Typography>
-          <Button className={classes.startButton} variant="contained" color="primary" type="button">Start Shopping</Button>
+          <Button onClick={handleSignInClick} className={classes.startButton} variant="contained" color="primary" type="button">Start Shopping</Button>
         </div>
       </div>
       <div className={classes.centerContainer}>
@@ -198,7 +204,7 @@ export default function LandingScreen() {
           If you’re a food bank,
           food relief agency, or buyer
         </h3>
-        <Button className={classes.signUpButtonGreen} variant="contained" color="primary" type="button">Sign Up Now</Button>
+        <Button onClick={handleSignUpClick} className={classes.signUpButtonGreen} variant="contained" color="primary" type="button">Sign Up Now</Button>
         <div className={classes.horizontalContainer}>
           <Typography className={classes.questionText}>
             Have questions? Visit the&nbsp;

@@ -119,16 +119,6 @@ export default function Navbar(props) {
                 </li>
                 <li className="nav-item">
                   <NavLink
-                    to="/notifications"
-                    activeClassName="nav-links-active"
-                    className="nav-links"
-                    onClick={closeMobileMenu}
-                  >
-                    Notifications
-                  </NavLink>
-                </li>
-                <li className="nav-item">
-                  <NavLink
                     to="/profile"
                     activeClassName="nav-links-active"
                     className="nav-links"

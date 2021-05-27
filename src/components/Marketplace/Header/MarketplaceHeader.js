@@ -48,7 +48,6 @@ const useStyles = makeStyles({
   // Search bar styling
   searchBarContainer: {
     marginTop: '0.5%',
-    // width: '68%',
     marginLeft: '3.5%',
   },
   inputText: {

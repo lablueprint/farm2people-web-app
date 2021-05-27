@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
-import headerBanner from '../../assets/images/HeaderBanner.svg';
+import headerBanner from '../../assets/images/HeaderBanner.jpg';
 import treesBanner from '../../assets/images/TreesBanner.svg';
 import fruit from '../../assets/images/LandingScreenFruit.svg';
 import '../../styles/fonts.css';
@@ -194,6 +194,9 @@ export default function LandingScreen() {
   const handleSignInClick = () => {
     history.push('/signin');
   };
+  const handleSignUpClick = () => {
+    history.push('/signup');
+  };
   return (
     <div>
       <div className={classes.headerContainer}>
@@ -205,7 +208,7 @@ export default function LandingScreen() {
             Or sell the produce you grow
           </p>
           <div className={classes.innerContainer}>
-            <Button className={classes.signupButton} variant="contained" color="primary" type="button">Sign Up</Button>
+            <Button onClick={handleSignUpClick} className={classes.signupButton} variant="contained" color="primary" type="button">Sign Up</Button>
             <div>
               <p className={classes.accountQuestionText}>Already have an account?</p>
               <Button onClick={handleSignInClick} look="clear" className={classes.signinButton}>Sign In</Button>
@@ -242,19 +245,19 @@ export default function LandingScreen() {
         <div className={classes.roleContainer}>
           <h3 className={classes.roleSignUpText}>If you are a company or buyer</h3>
           <div className={classes.centerContainer}>
-            <Button className={classes.roleSignUnButtonRed} variant="contained" color="primary" type="button">Sign Up as a buyer</Button>
+            <Button onClick={handleSignUpClick} className={classes.roleSignUnButtonRed} variant="contained" color="primary" type="button">Sign Up as a buyer</Button>
           </div>
         </div>
         <div className={classes.roleContainer}>
           <h3 className={classes.roleSignUpText}>If you are a food relief agency or non-profit</h3>
           <div className={classes.centerContainer}>
-            <Button className={classes.roleSignUnButtonBlue} variant="contained" color="primary" type="button">Sign Up as an agency</Button>
+            <Button onClick={handleSignUpClick} className={classes.roleSignUnButtonBlue} variant="contained" color="primary" type="button">Sign Up as an agency</Button>
           </div>
         </div>
         <div className={classes.roleContainer}>
           <h3 className={classes.roleSignUpText}>If you are a farmer or seller</h3>
           <div className={classes.centerContainer}>
-            <Button className={classes.roleSignUnButtonGreen} variant="contained" color="primary" type="button">Sign Up as a seller</Button>
+            <Button onClick={handleSignUpClick} className={classes.roleSignUnButtonGreen} variant="contained" color="primary" type="button">Sign Up as a seller</Button>
           </div>
         </div>
       </div>

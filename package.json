@@ -69,6 +69,6 @@
   },
   "airtable-schema-generator": {
     "mode": "Auto",
-    "output": "./src/lib/"
+    "output": "./src/lib/airtable/"
   }
 }

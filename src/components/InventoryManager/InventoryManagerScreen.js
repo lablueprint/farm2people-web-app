@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { store } from '../../lib/redux/store';
-import { base } from '../../lib/airtable';
+import { base } from '../../lib/airtable/airtable';
 import ListingsView from './ListingsView';
 import AddListingButton from './AddListingButton';
 import DeleteButton from './DeleteButton';
@@ -49,7 +49,7 @@ export default function InventoryManagerScreen() {
     });
   }
   function editRecord(rec) {
-    const { 'listing id': id, ...fields } = rec;
+    const { 'listing id': id, user, ...fields } = rec;
     const record = {
       id,
       fields,

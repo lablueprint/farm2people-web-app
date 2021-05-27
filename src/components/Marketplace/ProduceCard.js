@@ -19,11 +19,11 @@ const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig
 
 const useStyles = makeStyles({
   cardContainer: {
-    width: '18%',
+    width: '22%',
     background: 'white',
     borderWidth: '0px',
-    margin: '1.5%',
-    borderRadius: '8px',
+    margin: '5px 10px 20px 12px',
+    borderRadius: '6px',
     fontFamily: 'Work Sans',
   },
   img: { // Height must be specified for image to appear
@@ -32,36 +32,47 @@ const useStyles = makeStyles({
     marginTop: '4%',
     marginLeft: '5%',
     marginRight: '5%',
+    borderRadius: '6px',
   },
   titleText: {
     fontFamily: 'Work Sans',
-    fontSize: '18px',
-    marginBottom: '1.5%',
-    marginTop: '-4.5%',
+    fontSize: '17px',
+    marginBottom: '2.5%',
+    marginTop: '-4%',
     fontWeight: 'bold',
+    /* Make text hidden if it's too long, mark with ellipsis */
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   farmText: {
     fontFamily: 'Work Sans',
-    fontSize: '13px',
+    fontSize: '12.8px',
     marginBottom: '1.5%',
+    /* Make text hidden if it's too long, mark with ellipsis */
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+  },
+  priceTextPadding: {
+    marginBottom: '-4%',
   },
   priceText: {
     fontFamily: 'Work Sans',
-    fontSize: '16px',
+    fontSize: '15.5px',
     fontWeight: 'bolder',
     marginTop: '1%',
-    marginBottom: '-4.5%',
   },
   smallPriceText: {
     fontFamily: 'Work Sans',
-    fontSize: '12px',
+    fontSize: '11.5px',
     fontWeight: 'bolder',
-    marginTop: '1%',
-    marginBottom: '-4%',
+    marginTop: '10px',
+    marginBottom: '1px',
   },
   cartButton: {
     width: '100%',
-    borderRadius: '8px',
+    borderRadius: '6px',
     backgroundColor: '#53AA48',
     color: 'white',
     fontFamily: 'Work Sans',
@@ -76,18 +87,36 @@ const useStyles = makeStyles({
 
 export default function ProduceCard(props) {
   const {
-    cropName, farmID, unitPrice, unitType,
+    // eslint-disable-next-line no-unused-vars
+    produceID, farmID, palletPrice, season, // (TODO: remove later when season is used)
   } = props;
   const [farmName, setFarmName] = useState('');
+  const [produceName, setProduceName] = useState('');
+  // eslint-disable-next-line no-unused-vars
+  const [produceCategory, setProduceCategory] = useState(''); // (TODO: remove later when used)
 
   // Get farm name from Airtable if produce has farm id linked to it
   useEffect(() => {
-    if (farmID === null) {
+    if (farmID === null || farmID[0].length < 5) {
       setFarmName('Unnamed farm');
     } else {
       const farmArr = farmID.toString().split(',');
       base('Farms').find(farmArr[0]).then((farmObj) => {
         setFarmName(farmObj.fields['farm name'] || 'Farm not found');
+      });
+    }
+  }, []);
+
+  // Get produce name, img (TODO), + produce type using produceID
+  useEffect(() => {
+    if (produceID === null || produceID.length < 5) {
+      setProduceName('Unnamed produce');
+    } else {
+      base('Farms').find(produceID).then((produceObj) => {
+        // TODO: get image
+        setProduceName(produceObj.fields['produce type'] || 'Produce not found');
+        const category = produceObj.fields['produce category'];
+        setProduceCategory(category || 'No category');
       });
     }
   }, []);
@@ -102,7 +131,7 @@ export default function ProduceCard(props) {
       />
       <CardContent>
         <Typography className={classes.titleText}>
-          {cropName}
+          {produceName}
         </Typography>
         <Typography className={classes.farmText}>
           {farmName}
@@ -112,12 +141,13 @@ export default function ProduceCard(props) {
           direction="row"
           justify="flex-start"
           alignItems="flex-end"
+          className={classes.priceTextPadding}
         >
           <Typography className={classes.priceText}>
-            {`$${unitPrice}/`}
+            {`$${palletPrice}/`}
           </Typography>
           <Typography className={classes.smallPriceText}>
-            {unitType}
+            pallet
           </Typography>
         </Grid>
       </CardContent>
@@ -132,8 +162,8 @@ export default function ProduceCard(props) {
 }
 
 ProduceCard.propTypes = {
-  cropName: PropTypes.string.isRequired,
-  farmID: PropTypes.string.isRequired,
-  unitPrice: PropTypes.number.isRequired,
-  unitType: PropTypes.string.isRequired,
+  produceID: PropTypes.string.isRequired,
+  farmID: PropTypes.arrayOf(PropTypes.string).isRequired,
+  palletPrice: PropTypes.number.isRequired,
+  season: PropTypes.string.isRequired,
 };

@@ -7,7 +7,7 @@ import Airtable from 'airtable';
 import {
   Typography,
 } from '@material-ui/core';
-import ContactBanner from '../../assets/images/ContactBanner.svg';
+import ContactBanner from '../../assets/images/ContactBanner.png';
 import Circle from '../../assets/images/CircleLogo.svg';
 import FB from '../../assets/images/FB.svg';
 import LI from '../../assets/images/LI.svg';

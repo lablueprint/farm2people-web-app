@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container, Grid, Typography } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import FilterMenu from './FilterMenu';
 import PriceMenu from './PriceMenu';
 import SortMenu from './SortMenu';
@@ -38,7 +39,7 @@ const useStyles = makeStyles({
 });
 
 /* Sidebar with filter selections for types + sorting */
-export default function MarketplaceSidebar() {
+export default function MarketplaceSidebar({ onSeasonFilterChange }) {
   const classes = useStyles();
 
   return (
@@ -68,7 +69,12 @@ export default function MarketplaceSidebar() {
         menuTitle="Farming Season"
         filterOptions={['Fall', 'Winter', 'Summer', 'Spring']}
         isLast
+        onFilterChange={onSeasonFilterChange}
       />
     </Container>
   );
 }
+
+MarketplaceSidebar.propTypes = {
+  onSeasonFilterChange: PropTypes.func.isRequired,
+};

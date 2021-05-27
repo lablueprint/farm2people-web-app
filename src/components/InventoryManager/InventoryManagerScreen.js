@@ -102,7 +102,6 @@ export default function InventoryManagerScreen() {
         filterByFormula: `{user} = "${store.getState().userData.user.id}"`,
       })
       .all().then((records) => {
-        console.log(records);
         setCardListings(records);
         records.forEach((listing) => {
           initialCardSelect = { ...initialCardSelect, [listing.id]: false };

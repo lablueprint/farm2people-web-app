@@ -7,36 +7,29 @@ import Airtable from 'airtable';
 import {
   Typography,
 } from '@material-ui/core';
-import Image1 from './top.png';
-import Circle from './Circle Logo.png';
-import FB from './FB.png';
-import LI from './LI.png';
-import IG from './IG.png';
-import TW from './TW.png';
-import image2 from './image2.png';
+import ContactBanner from '../../assets/images/ContactBanner.svg';
+import Circle from '../../assets/images/CircleLogo.svg';
+import FB from '../../assets/images/FB.svg';
+import LI from '../../assets/images/LI.svg';
+import IG from '../../assets/images/IG.svg';
+import TW from '../../assets/images/TW.svg';
+import farmerSideImg from '../../assets/images/FarmerContact.svg';
 
 const useStyles = makeStyles({
-
   root: {
     display: 'flex',
     flexWrap: 'wrap',
-    /* for horizontal aligning of child divs */
     justifyContent: 'center',
-    /* for vertical aligning */
     alignItems: 'center',
   },
-
   lower: {
     paddingTop: '40px',
   },
-
   topList: {
     display: 'flex',
     lineHeight: 3,
     position: 'relative',
-
   },
-
   innerDoubleList: {
     display: 'flex',
     lineHeight: '28px',
@@ -45,7 +38,6 @@ const useStyles = makeStyles({
     position: 'relative',
     width: '100%',
   },
-
   innerListTitle: {
     fontFamily: 'Work Sans',
     textDecoration: 'none',
@@ -54,15 +46,14 @@ const useStyles = makeStyles({
     fontWeight: '400',
     fontStyle: 'normal',
   },
-
-  ListItem: {
+  listItem: {
     fontFamily: 'Work Sans',
     textDecoration: 'none',
     fontSize: '20px',
     color: '#373737',
     fontStyle: 'normal',
   },
-  ListItemTitle: {
+  listItemTitle: {
     fontFamily: 'Work Sans',
     textDecoration: 'none',
     fontWeight: 'bold',
@@ -71,8 +62,7 @@ const useStyles = makeStyles({
     textTransform: 'uppercase',
     fontStyle: 'normal',
   },
-
-  List: {
+  list: {
     listStyleType: 'none',
 
   },
@@ -81,7 +71,6 @@ const useStyles = makeStyles({
     listStyleType: 'none',
 
   },
-
   img: {
     paddingRight: 12,
   },
@@ -91,7 +80,6 @@ const useStyles = makeStyles({
     paddingBottom: 0,
     filter: 'brightness(80%)',
   },
-
   emailForm: {
     backgroundColor: '#F1F2F2',
     marginBottom: 0,
@@ -100,26 +88,11 @@ const useStyles = makeStyles({
     paddingTop: 50,
     paddingBottom: 40,
   },
-
-  navLinksActive: {
-    textDecoration: 'underline',
-    textDecorationColor: '#484848',
-    textDecorationThickness: '2px',
-    textUnderlineOffset: '1.5px',
-  },
   inputField: {
     fontFamily: 'Work Sans',
     width: '100%',
     backgroundColor: 'white',
-
   },
-  inputFieldModified: {
-    fontFamily: 'Work Sans',
-    width: '100%',
-    backgroundColor: 'white',
-
-  },
-
   text: {
     fontFamily: 'Work Sans',
     fontSize: '1.3em',
@@ -127,9 +100,6 @@ const useStyles = makeStyles({
     paddingTop: '30px',
     paddingBottom: '10px',
     textTransform: 'uppercase',
-  },
-  noSpacingGrid: {
-    height: 0,
   },
   inputTitle: {
     paddingBottom: 0,
@@ -140,20 +110,16 @@ const useStyles = makeStyles({
       content: '" *"',
       color: '#f00',
     },
-
   },
-
-  image1: {
+  contactBanner: {
     filter: 'brightness(80%)',
-    paddingBottom: '60px',
+    paddingBottom: '40px',
   },
-
   btn: {
     backgroundColor: '#53AA48',
     paddingBottom: '30px',
     width: '150%',
   },
-
 });
 
 const INITIAL_FORM_STATE = {
@@ -186,7 +152,6 @@ export default function ContactScreen() {
 
   const onSubmit = (event) => {
     event.preventDefault();
-
     base('Email').create([{
       fields:
       {
@@ -204,7 +169,7 @@ export default function ContactScreen() {
   return (
 
     <div className={classes.root}>
-      <img src={Image1} alt="" className={classes.image1} />
+      <img src={ContactBanner} alt="" className={classes.contactBanner} />
       <div>
         <img src={Circle} alt="" />
         <br />
@@ -217,32 +182,32 @@ export default function ContactScreen() {
       </div>
       <div className={classes.topList}>
 
-        <ul className={classes.List}>
-          <li className={classes.ListItemTitle}>
+        <ul className={classes.list}>
+          <li className={classes.listItemTitle}>
             Location
           </li>
-          <li className={classes.ListItemTitle}>
+          <li className={classes.listItemTitle}>
             Phone Number
           </li>
-          <li className={classes.ListItemTitle}>
+          <li className={classes.listItemTitle}>
             Email
           </li>
-          <li className={classes.ListItemTitle}>
+          <li className={classes.listItemTitle}>
             Operating Times
           </li>
         </ul>
 
-        <ul className={classes.List}>
-          <li className={classes.ListItem}>
+        <ul className={classes.list}>
+          <li className={classes.listItem}>
             Los Angeles - CA
           </li>
-          <li className={classes.ListItem}>
+          <li className={classes.listItem}>
             (123) 456-7890
           </li>
-          <li className={classes.ListItem}>
+          <li className={classes.listItem}>
             farm2people@mail.org
           </li>
-          <li className={classes.ListItem}>
+          <li className={classes.listItem}>
             <div className={classes.innerDoubleList}>
               <ul className={classes.innerList}>
                 <li className={classes.innerListTitle}>
@@ -268,26 +233,26 @@ export default function ContactScreen() {
                 </li>
               </ul>
 
-              <ul className={classes.List}>
-                <li className={classes.ListItem}>
+              <ul className={classes.list}>
+                <li className={classes.listItem}>
                   9AM - 5PM
                 </li>
-                <li className={classes.ListItem}>
+                <li className={classes.listItem}>
                   9AM - 8PM
                 </li>
-                <li className={classes.ListItem}>
+                <li className={classes.listItem}>
                   9AM - 8PM
                 </li>
-                <li className={classes.ListItem}>
+                <li className={classes.listItem}>
                   9AM - 8PM
                 </li>
-                <li className={classes.ListItem}>
+                <li className={classes.listItem}>
                   9AM - 8PM
                 </li>
-                <li className={classes.ListItem}>
+                <li className={classes.listItem}>
                   9AM - 8PM
                 </li>
-                <li className={classes.ListItem}>
+                <li className={classes.listItem}>
                   9AM - 5PM
                 </li>
               </ul>
@@ -301,7 +266,7 @@ export default function ContactScreen() {
           <br />
           <Grid container spacing={0}>
             <Grid item xs={5}>
-              <img className={classes.emailImg} src={image2} alt="" />
+              <img className={classes.emailImg} src={farmerSideImg} alt="" />
             </Grid>
 
             <Grid
@@ -311,7 +276,7 @@ export default function ContactScreen() {
               container
               spacing={0}
             >
-              <Grid item xs={12} className={classes.noSpacingGrid}>
+              <Grid item xs={12}>
                 <Typography className={classes.inputTitle}>
                   Name
                 </Typography>

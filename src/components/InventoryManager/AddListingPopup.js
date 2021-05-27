@@ -21,6 +21,7 @@ import PricesStep from './ListingSteps/PricesStep';
 import DatesStep from './ListingSteps/DatesStep';
 import PhotoStep from './ListingSteps/PhotoStep';
 import ConfirmationStep from './ListingSteps/ConfirmationStep';
+import { store } from '../../lib/redux/store';
 
 const useStyles = makeStyles({
   dialogTitle: {
@@ -56,34 +57,6 @@ const useStyles = makeStyles({
 
 const today = (new Date()).toISOString().split('T')[0];
 // TODO : add finished screen
-const initialListing = {
-  produce: [],
-  'growing season': '',
-  details: '',
-  'individual produce unit': '',
-  'individual produce units per grouped produce type': 0,
-  'grouped produce type': '',
-  'lbs per grouped produce type': 0,
-  'has master units': false,
-  'grouped produce type per master unit': 0,
-  'master units per pallet': 0,
-  'grouped produce type per pallet': 0.0,
-  'has master pallets': false,
-  'pallets per master pallet': 0,
-  'master pallets': 0,
-  'standard price per grouped produce type': 0.0,
-  'agency price per grouped produce type': 0.0,
-  'date entered': today,
-  'first available date': '',
-  'sell by date': '',
-  'available until': '',
-  'pallets available': 0,
-  'pallets pending': 0,
-  'pallets sold': 0,
-  'listing picture': [],
-  privatized: false,
-  'users interested': 0,
-};
 
 const initialProduce = {
   id: '',
@@ -107,6 +80,36 @@ function getSteps() {
 export default function AddListingPopup({
   closeDialog, isOpen, modifyListings, produceTypes,
 }) {
+  const initialListing = {
+    'user id': [store.getState().userData.user.id],
+    produce: [],
+    'growing season': '',
+    details: '',
+    'individual produce unit': '',
+    'individual produce units per grouped produce type': 0,
+    'grouped produce type': '',
+    'lbs per grouped produce type': 0,
+    'has master units': false,
+    'grouped produce type per master unit': 0,
+    'master units per pallet': 0,
+    'grouped produce type per pallet': 0.0,
+    'has master pallets': false,
+    'pallets per master pallet': 0,
+    'master pallets': 0,
+    'standard price per grouped produce type': 0.0,
+    'agency price per grouped produce type': 0.0,
+    'date entered': today,
+    'first available date': '',
+    'sell by date': '',
+    'available until': '',
+    'pallets available': 0,
+    'pallets pending': 0,
+    'pallets sold': 0,
+    'listing picture': [],
+    privatized: false,
+    'users interested': 0,
+  };
+
   const classes = useStyles();
   const [produceRecord, setProduceRecord] = useState(initialProduce);
   const [listingRecord, setListingRecord] = useState(initialListing);

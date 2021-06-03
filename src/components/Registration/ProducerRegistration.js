@@ -356,11 +356,12 @@ export default function RegistrationScreen() {
           },
         },
       ], (err) => {
-        if (err) {
-          setErrorMsg(errorMsg.length === 0 ? err : `${errorMsg}`);
-        } else {
-          setErrorMsg('');
-        }
+        // if (err) {
+        //   setErrorMsg(errorMsg.length === 0 ? err : `${errorMsg}`);
+        // } else {
+        //   setErrorMsg('');
+        // }
+        setErrorMsg(err);
       });
     } catch (err) {
       if (err) {
@@ -403,24 +404,20 @@ export default function RegistrationScreen() {
     }
   }, [currentStep]);
 
-  const step2IsInvalid = useMemo(() => (
-    formState.addOne === '' || formState.addTwo === ''
-      || formState.additonalContact === '' || formState.socials === ''
+  const step1EmptyInputCheck = useMemo(() => (
+    formState.county === ''
   ),
   [formState]);
 
-  const step3IsInvalid = useMemo(() => (
-    formState.farmSize === '' || formState.market === [] || formState.farmPractices === []
-    || formState.opDemographic === [] || formState.farmDesc === '' || formState.pickup === []
+  const step2EmptyInputCheck = useMemo(() => (
+    formState.addOne === ''
   ),
   [formState]);
 
-  const Step1Check = useMemo(() => {
-    if (formState.taxID !== '' && !Number(formState.taxID)) {
-      return 'Make sure your Tax ID is a number!';
-    }
-    return '';
-  },
+  const step3EmptyInputCheck = useMemo(() => (
+    formState.farmSize === '' || formState.market.length === 0 || formState.farmPractices.length === 0
+    || formState.opDemographic.length === 0 || formState.farmDesc === '' || formState.pickup.length === 0
+  ),
   [formState]);
 
   const steps = getSteps();
@@ -463,7 +460,6 @@ export default function RegistrationScreen() {
                   <Step1
                     currentStep={currentStep}
                     formState={formState}
-                    Step1Check={Step1Check}
                     classes={classes}
                     handleChange={handleChange}
                     onPrev={onPrev}
@@ -471,6 +467,7 @@ export default function RegistrationScreen() {
                     errorMsg={errorMsg}
                     handleSelect={handleSelect}
                     handleBool={handleBool}
+                    step1EmptyInputCheck={step1EmptyInputCheck}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -482,9 +479,8 @@ export default function RegistrationScreen() {
                     onPrev={onPrev}
                     onNext={onNext}
                     errorMsg={errorMsg}
-                    step2IsInvalid={step2IsInvalid}
-                    loading={loading}
                     handleBool={handleBool}
+                    step2EmptyInputCheck={step2EmptyInputCheck}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -497,8 +493,7 @@ export default function RegistrationScreen() {
                     onPrev={onPrev}
                     onNext={onNext}
                     errorMsg={errorMsg}
-                    step3IsInvalid={step3IsInvalid}
-                    loading={loading}
+                    step3EmptyInputCheck={step3EmptyInputCheck}
                     handleBool={handleBool}
                   />
                 </Grid>
@@ -534,7 +529,7 @@ export default function RegistrationScreen() {
 }
 
 function Step1({
-  currentStep, formState, classes, handleChange, onNext, errorMsg, handleBool,
+  currentStep, formState, classes, handleChange, onNext, errorMsg, handleBool, step1EmptyInputCheck,
 }) {
   if (currentStep !== 1) {
     return null;
@@ -679,6 +674,7 @@ function Step1({
           onClick={onNext}
           color="primary"
           variant="contained"
+          disabled={step1EmptyInputCheck}
           center
         >
           Next
@@ -690,7 +686,7 @@ function Step1({
 
 function Step2({
   currentStep, formState, classes, handleChange, onPrev, errorMsg,
-  step2IsInvalid, loading, onNext, handleBool,
+  onNext, handleBool, step2EmptyInputCheck,
 }) {
   if (currentStep !== 2) {
     return null;
@@ -707,7 +703,6 @@ function Step2({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="website"
           name="website"
@@ -731,7 +726,6 @@ function Step2({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="add2"
           name="addTwo"
@@ -749,7 +743,6 @@ function Step2({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="additionalContact"
           name="additionalContact"
@@ -779,7 +772,7 @@ function Step2({
           fullWidth
           color="primary"
           variant="contained"
-          disabled={step2IsInvalid || loading}
+          disabled={step2EmptyInputCheck}
         >
           Next
         </Button>
@@ -790,7 +783,7 @@ function Step2({
 
 function Step3({
   currentStep, formState, classes, handleChange, onPrev, errorMsg,
-  step3IsInvalid, loading, onNext, handleSelect, handleBool,
+  step3EmptyInputCheck, onNext, handleSelect, handleBool,
 }) {
   if (currentStep !== 3) {
     return null;
@@ -806,7 +799,7 @@ function Step3({
     >
       <Grid item xs={12}>
         <FormControl className={classes.formControl} variant="outlined">
-          <InputLabel id="mutiple-name-label">Market</InputLabel>
+          <InputLabel id="mutiple-name-label" required>Market</InputLabel>
           <Select
             id="demo-mutiple-name"
             multiple
@@ -816,7 +809,6 @@ function Step3({
             MenuProps={MenuProps}
             name="market"
             label="Population Served"
-            required
           >
             {MARKETS.map((market) => (
               <MenuItem
@@ -831,7 +823,7 @@ function Step3({
       </Grid>
       <Grid item xs={12}>
         <FormControl className={classes.formControl}>
-          <InputLabel id="single-name-label">Farm Size</InputLabel>
+          <InputLabel id="single-name-label" required>Farm Size</InputLabel>
           <Select
             labelId="simple-select-label"
             id="demo-single-name"
@@ -839,7 +831,6 @@ function Step3({
             onChange={handleSelect}
             name="farmSize"
             label="Farm Size"
-            required
             fullWidth
           >
             {FARMSIZE.map((size) => (
@@ -855,7 +846,7 @@ function Step3({
       </Grid>
       <Grid item xs={12}>
         <FormControl className={classes.formControl} variant="outlined">
-          <InputLabel id="mutiple-name-label">Farming Practices</InputLabel>
+          <InputLabel id="mutiple-name-label" required>Farming Practices</InputLabel>
           <Select
             id="demo-mutiple-name"
             multiple
@@ -865,7 +856,6 @@ function Step3({
             MenuProps={MenuProps}
             name="farmPractices"
             label="Population Served"
-            required
           >
             {PRACTICES.map((p) => (
               <MenuItem
@@ -886,7 +876,7 @@ function Step3({
       </Grid>
       <Grid item xs={12}>
         <FormControl className={classes.formControl} variant="outlined">
-          <InputLabel id="mutiple-name-label">Ownership and Operation</InputLabel>
+          <InputLabel id="mutiple-name-label" required>Ownership and Operation</InputLabel>
           <Select
             id="demo-mutiple-name"
             multiple
@@ -926,7 +916,7 @@ function Step3({
       </Grid>
       <Grid item xs={12}>
         <FormControl className={classes.formControl} variant="outlined">
-          <InputLabel id="mutiple-name-label">Pick-Up Options</InputLabel>
+          <InputLabel id="mutiple-name-label" required>Pick-Up Options</InputLabel>
           <Select
             id="demo-mutiple-name"
             multiple
@@ -1010,7 +1000,7 @@ function Step3({
           fullWidth
           color="primary"
           variant="contained"
-          disabled={step3IsInvalid || loading}
+          disabled={step3EmptyInputCheck}
         >
           Next
         </Button>

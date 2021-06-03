@@ -1,4 +1,4 @@
-import RegistrationScreen from './ProdRegistration';
+import RegistrationScreen from './ProducerRegistration';
 // import RegistrationScreen from './AgencyRegistration';
 
 export default RegistrationScreen;

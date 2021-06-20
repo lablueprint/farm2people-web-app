@@ -6,12 +6,22 @@ import {
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Airtable from 'airtable';
 import {
   withStyles,
 } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
+import bcrypt from 'bcryptjs';
+import { store } from '../../lib/redux/store';
 import useStyles from './ChangePasswordStyles';
+
+const airtableConfig = {
+  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
+};
+
+const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 const ChangePasswordButton = withStyles({
   root: {
@@ -24,17 +34,41 @@ const ChangePasswordButton = withStyles({
 })(Button);
 
 export default function ChangePasswordForm({
-  handleClose, onSubmit, handlePasswordChange, passwords, validateForm,
+  handleClose, handlePasswordChange, passwords, validateForm, setSubmit,
 }) {
   const classes = useStyles();
-  const submit = (e) => {
-    e.preventDefault();
-    onSubmit();
+  const [noMatchOld, setNoMatchOld] = React.useState(false);
+  const submit = async (event) => {
+    event.preventDefault();
+    const userID = store.getState().userData == null ? ''
+      : store.getState().userData.user.id;
+    base('Users').find(userID, (err, record) => {
+      if (err) { return; }
+      const { password } = record.fields;
+      const isMatch = bcrypt.compareSync(passwords.oldP, password);
+      if (isMatch) {
+        const salt = bcrypt.genSaltSync(10);
+        const newHash = bcrypt.hashSync(passwords.newP, salt);
+        base('Users').update([
+          {
+            id: userID,
+            fields: {
+              password: newHash,
+            },
+          },
+        ], (errorMsg) => {
+          if (!errorMsg) {
+            setSubmit(true);
+          }
+        });
+      } else {
+        setNoMatchOld(true);
+      }
+    });
   };
 
-  // TODO: Make validateForm work somehow
   const buttonEnabled = passwords.newP === passwords.confirmP && passwords.newP !== '' && validateForm;
-  const noMatch = passwords.newP !== passwords.confirmP && passwords.newP !== '' && passwords.confirmP !== '';
+  const noMatchConfirm = passwords.newP !== passwords.confirmP && passwords.newP !== '' && passwords.confirmP !== '';
 
   return (
     <Box p={3}>
@@ -101,7 +135,10 @@ export default function ChangePasswordForm({
               />
             </FormControl>
             <Typography className={classes.errorText}>
-              {noMatch && 'Confirm password does not match your new password!'}
+              {noMatchConfirm && 'Confirm password does not match your new password!'}
+            </Typography>
+            <Typography className={classes.errorText}>
+              {noMatchOld && 'Old password does not match your saved password!'}
             </Typography>
           </Box>
         </DialogContent>
@@ -129,7 +166,6 @@ export default function ChangePasswordForm({
 
 ChangePasswordForm.propTypes = {
   handleClose: PropTypes.func.isRequired,
-  onSubmit: PropTypes.func.isRequired,
   handlePasswordChange: PropTypes.func.isRequired,
   passwords: PropTypes.shape({
     oldP: PropTypes.string,
@@ -137,4 +173,5 @@ ChangePasswordForm.propTypes = {
     newP: PropTypes.string,
   }).isRequired,
   validateForm: PropTypes.bool.isRequired,
+  setSubmit: PropTypes.func.isRequired,
 };

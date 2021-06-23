@@ -16,6 +16,7 @@ const useStyles = makeStyles({
   headerContainer: {
     paddingLeft: '3%',
     paddingRight: '4%',
+    paddingBottom: '3%',
   },
   marketplaceTitleText: {
     fontFamily: 'Work Sans',

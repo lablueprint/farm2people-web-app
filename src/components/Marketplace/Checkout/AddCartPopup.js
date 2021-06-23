@@ -9,7 +9,6 @@ import {
 } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import useLongPress from './useLongPress';
 import { base } from '../../../lib/airtable/airtable';
 import { store, history } from '../../../lib/redux/store';
 
@@ -93,7 +92,6 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
     fontSize: '16px',
     color: '#373737',
-
   },
   cancelIcon: {
     color: '#53AA48',
@@ -122,7 +120,6 @@ const useStyles = makeStyles({
     fontWeight: '600',
     fontSize: '35px',
     color: '#3D3E3F',
-
   },
 });
 
@@ -137,6 +134,7 @@ export default function AddCartPopup(props) {
   const [popupStep, setPopupStep] = useState(1);
   const [userID, setUserID] = useState('');
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
   const setPopupStep1 = () => {
     setPopupStep(1);
   };
@@ -195,7 +193,7 @@ export default function AddCartPopup(props) {
             },
           ], (err) => {
             if (err) {
-              console.error(err);
+              setErrorMsg(err);
             }
             setLoading(false);
           });
@@ -220,7 +218,7 @@ export default function AddCartPopup(props) {
             },
           ], (err) => {
             if (err) {
-              console.error(err);
+              setErrorMsg(err);
             }
             setLoading(false);
           });
@@ -231,12 +229,33 @@ export default function AddCartPopup(props) {
 
   const viewCartClick = () => { history.push('/cart'); };
 
-  const longPressIncrementEvent = useLongPress(incrementCartCount, 100);
-  const longPressDecrementEvent = useLongPress(decrementCartCount, 100);
+  /* TODO: These lines of code instantiate the useLongPress component, which
+  allows a user to hold a button to activate an onClick function. There currently
+  exits a bug that makes it so that switching between two long press events
+  leads the component to get stuck in the other long press event. The following two
+  lines instantiates longPresses for our incrementation and decrementation add quantity to
+  cart buttons. They exist for solely reference until a developer can fix this bug
+  before we push this feature into production */
+
+  // const longPressIncrementEvent = useLongPress(incrementCartCount, 100);
+  // const longPressDecrementEvent = useLongPress(decrementCartCount, 100);
+
+  /* In order to add this longPressIncrementEvent and longPressDecrementEvent to
+  a specific button, simply add it as a prop like so:
+    ex.)
+    <IconButton {...longPressDecrementEvent} onClick={decrementCartCount}>
+        ...Icon Component Here...
+    </IconButton>
+  */
 
   return (
     <Dialog fullWidth maxWidth="sm" onClose={handleExitCartPopup} open={open}>
-      {loading && (
+      {errorMsg && (
+      <Typography>
+        {errorMsg}
+      </Typography>
+      )}
+      {loading && !errorMsg && (
       <Grid
         container
         spacing={0}
@@ -250,8 +269,7 @@ export default function AddCartPopup(props) {
         </Grid>
       </Grid>
       )}
-      {popupStep === 1 && !loading
-      && (
+      {popupStep === 1 && !loading && !errorMsg && (
       <>
         <DialogTitle onClose={handleExitCartPopup}>
           <IconButton
@@ -267,13 +285,13 @@ export default function AddCartPopup(props) {
           <Grid container justify="center" align="center" alignItems="center">
             <Grid xs={3} />
             <Grid xs={5} container className={classes.outlineBox} justify="center" align="center" alignItems="center">
-              <IconButton {...longPressDecrementEvent} onClick={decrementCartCount} disabled={cartCount <= 0} align="right" aria-label="increase">
+              <IconButton onClick={decrementCartCount} disabled={cartCount <= 0} align="right" aria-label="increase">
                 <Remove fontSize="inherit" className={cartCount <= 0 ? classes.disabledQuantityButtons : classes.quantityButtons} />
               </IconButton>
               <Typography gutterBottom variant="subtitle1" className={[classes.listingNumbers, classes.boldText]}>
                 {cartCount}
               </Typography>
-              <IconButton {...longPressIncrementEvent} onClick={incrementCartCount} disabled={cartCount >= popupProduce.palletsAvailable} aria-label="decrease">
+              <IconButton onClick={incrementCartCount} disabled={cartCount >= popupProduce.palletsAvailable} aria-label="decrease">
                 <Add fontSize="inherit" className={cartCount >= popupProduce.palletsAvailable ? classes.disabledQuantityButtons : classes.quantityButtons} />
               </IconButton>
             </Grid>
@@ -292,8 +310,7 @@ export default function AddCartPopup(props) {
         </DialogActions>
       </>
       )}
-      {popupStep === 2 && !loading
-      && (
+      {popupStep === 2 && !loading && !errorMsg && (
       <>
         <DialogTitle onClose={handleExitCartPopup}>
           <IconButton

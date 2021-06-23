@@ -161,7 +161,7 @@ export default function ProduceCard(props) {
           <>
             <CardMedia
               className={classes.img}
-              image={produceImg} // Temporary dummy image
+              image={produceImg}
               title="Produce Image"
             />
             <CardContent>

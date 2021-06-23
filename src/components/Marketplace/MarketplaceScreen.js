@@ -34,35 +34,6 @@ export default function MarketplaceScreen() {
   const [numResults, setNumResults] = useState(10); // # of results to display
   const [filteredProduce, setFilteredProduce] = useState(null);
 
-  // Manages farm season filtering fx + # of items per filter
-  const [seasonFilters, setSeasonFilters] = useState([]);
-  // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
-  const onSeasonFilterChange = (newFilters) => {
-    setSeasonFilters(newFilters);
-  };
-  const farmSeasonFilters = ['Fall', 'Winter', 'Summer', 'Spring'];
-  const [itemsPerFarmSeason, setSeasonItems] = useState([]);
-
-  // Fx to get # of items per filter option to display in the filter menus
-  function getNumItemsPerCategory() {
-    // Get items per farming season
-    const perSeason = [];
-    farmSeasonFilters.forEach((season) => {
-      const currentSeasonItems = produceListings.filter(
-        (listing) => listing.season === season,
-      );
-      perSeason.push(currentSeasonItems.length);
-    });
-    setSeasonItems(perSeason);
-  }
-
-  // TODO: sort, item type, produce type, price
-  // const [produceFilters, setProduceFilters] = useState([]);
-  /* const onProduceFilterChange = (newFilters) => {
-    setProduceFilters(newFilters);
-  }; */
-
-  const classes = useStyles();
   function getFarmRecords() {
     base('Farms').select({ view: 'Grid view' }).all()
       .then((farmRecords) => {
@@ -79,12 +50,16 @@ export default function MarketplaceScreen() {
           const pricePerGroup = record.fields['standard price per grouped produce type'] || 0;
           const groupPerPallet = record.fields['grouped produce type per pallet'] || 0;
           const palletPrice = pricePerGroup * groupPerPallet;
+          // Capitalise 1st letter of produce type to match filtering
+          let produceType = record.fields['produce category'] ? record.fields['produce category'][0] : 'No category';
+          produceType = produceType.charAt(0).toUpperCase() + produceType.slice(1);
           const recordInfo = {
             listingID: record.fields['listing id'],
             produceID: record.fields.produce ? record.fields.produce[0] : -1,
             farmID: record.fields['farm id'],
             palletPrice: palletPrice !== 0 ? palletPrice : -1,
             season: record.fields['growing season'] || 'No season',
+            produceType,
           };
           processedProduceRecords.push(recordInfo);
         });
@@ -92,28 +67,79 @@ export default function MarketplaceScreen() {
       });
   }
 
+  // Manages farm season filtering (fx, filter options, # of items per option)
+  const [seasonFilters, setSeasonFilters] = useState([]);
+  // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
+  const onSeasonFilterChange = (newFilters) => {
+    setSeasonFilters(newFilters);
+  };
+  const farmSeasonFilters = ['Fall', 'Winter', 'Summer', 'Spring'];
+  const [itemsPerFarmSeason, setSeasonItems] = useState([]);
+
+  // Manages produce type filtering
+  const [prodFilters, setProdFilters] = useState([]);
+  // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
+  const onProduceFilterChange = (newFilters) => {
+    setProdFilters(newFilters);
+  };
+  const produceTypeFilters = ['Vegetable', 'Fruit', 'Legume', 'Grain', 'Oat'];
+  const [itemsPerProdType, setProdItems] = useState([]);
+
+  // Fx to get # of items per filter option to display in the filter menus
+  function getNumItemsPerCategory() {
+    // Get items per farming season
+    const perSeason = [];
+    farmSeasonFilters.forEach((season) => {
+      const currentSeasonItems = produceListings.filter(
+        (listing) => listing.season === season,
+      );
+      perSeason.push(currentSeasonItems.length);
+    });
+    setSeasonItems(perSeason);
+
+    // Get items per produce type
+    const perProdType = [];
+    produceTypeFilters.forEach((prodType) => {
+      const currentProdItems = produceListings.filter(
+        (listing) => listing.produceType === prodType,
+      );
+      perProdType.push(currentProdItems.length);
+    });
+    setProdItems(perProdType);
+  }
+  // TODO: sort by, item type, price
+
+  // Limits rendered produced cards to only those matching the selected filters
+  function filterProduce() {
+    let filteredListings = produceListings;
+    if (seasonFilters.length > 0) {
+      filteredListings = filteredListings.filter(
+        (listing) => seasonFilters.includes(listing.season),
+      );
+    }
+    if (prodFilters.length > 0) {
+      filteredListings = filteredListings.filter(
+        (listing) => prodFilters.includes(listing.produceType),
+      );
+    }
+    setFilteredProduce(filteredListings);
+  }
+
   // Get records from Airtable whenever DOM mounts and updates/changes
   useEffect(() => {
     getFarmRecords();
     getProduceRecords();
   }, []);
-
-  function filterProduce() {
-    const filteredListings = produceListings.filter(
-      (listing) => seasonFilters.includes(listing.season),
-    );
-    setFilteredProduce(filteredListings);
-  }
-
   // Make sure that filterProduce updates whenever filters change
   useEffect(() => {
     filterProduce();
-  }, [seasonFilters]);
-
+  }, [seasonFilters, prodFilters]);
+  // Make sure # of produce items per category updates whenever produce listings change
   useEffect(() => {
     getNumItemsPerCategory();
   }, [produceListings]);
 
+  const classes = useStyles();
   // Get total number of results depending on if produce or farm
   const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
 
@@ -122,8 +148,11 @@ export default function MarketplaceScreen() {
       <Grid item className={classes.sidebar}>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar
+          prodTypeFilters={produceTypeFilters}
           farmSeasonFilters={farmSeasonFilters}
+          itemsPerProdType={itemsPerProdType}
           itemsPerFarmSeason={itemsPerFarmSeason}
+          onProduceFilterChange={onProduceFilterChange}
           onSeasonFilterChange={onSeasonFilterChange}
         />
       </Grid>
@@ -138,7 +167,7 @@ export default function MarketplaceScreen() {
         />
         <Grid container direction="row" justify="flex-start">
           {/* Map each array of produceListing info to render a ProduceCard */
-            tabValue === 'all' && seasonFilters.length === 0 && produceListings.map((produce) => (
+            tabValue === 'all' && seasonFilters.length === 0 && prodFilters.length === 0 && produceListings.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
                 /* ProduceCard will get produce name, photo, + farm name by ids */
@@ -150,7 +179,7 @@ export default function MarketplaceScreen() {
             ))
           }
           {/* Map each array of produceListing info to render a ProduceCard */
-            tabValue === 'all' && seasonFilters.length > 0 && filteredProduce.map((produce) => (
+            tabValue === 'all' && (seasonFilters.length > 0 || prodFilters.length > 0) && filteredProduce.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
                 /* ProduceCard will get produce name, photo, + farm name by ids */

@@ -40,7 +40,7 @@ const useStyles = makeStyles({
 
 /* Sidebar with filter selections for types + sorting */
 export default function MarketplaceSidebar({
-  itemsPerFarmSeason, farmSeasonFilters,
+  prodTypeFilters, farmSeasonFilters, itemsPerProdType, itemsPerFarmSeason, onProduceFilterChange,
   onSeasonFilterChange,
 }) {
   const classes = useStyles();
@@ -64,8 +64,10 @@ export default function MarketplaceSidebar({
       <FilterMenu menuTitle="Item Type" filterOptions={['Agency Price', 'Standard Items']} isLast={false} />
       <FilterMenu
         menuTitle="Produce Type"
-        filterOptions={['Vegetables', 'Fruits', 'Legumes', 'Grains', 'Oats']}
+        filterOptions={prodTypeFilters}
+        itemsPerOption={itemsPerProdType}
         isLast={false}
+        onFilterChange={onProduceFilterChange}
       />
       <PriceMenu priceOptions={[0, 15, 30, 45, 75, 60]} />
       <FilterMenu
@@ -80,7 +82,10 @@ export default function MarketplaceSidebar({
 }
 
 MarketplaceSidebar.propTypes = {
+  prodTypeFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
   farmSeasonFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
+  itemsPerProdType: PropTypes.arrayOf(PropTypes.number).isRequired,
   itemsPerFarmSeason: PropTypes.arrayOf(PropTypes.number).isRequired,
+  onProduceFilterChange: PropTypes.func.isRequired,
   onSeasonFilterChange: PropTypes.func.isRequired,
 };

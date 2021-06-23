@@ -137,7 +137,6 @@ export default function FilterMenu({
               {itemsPerOption[index]}
             </ListItemSecondaryAction>
           </ListItem>
-
         )))}
       </List>
       {!isLast && <Divider variant="middle" />}

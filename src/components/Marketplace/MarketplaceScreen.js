@@ -34,15 +34,33 @@ export default function MarketplaceScreen() {
   const [numResults, setNumResults] = useState(10); // # of results to display
   const [filteredProduce, setFilteredProduce] = useState(null);
 
-  // Props for keeping track of filters (sort, item, produce, price, season) TODO REMOVE LINE BELOW
-  // eslint-disable-next-line no-unused-vars
+  // Manages farm season filtering fx + # of items per filter
   const [seasonFilters, setSeasonFilters] = useState([]);
-
-  // Called by child component when farm season filters are changed
+  // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
   const onSeasonFilterChange = (newFilters) => {
-    // Set seasonFilters to new filters (empty array [] if no filters/reset)
     setSeasonFilters(newFilters);
   };
+  const farmSeasonFilters = ['Fall', 'Winter', 'Summer', 'Spring'];
+  const [itemsPerFarmSeason, setSeasonItems] = useState([]);
+
+  // Fx to get # of items per filter option to display in the filter menus
+  function getNumItemsPerCategory() {
+    // Get items per farming season
+    const perSeason = [];
+    farmSeasonFilters.forEach((season) => {
+      const currentSeasonItems = produceListings.filter(
+        (listing) => listing.season === season,
+      );
+      perSeason.push(currentSeasonItems.length);
+    });
+    setSeasonItems(perSeason);
+  }
+
+  // TODO: sort, item type, produce type, price
+  // const [produceFilters, setProduceFilters] = useState([]);
+  /* const onProduceFilterChange = (newFilters) => {
+    setProduceFilters(newFilters);
+  }; */
 
   const classes = useStyles();
   function getFarmRecords() {
@@ -92,6 +110,10 @@ export default function MarketplaceScreen() {
     filterProduce();
   }, [seasonFilters]);
 
+  useEffect(() => {
+    getNumItemsPerCategory();
+  }, [produceListings]);
+
   // Get total number of results depending on if produce or farm
   const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
 
@@ -100,6 +122,8 @@ export default function MarketplaceScreen() {
       <Grid item className={classes.sidebar}>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar
+          farmSeasonFilters={farmSeasonFilters}
+          itemsPerFarmSeason={itemsPerFarmSeason}
           onSeasonFilterChange={onSeasonFilterChange}
         />
       </Grid>

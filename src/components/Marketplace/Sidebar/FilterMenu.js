@@ -55,7 +55,7 @@ const useStyles = makeStyles({
 
 /* Menu in the sidebar for selecting filters, takes in array of filter options */
 export default function FilterMenu({
-  menuTitle, filterOptions, isLast, onFilterChange,
+  menuTitle, filterOptions, itemsPerOption, isLast, onFilterChange,
 }) {
   const classes = useStyles();
   const [isChecked, setIsChecked] = useState([]);
@@ -110,7 +110,7 @@ export default function FilterMenu({
       </Grid>
       {/* List of filter options only shows if expanded */}
       <List dense>
-        {isExpanded && (filterOptions.map((option) => (
+        {isExpanded && (filterOptions.map((option, index) => (
           <ListItem
             dense
             key={option}
@@ -134,7 +134,7 @@ export default function FilterMenu({
             />
             {/* TODO: Get real #, may need to make this a component for airtable calls */}
             <ListItemSecondaryAction className={classes.filterNumText}>
-              100
+              {itemsPerOption[index]}
             </ListItemSecondaryAction>
           </ListItem>
 
@@ -148,6 +148,7 @@ export default function FilterMenu({
 FilterMenu.propTypes = {
   menuTitle: PropTypes.string.isRequired,
   filterOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+  itemsPerOption: PropTypes.arrayOf(PropTypes.number).isRequired,
   isLast: PropTypes.bool.isRequired,
   onFilterChange: PropTypes.func.isRequired,
 };

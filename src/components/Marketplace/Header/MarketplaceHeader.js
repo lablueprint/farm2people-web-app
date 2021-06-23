@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Grid, TextField, Typography,
+  Grid, TextField, Typography, ButtonBase,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -88,9 +88,20 @@ const useStyles = makeStyles({
 
 /* Marketplace header: title, view results, search bar, and tab selector */
 export default function MarketplaceHeader({
-  tabValue, setTabValue, totalResults, numResults, setNumResults,
+  tabValue, setTabValue, totalResults, numResults, setNumResults, searchTerms, setSearchTerms,
+  filterBySearch,
 }) {
   const classes = useStyles();
+
+  // update search terms on text field input
+  const handleChange = (event) => {
+    setSearchTerms(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    filterBySearch();
+  };
 
   return (
     <div className={classes.headerContainer}>
@@ -125,21 +136,25 @@ export default function MarketplaceHeader({
             </Typography>
           </Grid>
           <Grid item xs>
-            <TextField
-              placeholder="Search for produce, farms, etc."
-              fullWidth
-              variant="outlined"
-              InputProps={{
-                disableUnderline: true,
-                classes: {
-                  input: classes.inputText,
-                  adornedEnd: classes.searchIcon,
-                },
-                endAdornment: <SearchIcon />,
-              }}
-              className={classes.searchBarContainer}
-              size="small"
-            />
+            <form onSubmit={handleSubmit}>
+              <TextField
+                placeholder="Search for produce, farms, etc."
+                fullWidth
+                variant="outlined"
+                InputProps={{
+                  disableUnderline: true,
+                  classes: {
+                    input: classes.inputText,
+                    adornedEnd: classes.searchIcon,
+                  },
+                  endAdornment: <ButtonBase type="submit"><SearchIcon /></ButtonBase>,
+                }}
+                className={classes.searchBarContainer}
+                size="small"
+                value={searchTerms}
+                onChange={handleChange}
+              />
+            </form>
           </Grid>
         </Grid>
       </Grid>
@@ -165,4 +180,7 @@ MarketplaceHeader.propTypes = {
   totalResults: PropTypes.number.isRequired,
   numResults: PropTypes.number.isRequired,
   setNumResults: PropTypes.func.isRequired,
+  searchTerms: PropTypes.string.isRequired,
+  setSearchTerms: PropTypes.func.isRequired,
+  filterBySearch: PropTypes.func.isRequired,
 };

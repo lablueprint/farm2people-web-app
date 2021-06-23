@@ -40,19 +40,24 @@ const INITIAL_POPUP_PRODUCE = {
 
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
+  const [filteredFarms, setFilteredFarms] = useState([]);
   const [produceListings, setProduceListings] = useState([]);
+  const [filteredProduce, setFilteredProduce] = useState([]);
   const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
   const [numResults, setNumResults] = useState(10); // # of results to display
   const [popupProduce, setPopupProduce] = useState(INITIAL_POPUP_PRODUCE);
   const [open, setOpen] = useState(false);
+  const [searchTerms, setSearchTerms] = useState(''); // user entered search terms
 
   const classes = useStyles();
   function getFarmRecords() {
     base('Farms').select({ view: 'Grid view' }).all()
       .then((farmRecords) => {
         setFarmListings(farmRecords);
+        setFilteredFarms(farmRecords);
       });
   }
+
   // Get prod id, grouped unit type, price per grouped unit for each produce record
   function getProduceRecords() {
     base('Listings').select({ view: 'Grid view' }).all()
@@ -73,6 +78,7 @@ export default function MarketplaceScreen() {
           filteredProduceRecords.push(recordInfo);
         });
         setProduceListings(filteredProduceRecords);
+        setFilteredProduce(filteredProduceRecords);
       });
   }
 
@@ -90,7 +96,69 @@ export default function MarketplaceScreen() {
   };
 
   // Get total number of results depending on if produce or farm
-  const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
+  const totalResults = tabValue === 'all' ? filteredProduce.length : filteredFarms.length;
+
+  // helper fx to check any string for search term
+  const checkFieldForSearchTerm = (field) => {
+    const reg = new RegExp(searchTerms, 'i');
+    return field && reg.test(field);
+  };
+
+  const filterFarmsBySearch = () => {
+    const filtered = farmListings.filter((farm) => checkFieldForSearchTerm(farm.fields['farm name']) === true);
+    setFilteredFarms(filtered);
+  };
+
+  // helper fx to async check produce name
+  const searchProduceName = (produce) => {
+    const { produceID } = produce;
+    let containsTerm = false;
+
+    if (produceID === undefined || produceID.length < 5) { return false; }
+
+    return new Promise((resolve) => {
+      base('Produce Type').find(produceID).then((produceObj) => {
+        if (checkFieldForSearchTerm(produceObj.fields['produce type']) === true) { containsTerm = true; }
+        return resolve(containsTerm);
+      });
+    });
+  };
+
+  // helper fx to async check produce farm name
+  const searchProduceFarmName = (produce) => {
+    const { farmID } = produce;
+    let containsTerm = false;
+
+    if (farmID === undefined || farmID[0].length < 5) { return false; }
+
+    const farmArr = farmID.toString().split(',');
+    return new Promise((resolve) => {
+      base('Farms').find(farmArr[0]).then((farmObj) => {
+        if (checkFieldForSearchTerm(farmObj.fields['farm name']) === true) { containsTerm = true; }
+        return resolve(containsTerm);
+      });
+    });
+  };
+
+  // helper fx to check individual produce for name or farm name match to search term
+  async function searchProduce(produce) {
+    return await searchProduceName(produce) || searchProduceFarmName(produce);
+  }
+
+  // filter produce by name/farm match to user search terms
+  async function filterProducebySearch() {
+    const data = Array.from(produceListings);
+    Promise.all(data.map((produce) => searchProduce(produce)))
+    // Use the result of the promises to filter the produceListings
+      .then((result) => setFilteredProduce(data.filter((element, index) => result[index])));
+  }
+
+  // run on submit of search bar (search icon or enter clicked)
+  // may be useful to add any side bar filtering methods here too
+  const filterBySearch = () => {
+    filterProducebySearch();
+    filterFarmsBySearch();
+  };
 
   return (
     <Grid container className={classes.root}>
@@ -111,10 +179,13 @@ export default function MarketplaceScreen() {
           totalResults={totalResults}
           numResults={numResults}
           setNumResults={setNumResults}
+          searchTerms={searchTerms}
+          setSearchTerms={setSearchTerms}
+          filterBySearch={filterBySearch}
         />
         <Grid container direction="row" justify="flex-start">
           {/* Map each array of produceListing info to render a ProduceCard */
-            tabValue === 'all' && produceListings.map((produce) => (
+            tabValue === 'all' && filteredProduce.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
                 listingID={produce.listingID}
@@ -131,7 +202,7 @@ export default function MarketplaceScreen() {
           }
         </Grid>
         {/* Map each array of farmListing info to render a FarmCard */
-          tabValue === 'farm' && farmListings.map((farm) => (
+          tabValue === 'farm' && filteredFarms.map((farm) => (
             <FarmCard
               key={farm.id}
               farmName={farm.fields['farm name'] || 'No farm name'}

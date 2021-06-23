@@ -131,7 +131,7 @@ export default function FilterMenu({
               primary={option}
               className={classes.filterOptionText}
             />
-            {/* TODO: Get real #, may need to make this a component for airtable calls */}
+            {/* # of items that match this option */}
             <ListItemSecondaryAction className={classes.filterNumText}>
               {itemsPerOption[index]}
             </ListItemSecondaryAction>

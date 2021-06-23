@@ -83,7 +83,6 @@ export default function FilterMenu({
     setIsChecked(newChecked);
   };
 
-  // TODO: actually filter results based on selected filters
   return (
     <div>
       <Grid

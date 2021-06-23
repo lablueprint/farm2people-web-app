@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Airtable from 'airtable';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
+import AddCartPopup from './Checkout/AddCartPopup';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
@@ -27,6 +28,16 @@ const airtableConfig = {
 
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
+const INITIAL_POPUP_PRODUCE = {
+  crop: '',
+  price: 0,
+  farmName: '',
+  palletsAvailable: 0,
+  produceImg: '',
+  listingID: '',
+  farmID: '',
+};
+
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
   const [filteredFarms, setFilteredFarms] = useState([]);
@@ -34,6 +45,8 @@ export default function MarketplaceScreen() {
   const [filteredProduce, setFilteredProduce] = useState([]);
   const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
   const [numResults, setNumResults] = useState(10); // # of results to display
+  const [popupProduce, setPopupProduce] = useState(INITIAL_POPUP_PRODUCE);
+  const [open, setOpen] = useState(false);
   const [searchTerms, setSearchTerms] = useState(''); // user entered search terms
 
   const classes = useStyles();
@@ -47,8 +60,7 @@ export default function MarketplaceScreen() {
 
   // Get prod id, grouped unit type, price per grouped unit for each produce record
   function getProduceRecords() {
-    // TODO: change Listing UPDATED back to Listings
-    base('Listing UPDATED').select({ view: 'Grid view' }).all()
+    base('Listings').select({ view: 'Grid view' }).all()
       .then((produceRecords) => {
         const filteredProduceRecords = [];
         produceRecords.forEach((record) => {
@@ -61,6 +73,7 @@ export default function MarketplaceScreen() {
             farmID: record.fields['farm id'],
             palletPrice: palletPrice !== 0 ? palletPrice : -1,
             season: record.fields['growing season'] || 'No season',
+            palletsAvailable: record.fields['pallets available'] || 0,
           };
           filteredProduceRecords.push(recordInfo);
         });
@@ -74,6 +87,13 @@ export default function MarketplaceScreen() {
     getFarmRecords();
     getProduceRecords();
   }, []);
+
+  const handleOpenCartPopup = () => {
+    setOpen(true);
+  };
+  const handleCloseCartPopup = () => {
+    setOpen(false);
+  };
 
   // Get total number of results depending on if produce or farm
   const totalResults = tabValue === 'all' ? filteredProduce.length : filteredFarms.length;
@@ -142,6 +162,11 @@ export default function MarketplaceScreen() {
 
   return (
     <Grid container className={classes.root}>
+      <AddCartPopup
+        popupProduce={popupProduce}
+        open={open}
+        handleCloseCartPopup={handleCloseCartPopup}
+      />
       <Grid item className={classes.sidebar}>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar />
@@ -163,10 +188,14 @@ export default function MarketplaceScreen() {
             tabValue === 'all' && filteredProduce.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
+                listingID={produce.listingID}
+                handleOpenCartPopup={handleOpenCartPopup}
+                setPopupProduce={setPopupProduce}
                 /* ProduceCard will get produce name, photo, + farm name by ids */
                 produceID={produce.produceID || null}
                 farmID={produce.farmID || null}
                 palletPrice={produce.palletPrice}
+                palletsAvailable={produce.palletsAvailable}
                 season={produce.season}
               />
             ))

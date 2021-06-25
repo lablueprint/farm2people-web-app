@@ -1,7 +1,7 @@
 /* Container for all Cart Screen display components */
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Airtable from 'airtable';
+// import Airtable from 'airtable';
 import {
   Card, CardContent, Grid, Typography, ButtonBase, makeStyles,
 } from '@material-ui/core';
@@ -13,14 +13,7 @@ import Fruit3 from '../../assets/images/Fruit3.svg';
 import Fruit4 from '../../assets/images/Fruit4.svg';
 import '../../styles/fonts.css';
 import { store } from '../../lib/redux/store';
-
-// airtable setup
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+import { base } from '../../lib/airtable/airtable';
 
 // custom styling
 const useStyles = makeStyles({
@@ -143,7 +136,7 @@ function CartScreen() {
     setSubtotal(0);
 
     base('Users').find(store.getState().userData.user.id, (err, user) => {
-      if (err) { setErrorMessage(err); return; }
+      if (err) { setErrorMessage(err.message); return; }
       let items = [];
       const tempFarms = {};
 
@@ -151,14 +144,14 @@ function CartScreen() {
       if (user.fields.cart) {
         user.fields.cart.forEach((id) => {
           base('Reserved Listings').find(id, (e, item) => {
-            if (e) { setErrorMessage(e); return; }
+            if (e) { setErrorMessage(e.message); return; }
             items = [...items, item];
             setCartListings(items);
 
             // fetch item's farm and add to farms if necessary
             const farmID = item.fields['farm id'];
             base('Farms').find(farmID, (error, farm) => {
-              if (error) { setErrorMessage(error); }
+              if (error) { setErrorMessage(error.message); }
               if (!tempFarms[farmID]) {
               // this was my solution to needing to store a subtotal for each farm
                 tempFarms[farmID] = { name: farm.fields['farm name'], subtotal: 0 };
@@ -167,7 +160,7 @@ function CartScreen() {
               // fetch price of listing and add to farm subtotal and overall subtotal
               // this call is nested to ensure it is called after any farm objects are created
               base('Listings').find(item.fields['listing id'][0], (er, record) => {
-                if (er) { setErrorMessage(er); return; }
+                if (er) { setErrorMessage(er.message); return; }
                 const useAgencyPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type'];
                 const currCartItemPrice = useAgencyPrice ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
                 const currCartItemCost = item.fields.pallets * record.fields['grouped produce type per pallet'] * currCartItemPrice;
@@ -199,7 +192,7 @@ function CartScreen() {
     base('Reserved Listings').destroy([id],
       (err) => {
         if (err) {
-          setErrorMessage(err);
+          setErrorMessage(err.message);
         }
       });
 

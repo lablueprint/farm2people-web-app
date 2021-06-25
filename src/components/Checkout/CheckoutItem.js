@@ -114,7 +114,7 @@ function CheckoutItem({ listingID, pallets }) {
       });
       setLoading(false);
     });
-  });
+  }, []);
 
   return (
     <div className={classes.listingRow}>

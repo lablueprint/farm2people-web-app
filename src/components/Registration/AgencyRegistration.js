@@ -257,7 +257,7 @@ export default function RegistrationScreen() {
         {
           fields: {
             'contact name': formState.contactName,
-            'legal name': formState.agencyName,
+            'agency name': formState.agencyName,
             'federal tax id': Number(formState.taxID),
             'user id': [formState.userID],
             phone: formState.phone,

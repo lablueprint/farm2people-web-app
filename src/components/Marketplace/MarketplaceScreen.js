@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Airtable from 'airtable';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
@@ -27,7 +28,7 @@ const airtableConfig = {
 
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
-export default function MarketplaceScreen() {
+export default function MarketplaceScreen({ shoppingFarm }) {
   const [farmListings, setFarmListings] = useState([]);
   const [filteredFarms, setFilteredFarms] = useState([]);
   const [produceListings, setProduceListings] = useState([]);
@@ -38,11 +39,13 @@ export default function MarketplaceScreen() {
 
   const classes = useStyles();
   function getFarmRecords() {
-    base('Farms').select({ view: 'Grid view' }).all()
-      .then((farmRecords) => {
-        setFarmListings(farmRecords);
-        setFilteredFarms(farmRecords);
-      });
+    if (shoppingFarm === null) {
+      base('Farms').select({ view: 'Grid view' }).all()
+        .then((farmRecords) => {
+          setFarmListings(farmRecords);
+          setFilteredFarms(farmRecords);
+        });
+    }
   }
 
   // Get prod id, grouped unit type, price per grouped unit for each produce record
@@ -133,6 +136,15 @@ export default function MarketplaceScreen() {
       .then((result) => setFilteredProduce(data.filter((element, index) => result[index])));
   }
 
+  /*
+  async function filterShopByFarmBySearch() {
+    const data = Array.from(farmListings);
+    Promise.all(data.map((produce) => searchProduce(produce)))
+    // Use the result of the promises to filter the produceListings
+      .then((result) => setFilteredFarms(data.filter((element, index) => result[index])));
+  }
+  */
+
   // run on submit of search bar (search icon or enter clicked)
   // may be useful to add any side bar filtering methods here too
   const filterBySearch = () => {
@@ -189,3 +201,14 @@ export default function MarketplaceScreen() {
     </Grid>
   );
 }
+
+MarketplaceScreen.propTypes = {
+  shoppingFarm: {
+    name: PropTypes.string,
+    id: PropTypes.string,
+  },
+};
+
+MarketplaceScreen.defaultProps = {
+  shoppingFarm: null,
+};

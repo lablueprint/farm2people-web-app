@@ -1,4 +1,3 @@
-import Airtable from 'airtable';
 import React, { useEffect, useState, Fragment } from 'react';
 import {
   Card, CardActions, CardContent, CardMedia, Grid, IconButton, Typography,
@@ -9,14 +8,7 @@ import PropTypes from 'prop-types';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import cabbageDog from '../../assets/images/cabbagedog.png';
 import '../../styles/fonts.css';
-
-// Airtable set-up
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+import { base } from '../../lib/airtable/airtable';
 
 const useStyles = makeStyles({
   loading: {
@@ -133,7 +125,7 @@ export default function ProduceCard(props) {
         } else { setProduceImg(cabbageDog); }
       });
     }
-  });
+  }, []);
 
   const handleNewPopup = () => {
     handleOpenCartPopup();

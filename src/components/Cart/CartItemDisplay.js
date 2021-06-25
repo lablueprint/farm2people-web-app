@@ -1,7 +1,6 @@
 /* Grid Display for reserved listing details */
 
 import { React, useState, useEffect } from 'react';
-import Airtable from 'airtable';
 import {
   Grid, Typography, IconButton, makeStyles, ButtonBase,
 } from '@material-ui/core';
@@ -10,14 +9,7 @@ import Delete from '@material-ui/icons/DeleteOutlineOutlined';
 import PropTypes from 'prop-types';
 import '../../styles/fonts.css';
 import CartDialog from './CartDialog';
-
-// airtable setup
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+import { base } from '../../lib/airtable/airtable';
 
 // custom styling
 const useStyles = makeStyles({

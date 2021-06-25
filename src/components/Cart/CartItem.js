@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Airtable from 'airtable';
 import PropTypes from 'prop-types';
 import CartItemDisplay from './CartItemDisplay';
 import { store } from '../../lib/redux/store';
-
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+import { base } from '../../lib/airtable/airtable';
 
 export default function CartItem({
   reservedListingID, pallets, listingID, updateSubtotal, removeListing, farmID,

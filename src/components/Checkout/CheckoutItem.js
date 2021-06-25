@@ -4,19 +4,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import Airtable from 'airtable';
 import {
   Typography, makeStyles, Grid,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { store } from '../../lib/redux/store';
-
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+import { base } from '../../lib/airtable/airtable';
 
 const useStyles = makeStyles({
   listingRow: {

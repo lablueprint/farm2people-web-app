@@ -1,7 +1,6 @@
 /* Container for all Cart Screen display components */
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Airtable from 'airtable';
 import {
   Card, CardContent, Grid, Typography, ButtonBase, makeStyles,
 } from '@material-ui/core';
@@ -13,14 +12,7 @@ import Fruit3 from '../../assets/images/Fruit3.svg';
 import Fruit4 from '../../assets/images/Fruit4.svg';
 import '../../styles/fonts.css';
 import { store } from '../../lib/redux/store';
-
-// airtable setup
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+import { base } from '../../lib/airtable/airtable';
 
 // custom styling
 const useStyles = makeStyles({

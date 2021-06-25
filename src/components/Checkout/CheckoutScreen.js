@@ -23,16 +23,7 @@ import CheckoutTextField from './CheckoutTextField';
 import Fruit3 from '../../assets/images/Fruit3.svg';
 import Fruit4 from '../../assets/images/Fruit4.svg';
 import { store } from '../../lib/redux/store';
-
-// airtable configuration
-const Airtable = require('airtable');
-
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-const base = new Airtable({ apiKey: airtableConfig.apiKey })
-  .base(airtableConfig.baseKey);
+import { base } from '../../lib/airtable/airtable';
 
 // styling
 const useStyles = makeStyles({

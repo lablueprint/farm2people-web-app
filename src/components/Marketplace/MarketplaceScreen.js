@@ -87,9 +87,18 @@ export default function MarketplaceScreen() {
   // Manages pallet price filtering TODO remove eslint comments
   // eslint-disable-next-line no-unused-vars
   const [priceFilters, setPriceFilters] = useState([]);
+  const [priceRanges, setPriceRanges] = useState([]);
   const onPriceFilterChange = (newFilters) => {
     setPriceFilters(newFilters);
-    console.log(newFilters);
+    // Parse the min + max #s from each range by splitting + filtering the string
+    const newPriceRanges = [];
+    newFilters.forEach((prices) => {
+      let num = prices.replace(/\D/g, '#'); // regex expr to replace non-digits w/ #
+      num = num.split('#').filter((elem) => elem !== ''); // split into array, filter to only get nums
+      newPriceRanges.push(num);
+    });
+    console.log(newPriceRanges);
+    setPriceRanges(newPriceRanges);
   };
   const priceOptions = [0, 15, 30, 45, 60, 75];
   const [itemsPerPrice, setPriceItems] = useState([]);
@@ -137,7 +146,6 @@ export default function MarketplaceScreen() {
       }
     });
     setPriceItems(perPrice);
-    console.log(perPrice);
   }
   // TODO: sort by, item type, price
 
@@ -153,6 +161,9 @@ export default function MarketplaceScreen() {
       filteredListings = filteredListings.filter(
         (listing) => prodFilters.includes(listing.produceType),
       );
+    }
+    if (priceRanges.length > 0) {
+      // todo
     }
     setFilteredProduce(filteredListings);
   }

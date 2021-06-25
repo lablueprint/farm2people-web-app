@@ -98,7 +98,7 @@ export default function PriceMenu({ priceOptions, itemsPerPrice, onFilterChange 
       newChecked.splice(currentIndex, 1);
     }
 
-    onFilterChange(newChecked); // Pass new price range back to markplace to display
+    onFilterChange(newChecked); // Pass new price ranges back to marketplace to filter
     setIsChecked(newChecked);
   };
 
@@ -212,7 +212,7 @@ export default function PriceMenu({ priceOptions, itemsPerPrice, onFilterChange 
               primary={option}
               className={classes.filterOptionText}
             />
-            {/* TODO: Get real #, may need to make this a component for airtable calls */}
+            {/* # of items that match this option */}
             <ListItemSecondaryAction className={classes.filterNumText}>
               {itemsPerPrice[index]}
             </ListItemSecondaryAction>

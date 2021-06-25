@@ -147,7 +147,20 @@ export default function MarketplaceScreen() {
     });
     setPriceItems(perPrice);
   }
-  // TODO: sort by, item type, price
+  // TODO: sort by, item type
+
+  // Go through each of the selected ranges + check if this price w/in any of them
+  function inPriceRange(num) {
+    let output = false;
+    priceRanges.forEach((range) => {
+      const priceMin = parseInt(range[0], 10);
+      const priceMax = parseInt(range[1], 10);
+      if (num >= priceMin && num <= priceMax) {
+        output = true;
+      }
+    });
+    return output;
+  }
 
   // Limits rendered produced cards to only those matching the selected filters
   function filterProduce() {
@@ -162,8 +175,11 @@ export default function MarketplaceScreen() {
         (listing) => prodFilters.includes(listing.produceType),
       );
     }
-    if (priceRanges.length > 0) {
-      // todo
+    if (priceFilters.length > 0) {
+      console.log(inPriceRange(10)); // always returns false
+      filteredListings = filteredListings.filter(
+        (listing) => inPriceRange(listing.palletPrice), // TODO: check if inpricerange always false?
+      );
     }
     setFilteredProduce(filteredListings);
   }
@@ -173,14 +189,18 @@ export default function MarketplaceScreen() {
     getFarmRecords();
     getProduceRecords();
   }, []);
-  // Make sure that filterProduce updates whenever filters change
-  useEffect(() => {
-    filterProduce();
-  }, [seasonFilters, prodFilters]);
   // Make sure # of produce items per category updates whenever produce listings change
   useEffect(() => {
     getNumItemsPerCategory();
   }, [produceListings]);
+  // Ma ke sure that filterProduce + isfilter bool updates whenever filters change
+  const [isFiltered, setIsFiltered] = useState(false); // True if any current filters
+  useEffect(() => {
+    filterProduce();
+    const newIsFiltered = !(seasonFilters.length === 0
+      && prodFilters.length === 0 && priceFilters.length === 0);
+    setIsFiltered(newIsFiltered);
+  }, [seasonFilters, prodFilters, priceFilters]);
 
   const classes = useStyles();
   // Get total number of results depending on if produce or farm
@@ -213,7 +233,7 @@ export default function MarketplaceScreen() {
         />
         <Grid container direction="row" justify="flex-start">
           {/* Map each array of produceListing info to render a ProduceCard */
-            tabValue === 'all' && seasonFilters.length === 0 && prodFilters.length === 0 && produceListings.map((produce) => (
+            tabValue === 'all' && !isFiltered && produceListings.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
                 /* ProduceCard will get produce name, photo, + farm name by ids */
@@ -225,7 +245,7 @@ export default function MarketplaceScreen() {
             ))
           }
           {/* Map each array of produceListing info to render a ProduceCard */
-            tabValue === 'all' && (seasonFilters.length > 0 || prodFilters.length > 0) && filteredProduce.map((produce) => (
+            tabValue === 'all' && isFiltered && filteredProduce.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
                 /* ProduceCard will get produce name, photo, + farm name by ids */

@@ -60,13 +60,13 @@ const useStyles = makeStyles({
   },
   // Styling for menu items
   optionContainer: {
-    marginTop: '-5%',
+    marginTop: '-9px',
   },
   filterOptionText: {
     fontFamily: 'Work Sans',
     fontSize: '12.5px',
     color: '#373737',
-    marginLeft: '-15%',
+    marginLeft: '-12.5%',
   },
   filterNumText: {
     fontFamily: 'Work Sans',
@@ -79,7 +79,7 @@ const useStyles = makeStyles({
 });
 
 /* Menu in the sidebar for selecting filters, takes in array of filter options */
-export default function PriceMenu({ priceOptions }) {
+export default function PriceMenu({ priceOptions, itemsPerPrice, onFilterChange }) {
   const classes = useStyles();
   const [isChecked, setIsChecked] = useState([]);
   // Sort priceOptions in asc order + get highest price for default max
@@ -98,6 +98,7 @@ export default function PriceMenu({ priceOptions }) {
       newChecked.splice(currentIndex, 1);
     }
 
+    onFilterChange(newChecked); // Pass new price range back to markplace to display
     setIsChecked(newChecked);
   };
 
@@ -190,7 +191,7 @@ export default function PriceMenu({ priceOptions }) {
       </Grid>
       {/* Price options list */}
       <List dense>
-        {priceText.map((option) => (
+        {priceText.map((option, index) => (
           <ListItem
             dense
             key={option}
@@ -213,7 +214,7 @@ export default function PriceMenu({ priceOptions }) {
             />
             {/* TODO: Get real #, may need to make this a component for airtable calls */}
             <ListItemSecondaryAction className={classes.filterNumText}>
-              100
+              {itemsPerPrice[index]}
             </ListItemSecondaryAction>
           </ListItem>
 
@@ -226,4 +227,6 @@ export default function PriceMenu({ priceOptions }) {
 
 PriceMenu.propTypes = {
   priceOptions: PropTypes.arrayOf(PropTypes.number).isRequired,
+  itemsPerPrice: PropTypes.arrayOf(PropTypes.number).isRequired,
+  onFilterChange: PropTypes.func.isRequired,
 };

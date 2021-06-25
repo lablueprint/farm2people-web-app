@@ -78,12 +78,21 @@ export default function MarketplaceScreen() {
 
   // Manages produce type filtering
   const [prodFilters, setProdFilters] = useState([]);
-  // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
   const onProduceFilterChange = (newFilters) => {
     setProdFilters(newFilters);
   };
   const produceTypeFilters = ['Vegetable', 'Fruit', 'Legume', 'Grain', 'Oat'];
   const [itemsPerProdType, setProdItems] = useState([]);
+
+  // Manages pallet price filtering TODO remove eslint comments
+  // eslint-disable-next-line no-unused-vars
+  const [priceFilters, setPriceFilters] = useState([]);
+  const onPriceFilterChange = (newFilters) => {
+    setPriceFilters(newFilters);
+    console.log(newFilters);
+  };
+  const priceOptions = [0, 15, 30, 45, 60, 75];
+  const [itemsPerPrice, setPriceItems] = useState([]);
 
   // Fx to get # of items per filter option to display in the filter menus
   function getNumItemsPerCategory() {
@@ -106,6 +115,29 @@ export default function MarketplaceScreen() {
       perProdType.push(currentProdItems.length);
     });
     setProdItems(perProdType);
+
+    // Get items per price range (0-15, 15-30, 30-45, 45-60, 60-75)
+    const perPrice = [0, 0, 0, 0, 0];
+    produceListings.forEach((listing) => {
+      const thisPrice = listing.palletPrice;
+      if (thisPrice >= priceOptions[0] && thisPrice <= priceOptions[1]) {
+        perPrice[0] += 1;
+      }
+      if (thisPrice >= priceOptions[1] && thisPrice <= priceOptions[2]) {
+        perPrice[1] += 1;
+      }
+      if (thisPrice >= priceOptions[2] && thisPrice <= priceOptions[3]) {
+        perPrice[2] += 1;
+      }
+      if (thisPrice >= priceOptions[3] && thisPrice <= priceOptions[4]) {
+        perPrice[3] += 1;
+      }
+      if (thisPrice >= priceOptions[4] && thisPrice <= priceOptions[5]) {
+        perPrice[4] += 1;
+      }
+    });
+    setPriceItems(perPrice);
+    console.log(perPrice);
   }
   // TODO: sort by, item type, price
 
@@ -149,10 +181,13 @@ export default function MarketplaceScreen() {
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar
           prodTypeFilters={produceTypeFilters}
-          farmSeasonFilters={farmSeasonFilters}
           itemsPerProdType={itemsPerProdType}
-          itemsPerFarmSeason={itemsPerFarmSeason}
           onProduceFilterChange={onProduceFilterChange}
+          priceOptions={priceOptions}
+          itemsPerPrice={itemsPerPrice}
+          onPriceFilterChange={onPriceFilterChange}
+          farmSeasonFilters={farmSeasonFilters}
+          itemsPerFarmSeason={itemsPerFarmSeason}
           onSeasonFilterChange={onSeasonFilterChange}
         />
       </Grid>

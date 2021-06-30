@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Airtable from 'airtable';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
@@ -28,24 +28,26 @@ const airtableConfig = {
 
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
-export default function MarketplaceScreen({ shoppingFarm }) {
+export default function MarketplaceScreen() {
+  const history = useHistory();
   const [farmListings, setFarmListings] = useState([]);
   const [filteredFarms, setFilteredFarms] = useState([]);
   const [produceListings, setProduceListings] = useState([]);
   const [filteredProduce, setFilteredProduce] = useState([]);
+  const [shopByFarmProduce, setShopByFarmProduce] = useState(null);
+  // TODO: filtering methods of shopByFarmProduce
   const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
   const [numResults, setNumResults] = useState(10); // # of results to display
   const [searchTerms, setSearchTerms] = useState(''); // user entered search terms
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const classes = useStyles();
   function getFarmRecords() {
-    if (shoppingFarm === null) {
-      base('Farms').select({ view: 'Grid view' }).all()
-        .then((farmRecords) => {
-          setFarmListings(farmRecords);
-          setFilteredFarms(farmRecords);
-        });
-    }
+    base('Farms').select({ view: 'Grid view' }).all()
+      .then((farmRecords) => {
+        setFarmListings(farmRecords);
+        setFilteredFarms(farmRecords);
+      });
   }
 
   // Get prod id, grouped unit type, price per grouped unit for each produce record
@@ -76,7 +78,39 @@ export default function MarketplaceScreen({ shoppingFarm }) {
   useEffect(() => {
     getFarmRecords();
     getProduceRecords();
+    console.log(history);
+    // history.pushState(null, null, '/all-produce');
   }, []);
+
+  const shopByFarm = (farmID, farmName) => {
+    // let url = '\\';
+    // url += farmName; // TODO: might need to process the farm name to get this to work right
+    // history.pushState(null, null, url);
+    console.log(farmName);
+    const tempListings = [];
+    // currently has error where not all listings load on first attempt
+    base('Farms').find(farmID, (err, farm) => {
+      if (err) { setErrorMessage(err.message); } else {
+        farm.fields.listings.forEach((id) => {
+          base('Listings').find(id, (e, record) => {
+            if (e) { setErrorMessage(e.message); }
+            const pricePerGroup = record.fields['standard price per grouped produce type'] || 0;
+            const groupPerPallet = record.fields['grouped produce type per pallet'] || 0;
+            const palletPrice = pricePerGroup * groupPerPallet;
+            const recordInfo = {
+              listingID: record.fields['listing id'],
+              produceID: record.fields.produce ? record.fields.produce[0] : -1,
+              farmID: record.fields['farm id'],
+              palletPrice: palletPrice !== 0 ? palletPrice : -1,
+              season: record.fields['growing season'] || 'No season',
+            };
+            tempListings.push(recordInfo);
+            setShopByFarmProduce(tempListings); // TODO: handle any staggered loading errors
+          });
+        });
+      }
+    });
+  };
 
   // Get total number of results depending on if produce or farm
   const totalResults = tabValue === 'all' ? filteredProduce.length : filteredFarms.length;
@@ -185,30 +219,42 @@ export default function MarketplaceScreen({ shoppingFarm }) {
           }
         </Grid>
         {/* Map each array of farmListing info to render a FarmCard */
-          tabValue === 'farm' && filteredFarms.map((farm) => (
-            <FarmCard
-              key={farm.id}
-              farmName={farm.fields['farm name'] || 'No farm name'}
-              address={farm.fields.address || 'No address'}
-              zipCode={farm.fields['zip code'] || -1}
-              description={farm.fields.description || 'No description'}
-              operationTypeTags={farm.fields['operation type'] || []}
-              farmingPracticeTags={farm.fields['farming practice type'] || []}
-            />
-          ))
+          tabValue === 'farm'
+          && (
+            shopByFarmProduce === null
+              ? filteredFarms.map((farm) => (
+                <FarmCard
+                  key={farm.id}
+                  farmID={farm.id}
+                  farmName={farm.fields['farm name'] || 'No farm name'}
+                  address={farm.fields.address || 'No address'}
+                  zipCode={farm.fields['zip code'] || -1}
+                  description={farm.fields.description || 'No description'}
+                  operationTypeTags={farm.fields['operation type'] || []}
+                  farmingPracticeTags={farm.fields['farming practice type'] || []}
+                  shopByFarm={shopByFarm}
+                />
+              ))
+              : (
+                <Grid container direction="row" justify="flex-start">
+
+                  {shopByFarmProduce.map((produce) => (
+                    <ProduceCard
+                      key={produce.listingID}
+                  /* ProduceCard will get produce name, photo, + farm name by ids */
+                      produceID={produce.produceID || null}
+                      farmID={produce.farmID || null}
+                      palletPrice={produce.palletPrice}
+                      season={produce.season}
+                    />
+                  ))}
+                </Grid>
+              )
+
+          )
         }
       </Grid>
+      <p>{errorMessage}</p>
     </Grid>
   );
 }
-
-MarketplaceScreen.propTypes = {
-  shoppingFarm: {
-    name: PropTypes.string,
-    id: PropTypes.string,
-  },
-};
-
-MarketplaceScreen.defaultProps = {
-  shoppingFarm: null,
-};

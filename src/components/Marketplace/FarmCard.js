@@ -139,7 +139,8 @@ export default function FarmCard(props) {
   const classes = useStyles();
   const [isExpanded, setIsExpanded] = useState(false);
   const {
-    farmName, address, zipCode, description, operationTypeTags, farmingPracticeTags,
+    farmID, farmName, address, zipCode, description, operationTypeTags, farmingPracticeTags,
+    shopByFarm,
   } = props;
 
   return (
@@ -279,6 +280,7 @@ export default function FarmCard(props) {
               className={classes.shopButton}
               variant="container"
               disableElevation
+              onClick={() => { shopByFarm(farmID, farmName); }}
             >
               SHOP THIS FARM
             </Button>
@@ -290,6 +292,7 @@ export default function FarmCard(props) {
 }
 
 FarmCard.propTypes = {
+  farmID: PropTypes.string.isRequired,
   farmName: PropTypes.string.isRequired,
   address: PropTypes.string.isRequired,
   zipCode: PropTypes.number.isRequired,
@@ -300,4 +303,5 @@ FarmCard.propTypes = {
   farmingPracticeTags: PropTypes.arrayOf({
     label: PropTypes.string.isRequired,
   }).isRequired,
+  shopByFarm: PropTypes.func.isRequired,
 };

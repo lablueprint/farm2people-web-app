@@ -252,6 +252,7 @@ export default function RegistrationScreen() {
   const handleSubmit = useCallback((event) => {
     event.preventDefault();
     setLoading(true);
+    setErrorMsg('');
     try {
       base('Agencies').create([
         {
@@ -265,7 +266,6 @@ export default function RegistrationScreen() {
             website: formState.website,
             'address line 1': formState.addOne,
             'address line 2': formState.addTwo,
-            address: `${formState.addOne},${formState.addTWo}`,
             zipcode: Number(formState.zipcode),
             'social media': formState.socials,
             'additional comments': formState.additionalComments,
@@ -274,24 +274,22 @@ export default function RegistrationScreen() {
           },
         },
       ], (err) => {
-        if (err) {
-          setErrorMsg(errorMsg.length === 0 ? err : `${errorMsg}`);
-          console.log(err);
-        } else {
-          setErrorMsg('');
-        }
+        setErrorMsg(err);
       });
     } catch (err) {
-      setErrorMsg(err);
+      if (err) {
+        setErrorMsg(err);
+      }
     }
-
-    if (!errorMsg) {
-      setCurrentStep(currentStep + 1);
+    if (errorMsg) {
+      setErrorMsg('Please choose a different email!');
       setLoading(false);
+    } else {
+      setCurrentStep(currentStep + 1);
     }
   }, [formState, currentStep]);
 
-  const routeChange = () => {
+  const homeRedirect = () => {
     const path = '/';
     history.push(path);
   };
@@ -312,7 +310,7 @@ export default function RegistrationScreen() {
     }
   }, [currentStep]);
 
-  const onSelect = useCallback((step) => {
+  const onSelectStep = useCallback((step) => {
     if (step >= 1 && step <= 3) {
       setCurrentStep(step);
     }
@@ -324,7 +322,7 @@ export default function RegistrationScreen() {
   ),
   [formState]);
 
-  const Step1Check = useMemo(() => {
+  const federalTaxIDCheck = useMemo(() => {
     if (formState.taxID !== '' && !Number(formState.taxID)) {
       return 'Make sure your Tax ID is a number!';
     }
@@ -377,7 +375,7 @@ export default function RegistrationScreen() {
                   <Step1
                     currentStep={currentStep}
                     formState={formState}
-                    Step1Check={Step1Check}
+                    federalTaxIDCheck={federalTaxIDCheck}
                     step1IsInvalid={step1IsInvalid}
                     classes={classes}
                     handleChange={handleChange}
@@ -408,7 +406,7 @@ export default function RegistrationScreen() {
                     handleChange={handleChange}
                     onPrev={onPrev}
                     onNext={onNext}
-                    onSelect={onSelect}
+                    onSelectStep={onSelectStep}
                     handleSubmit={handleSubmit}
                     errorMsg={errorMsg}
                     step3IsInvalid={step3IsInvalid}
@@ -418,7 +416,7 @@ export default function RegistrationScreen() {
                 <Grid item xs={12}>
                   <Step4
                     currentStep={currentStep}
-                    routeChange={routeChange}
+                    homeRedirect={homeRedirect}
                     classes={classes}
                   />
                 </Grid>
@@ -433,7 +431,7 @@ export default function RegistrationScreen() {
 
 function Step1({
   currentStep, formState, classes, handleChange, onNext, errorMsg, handleSelect,
-  Step1Check, step1IsInvalid,
+  federalTaxIDCheck, step1IsInvalid,
 }) {
   if (currentStep !== 1) {
     return null;
@@ -534,7 +532,7 @@ function Step1({
         </FormControl>
       </Grid>
       {errorMsg && <Grid item xs={12} className="error-msg">{errorMsg}</Grid>}
-      {Step1Check && <Grid item xs={12} className="error-msg">{Step1Check}</Grid>}
+      {federalTaxIDCheck && <Grid item xs={12} className="error-msg">{federalTaxIDCheck}</Grid>}
 
       <Grid item xs={12}>
         <Button
@@ -690,7 +688,7 @@ function Step2({
 
 function Step3({
   currentStep, formState, classes, onPrev, handleSubmit,
-  onSelect,
+  onSelectStep,
 }) {
   if (currentStep !== 3) {
     return null;
@@ -751,7 +749,7 @@ function Step3({
             </Grid>
           </Grid>
           <Grid item xs={12} sm={3} align="right">
-            <Button className={classes.smallButton} onClick={() => onSelect(field.page)}>
+            <Button className={classes.smallButton} onClick={() => onSelectStep(field.page)}>
               Edit
             </Button>
           </Grid>
@@ -786,7 +784,7 @@ function Step3({
 }
 
 function Step4({
-  currentStep, routeChange, classes,
+  currentStep, homeRedirect, classes,
 }) {
   if (currentStep !== 4) {
     return null;
@@ -820,7 +818,7 @@ function Step4({
             color="primary"
             variant="contained"
             style={{ backgroundColor: '#2D5496' }}
-            onClick={routeChange}
+            onClick={homeRedirect}
           >
             Back To Home
           </Button>

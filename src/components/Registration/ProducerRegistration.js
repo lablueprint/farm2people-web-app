@@ -113,6 +113,7 @@ const FARMSIZE = [
 
 const INITIAL_FORM_STATE = {
   contactName: '',
+  legalName: '',
   farmName: '',
   hideFarm: false,
   email: '',
@@ -279,7 +280,7 @@ export default function RegistrationScreen() {
       setFormState(
         {
           ...formState,
-          farmName: record.fields.organization,
+          legalName: record.fields.organization,
           zipcode: record.fields.zipcode,
           contactName: record.fields['contact name'],
           phone: record.fields.phone,
@@ -321,11 +322,12 @@ export default function RegistrationScreen() {
   const handleSubmit = useCallback((event) => {
     event.preventDefault();
     setLoading(true);
+    setErrorMsg('');
     try {
       base('Farms').create([
         {
           fields: {
-            'legal name': formState.farmName,
+            'legal name': formState.legalName,
             'farm name': formState.farmName,
             'farm name privatized': formState.hideFarm,
             'user id': [formState.userID],
@@ -356,11 +358,6 @@ export default function RegistrationScreen() {
           },
         },
       ], (err) => {
-        // if (err) {
-        //   setErrorMsg(errorMsg.length === 0 ? err : `${errorMsg}`);
-        // } else {
-        //   setErrorMsg('');
-        // }
         setErrorMsg(err);
       });
     } catch (err) {
@@ -398,14 +395,14 @@ export default function RegistrationScreen() {
     }
   }, [currentStep]);
 
-  const onSelect = useCallback((step) => {
+  const onSelectStep = useCallback((step) => {
     if (step >= 1 && step <= 3) {
       setCurrentStep(step);
     }
   }, [currentStep]);
 
   const step1EmptyInputCheck = useMemo(() => (
-    formState.county === ''
+    formState.county === '' || (formState.hideFarm && formState.farmName === '')
   ),
   [formState]);
 
@@ -505,10 +502,11 @@ export default function RegistrationScreen() {
                     handleChange={handleChange}
                     onPrev={onPrev}
                     onNext={onNext}
-                    onSelect={onSelect}
+                    onSelectStep={onSelectStep}
                     handleSubmit={handleSubmit}
                     errorMsg={errorMsg}
                     loading={loading}
+                    setFormState={setFormState}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -547,11 +545,11 @@ function Step1({
         <TextField
           variant="outlined"
           fullWidth
-          id="farmname"
+          id="legalname"
           label="Legal Farm Name"
-          name="farmName"
+          name="legalName"
           disabled
-          value={formState.farmName}
+          value={formState.legalName}
         >
           {formState.farmName}
         </TextField>
@@ -562,6 +560,24 @@ function Step1({
           label="Hide farm name on marketplace"
         />
       </Grid>
+      {formState.hideFarm
+        && (
+        <Grid item xs={12}>
+          <TextField
+            variant="outlined"
+            fullWidth
+            id="farmname"
+            label="Display Name"
+            placeholder="Marketplace display name (if legal farm name is hidden)"
+            name="farmName"
+            value={formState.farmName}
+            onChange={handleChange}
+          >
+            {formState.farmName}
+          </TextField>
+        </Grid>
+        )}
+
       <Grid item xs={12}>
         <TextField
           variant="outlined"
@@ -1011,10 +1027,18 @@ function Step3({
 
 function Step4({
   currentStep, formState, classes, onPrev, handleSubmit,
-  onSelect,
+  onSelectStep, setFormState,
 }) {
   if (currentStep !== 4) {
     return null;
+  }
+  if (!formState.hideFarm) {
+    setFormState(
+      {
+        ...formState,
+        farmName: formState.legalName,
+      },
+    );
   }
   const fields = [
     {
@@ -1086,7 +1110,7 @@ function Step4({
             </Grid>
           </Grid>
           <Grid item xs={12} sm={3} align="right">
-            <Button className={classes.smallButton} onClick={() => onSelect(field.page)}>
+            <Button className={classes.smallButton} onClick={() => onSelectStep(field.page)}>
               Edit
             </Button>
           </Grid>

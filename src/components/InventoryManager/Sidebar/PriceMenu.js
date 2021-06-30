@@ -36,10 +36,10 @@ const useStyles = makeStyles({
   },
   applyButton: {
     color: '#373737',
-    borderRadius: '1rem',
+    borderRadius: '.5rem',
     fontFamily: 'Work Sans',
     fontWeight: 'lighter',
-    fontSize: '0.8rem',
+    fontSize: '0.9rem',
     backgroundColor: '#E7F3E5',
     '&:hover': {
       backgroundColor: green[300],

@@ -130,7 +130,14 @@ export default function MarketplaceScreen() {
     getFarmRecords();
     getProduceRecords();
   }, []);
-  // Make sure that filterProduce updates whenever filters change
+  // Make sure that filterProduce + isfilter bool updates whenever filters change
+  const [isFiltered, setIsFiltered] = useState(false); // True if any current filters
+  useEffect(() => {
+    filterProduce();
+    const newIsFiltered = !(seasonFilters.length === 0
+       && prodFilters.length === 0);
+    setIsFiltered(newIsFiltered);
+  }, [seasonFilters, prodFilters]);
   useEffect(() => {
     filterProduce();
   }, [seasonFilters, prodFilters]);
@@ -140,8 +147,10 @@ export default function MarketplaceScreen() {
   }, [produceListings]);
 
   const classes = useStyles();
-  // Get total number of results depending on if produce or farm
-  const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
+  // Get total number of results depending on if (filtered/unfiltered) produce or farm
+  // eslint-disable-next-line no-nested-ternary
+  const totalResults = tabValue === 'all'
+    ? (isFiltered ? filteredProduce.length : produceListings.length) : farmListings.length;
 
   return (
     <Grid container className={classes.root}>

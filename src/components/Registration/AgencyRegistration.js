@@ -93,12 +93,6 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
     marginBottom: '7%',
   },
-  cenRegSubtitleText: {
-    textAlign: 'center',
-    paddingLeft: '10%',
-    fontSize: '30px',
-    marginBottom: '2%',
-  },
   labelText: {
     fontWeight: 'bold',
     paddingBottom: '3%',

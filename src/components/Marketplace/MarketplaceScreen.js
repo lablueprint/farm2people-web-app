@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import Airtable from 'airtable';
+// import Airtable from 'airtable';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
 import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
+import { base } from '../../lib/airtable/airtable';
 import '../../styles/fonts.css';
 
 const useStyles = makeStyles({
@@ -20,12 +21,12 @@ const useStyles = makeStyles({
 });
 
 // Airtable set-up
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
+// const airtableConfig = {
+//   apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+//   baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
+// };
 
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+// const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);

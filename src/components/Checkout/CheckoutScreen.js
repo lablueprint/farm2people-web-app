@@ -314,7 +314,7 @@ function CheckoutScreen() {
     setSubtotal(0);
 
     base('Users').find(store.getState().userData.user.id, (err, user) => {
-      if (err) { setAirtableError(err); return; }
+      if (err) { setAirtableError(err.message); return; }
       let tempProfiles = [];
       let tempItems = [];
       const tempFarms = {};
@@ -323,14 +323,14 @@ function CheckoutScreen() {
       if (user.fields.cart) {
         user.fields.cart.forEach((id) => {
           base('Reserved Listings').find(id, (e, item) => {
-            if (e) { setAirtableError(e); return; }
+            if (e) { setAirtableError(e.message); return; }
             tempItems = [...tempItems, item];
             setItems(tempItems);
 
             // fetch item's farm and add to farms if necessary
             const farmID = item.fields['farm id'];
             base('Farms').find(farmID, (error, farm) => {
-              if (error) { setAirtableError(error); }
+              if (error) { setAirtableError(error.message); }
               if (!tempFarms[farmID]) {
                 tempFarms[farmID] = farm.fields['farm name'];
               }
@@ -339,7 +339,7 @@ function CheckoutScreen() {
 
             // fetch price of listing and add to subtotal
             base('Listings').find(item.fields['listing id'][0], (er, record) => {
-              if (er) { setAirtableError(er); return; }
+              if (er) { setAirtableError(er.message); return; }
               const useAgencyPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type'];
               const currCartItemPrice = useAgencyPrice ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
               const currCartItemCost = item.fields.pallets * record.fields['grouped produce type per pallet'] * currCartItemPrice;
@@ -353,7 +353,7 @@ function CheckoutScreen() {
       if (user.fields['checkout profiles']) {
         user.fields['checkout profiles'].forEach((id) => {
           base('Checkout Profiles').find(id, (e, p) => {
-            if (e) { setAirtableError(e); return; }
+            if (e) { setAirtableError(e.message); return; }
             tempProfiles = [...tempProfiles, p];
             setPastProfiles(tempProfiles);
           });
@@ -472,7 +472,7 @@ function CheckoutScreen() {
     base('Checkout Profiles').create([{ fields: profile }],
       (err, records) => {
         if (err) {
-          setAirtableError(err);
+          setAirtableError(err.message);
         } else {
           const p = records[0];
           // The profile is saved to the past profile array temporarily regardless of whether the
@@ -491,7 +491,7 @@ function CheckoutScreen() {
       fields: profile,
     }], (err, records) => {
       if (err) {
-        setAirtableError(err);
+        setAirtableError(err.message);
       }
       // update the profile in the pastProfile array
       const editedProfile = records[0];
@@ -517,7 +517,7 @@ function CheckoutScreen() {
       ],
       (err) => {
         if (err) {
-          setAirtableError(err);
+          setAirtableError(err.message);
         } else {
           // clear the cart
           base('Users').update([
@@ -530,7 +530,7 @@ function CheckoutScreen() {
           ],
           (er) => {
             if (er) {
-              setAirtableError(er);
+              setAirtableError(er.message);
             }
           });
           onCheckoutSuccess();

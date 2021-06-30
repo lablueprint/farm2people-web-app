@@ -16,7 +16,7 @@ export default function CartItem({
 
   useEffect(() => {
     base('Listings').find(listingID[0], (err, record) => {
-      if (err) { setErrorMessage(err); return; }
+      if (err) { setErrorMessage(err.message); return; }
       setListingDetails(record);
       setLoading(false);
       setUsingAgencyPrice(store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type']);

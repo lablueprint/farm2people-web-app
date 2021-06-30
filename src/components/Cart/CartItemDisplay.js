@@ -116,7 +116,7 @@ export default function CartItemDisplay({
 
   useEffect(() => {
     base('Produce Type').find(produceID, (err, p) => {
-      if (err) { setErrorMessage(err); }
+      if (err) { setErrorMessage(err.message); }
       setProduceName(p.fields['produce type']);
       setImageURL((p.fields['produce picture'] ? p.fields['produce picture'][0].url : ''));
     });
@@ -133,7 +133,7 @@ export default function CartItemDisplay({
       },
     ], (err) => {
       if (err) {
-        setErrorMessage(err);
+        setErrorMessage(err.message);
       }
     });
   }

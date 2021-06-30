@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Airtable from 'airtable';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import AddCartPopup from './Checkout/AddCartPopup';
@@ -8,6 +7,7 @@ import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
 import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
 import '../../styles/fonts.css';
+import { base } from '../../lib/airtable/airtable';
 
 const useStyles = makeStyles({
   root: {
@@ -19,14 +19,6 @@ const useStyles = makeStyles({
     width: '21%',
   },
 });
-
-// Airtable set-up
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 const INITIAL_POPUP_PRODUCE = {
   crop: '',

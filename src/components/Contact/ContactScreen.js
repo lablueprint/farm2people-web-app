@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Airtable from 'airtable';
 import {
   Typography,
 } from '@material-ui/core';
@@ -14,6 +13,7 @@ import LI from '../../assets/images/LI.svg';
 import IG from '../../assets/images/IG.svg';
 import TW from '../../assets/images/TW.svg';
 import farmerSideImg from '../../assets/images/FarmerContact.png';
+import { base } from '../../lib/airtable/airtable';
 
 const useStyles = makeStyles({
   root: {
@@ -130,12 +130,6 @@ const INITIAL_FORM_STATE = {
   subject: '',
   message: '',
 };
-
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 export default function ContactScreen() {
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);

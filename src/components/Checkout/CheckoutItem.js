@@ -4,19 +4,12 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import Airtable from 'airtable';
 import {
   Typography, makeStyles, Grid,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import { store } from '../../lib/redux/store';
-
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+import { base } from '../../lib/airtable/airtable';
 
 const useStyles = makeStyles({
   listingRow: {
@@ -104,17 +97,17 @@ function CheckoutItem({ listingID, pallets }) {
 
   useEffect(() => {
     base('Listings').find(listingID[0], (err, record) => {
-      if (err) { setErrorMessage(err); return; }
+      if (err) { setErrorMessage(err.message); return; }
       setListingDetails(record);
       setUsingAgencyPrice(store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type']);
       base('Produce Type').find(record.fields.produce, (er, p) => {
-        if (err) { setErrorMessage(er); }
+        if (err) { setErrorMessage(er.message); }
         setProduceName(p.fields['produce type']);
         setImageURL((p.fields['produce picture'] ? p.fields['produce picture'][0].url : ''));
       });
       setLoading(false);
     });
-  });
+  }, []);
 
   return (
     <div className={classes.listingRow}>

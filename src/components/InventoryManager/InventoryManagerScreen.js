@@ -2,15 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import Airtable from 'airtable';
+import { store } from '../../lib/redux/store';
+import { base } from '../../lib/airtable/airtable';
 import ListingsView from './ListingsView';
 import AddListingButton from './AddListingButton';
 import DeleteButton from './DeleteButton';
 
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
 const useStyles = makeStyles({
   root: {
     position: 'relative',
@@ -32,9 +29,6 @@ const useStyles = makeStyles({
   },
 });
 
-const base = new Airtable({ apiKey: airtableConfig.apiKey })
-  .base(airtableConfig.baseKey);
-
 let initialCardSelect = {};
 export default function InventoryManagerScreen() {
   const classes = useStyles();
@@ -55,7 +49,7 @@ export default function InventoryManagerScreen() {
     });
   }
   function editRecord(rec) {
-    const { 'listing id': id, ...fields } = rec;
+    const { 'listing id': id, user, ...fields } = rec;
     const record = {
       id,
       fields,
@@ -103,7 +97,10 @@ export default function InventoryManagerScreen() {
   }
   useEffect(() => {
     base('Listings')
-      .select({ view: 'Grid view' })
+      .select({
+        view: 'Grid view',
+        filterByFormula: `{user} = "${store.getState().userData.user.id}"`,
+      })
       .all().then((records) => {
         setCardListings(records);
         records.forEach((listing) => {

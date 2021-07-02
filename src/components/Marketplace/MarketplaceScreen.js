@@ -37,7 +37,6 @@ export default function MarketplaceScreen() {
   const [filteredProduce, setFilteredProduce] = useState([]);
   const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
   const [numResults, setNumResults] = useState(10); // # of results to display
-  const [filteredProduce, setFilteredProduce] = useState(null);
   const [popupProduce, setPopupProduce] = useState(INITIAL_POPUP_PRODUCE);
   const [open, setOpen] = useState(false);
   const [searchTerms, setSearchTerms] = useState(''); // user entered search terms
@@ -167,9 +166,6 @@ export default function MarketplaceScreen() {
   const handleCloseCartPopup = () => {
     setOpen(false);
   };
-
-  // Get total number of results depending on if produce or farm
-  const totalResults = tabValue === 'all' ? filteredProduce.length : filteredFarms.length;
 
   // helper fx to check any string for search term
   const checkFieldForSearchTerm = (field) => {

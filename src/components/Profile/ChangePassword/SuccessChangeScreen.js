@@ -6,14 +6,13 @@ import {
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import IconButton from '@material-ui/core/IconButton';
-import Fruit1 from '../../assets/images/Fruit1.svg';
-import Fruit2 from '../../assets/images/Fruit2.svg';
-import Fruit3 from '../../assets/images/Fruit3.svg';
+import Fruit1 from '../../../assets/images/Fruit1.svg';
+import Fruit2 from '../../../assets/images/Fruit2.svg';
+import Fruit3 from '../../../assets/images/Fruit3.svg';
 
-// TODO: Combine all styles into ChangePasswordStyles
 const useStyles = makeStyles({
   centerHeading: {
     fontFamily: 'Work Sans',
@@ -27,6 +26,9 @@ const useStyles = makeStyles({
     fontSize: '20px',
     fontWeight: '400',
     color: '#373737',
+    textAlign: 'center',
+  },
+  box: {
     textAlign: 'center',
   },
   form: {
@@ -59,6 +61,9 @@ const useStyles = makeStyles({
     textTransform: 'none',
     fontWeight: '600',
   },
+  closeIcon: {
+    color: '#373737',
+  },
   centerAlignDialogActions: {
     justifyContent: 'center',
   },
@@ -67,10 +72,7 @@ const useStyles = makeStyles({
     height: 'auto',
     margin: '10px',
   },
-});
-
-const DoneButton = withStyles({
-  root: {
+  doneButton: {
     color: '#fff',
     backgroundColor: '#53AA48',
     width: '200px',
@@ -78,9 +80,9 @@ const DoneButton = withStyles({
       backgroundColor: '#3D7736',
     },
   },
-})(Button);
+});
 
-export default function ChangePasswordSuccess({ handleClose }) {
+export default function SuccessChangeScreen({ handleClose }) {
   const classes = useStyles();
 
   return (
@@ -88,12 +90,12 @@ export default function ChangePasswordSuccess({ handleClose }) {
       <DialogTitle>
         <Box display="flex" justifyContent="flex-end">
           <IconButton onClick={handleClose}>
-            <CloseIcon style={{ color: '#373737', transform: 'scale(1.2)' }} />
+            <CloseIcon className={classes.closeIcon} />
           </IconButton>
         </Box>
       </DialogTitle>
       <DialogContent>
-        <Box style={{ textAlign: 'center' }}>
+        <Box className={classes.box}>
           <img
             src={Fruit1}
             alt="fruit1"
@@ -120,16 +122,16 @@ export default function ChangePasswordSuccess({ handleClose }) {
         </Box>
       </DialogContent>
       <DialogActions classes={{ root: classes.centerAlignDialogActions }}>
-        <DoneButton variant="contained" size="large" onClick={handleClose}>
+        <Button variant="contained" className={classes.doneButton} size="large" onClick={handleClose}>
           <Typography className={classes.changePasswordButton}>
             DONE
           </Typography>
-        </DoneButton>
+        </Button>
       </DialogActions>
     </Box>
   );
 }
 
-ChangePasswordSuccess.propTypes = {
+SuccessChangeScreen.propTypes = {
   handleClose: PropTypes.func.isRequired,
 };

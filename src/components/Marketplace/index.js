@@ -1,3 +1,3 @@
-import MarketplaceScreen from './MarketplaceScreen';
+import MarketplaceRouter from './MarketplaceRouter';
 
-export default MarketplaceScreen;
+export default MarketplaceRouter;

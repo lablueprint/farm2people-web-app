@@ -104,17 +104,17 @@ function CheckoutItem({ listingID, pallets }) {
 
   useEffect(() => {
     base('Listings').find(listingID[0], (err, record) => {
-      if (err) { setErrorMessage(err); return; }
+      if (err) { setErrorMessage(err.message); return; }
       setListingDetails(record);
       setUsingAgencyPrice(store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type']);
       base('Produce Type').find(record.fields.produce, (er, p) => {
-        if (err) { setErrorMessage(er); }
+        if (err) { setErrorMessage(er.message); }
         setProduceName(p.fields['produce type']);
         setImageURL((p.fields['produce picture'] ? p.fields['produce picture'][0].url : ''));
       });
       setLoading(false);
     });
-  });
+  }, []);
 
   return (
     <div className={classes.listingRow}>

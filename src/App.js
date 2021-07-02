@@ -3,7 +3,7 @@ import { Router, Switch, Route } from 'react-router-dom';
 import { store, history } from './lib/redux/store';
 import { Navbar, Footer, PrivateRoute } from './components/Navigation';
 import InventoryManagerScreen from './components/InventoryManager';
-import MarketplaceScreen from './components/Marketplace';
+import MarketplaceRouter from './components/Marketplace';
 import ContactScreen from './components/Contact';
 import CartScreen from './components/Cart';
 import { CheckoutScreen, CheckoutSuccess } from './components/Checkout';
@@ -29,7 +29,7 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(getInitialAuth());
   const getHomeComponent = () => {
     if (authenticated === true) {
-      return userRole === 'vendor' ? InventoryManagerScreen : MarketplaceScreen;
+      return userRole === 'vendor' ? InventoryManagerScreen : MarketplaceRouter;
     }
     return LandingScreen;
   };
@@ -46,7 +46,7 @@ export default function App() {
         <Switch>
           <Route path="/" exact component={getHomeComponent()} />
           <PrivateRoute allowedRoles={sellingPermissions} path="/inventorymanager" exact component={InventoryManagerScreen} />
-          <PrivateRoute allowedRoles={purchasingPermissions} path="/marketplace" exact component={MarketplaceScreen} />
+          <PrivateRoute allowedRoles={purchasingPermissions} path="/marketplace" component={MarketplaceRouter} />
           <PrivateRoute allowedRoles={allPermissions} path="/profile" exact component={ProfileScreen} />
           <PrivateRoute allowedRoles={purchasingPermissions} path="/cart" exact component={CartScreen} />
           <PrivateRoute allowedRoles={purchasingPermissions} path="/cart/checkout" exact component={CheckoutScreen} />

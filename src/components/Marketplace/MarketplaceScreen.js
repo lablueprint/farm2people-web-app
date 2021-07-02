@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import Airtable from 'airtable';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
+import AddCartPopup from './Checkout/AddCartPopup';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
@@ -28,21 +29,35 @@ const airtableConfig = {
 
 const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
-export default function MarketplaceScreen() {
-  const history = useHistory();
+const INITIAL_POPUP_PRODUCE = {
+  crop: '',
+  price: 0,
+  farmName: '',
+  palletsAvailable: 0,
+  produceImg: '',
+  listingID: '',
+  farmID: '',
+};
+
+export default function MarketplaceScreen({ match }) {
+  const shopByFarmID = match.params.farmId; // id of the farm being shopped from if applicable
   const [farmListings, setFarmListings] = useState([]);
   const [filteredFarms, setFilteredFarms] = useState([]);
   const [produceListings, setProduceListings] = useState([]);
   const [filteredProduce, setFilteredProduce] = useState([]);
-  const [shopByFarmProduce, setShopByFarmProduce] = useState(null);
+  const [shopByFarmProduce, setShopByFarmProduce] = useState([]);
+  const [filteredShopByFarmProduce, setFilteredShopByFarmProduce] = useState([]);
   // TODO: filtering methods of shopByFarmProduce
   const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
   const [numResults, setNumResults] = useState(10); // # of results to display
+  const [popupProduce, setPopupProduce] = useState(INITIAL_POPUP_PRODUCE);
+  const [open, setOpen] = useState(false);
   const [searchTerms, setSearchTerms] = useState(''); // user entered search terms
   const [errorMessage, setErrorMessage] = useState(null);
 
   const classes = useStyles();
   function getFarmRecords() {
+    setShopByFarmProduce([]);
     base('Farms').select({ view: 'Grid view' }).all()
       .then((farmRecords) => {
         setFarmListings(farmRecords);
@@ -52,8 +67,7 @@ export default function MarketplaceScreen() {
 
   // Get prod id, grouped unit type, price per grouped unit for each produce record
   function getProduceRecords() {
-    // TODO: change Listing UPDATED back to Listings
-    base('Listing UPDATED').select({ view: 'Grid view' }).all()
+    base('Listings').select({ view: 'Grid view' }).all()
       .then((produceRecords) => {
         const filteredProduceRecords = [];
         produceRecords.forEach((record) => {
@@ -66,6 +80,7 @@ export default function MarketplaceScreen() {
             farmID: record.fields['farm id'],
             palletPrice: palletPrice !== 0 ? palletPrice : -1,
             season: record.fields['growing season'] || 'No season',
+            palletsAvailable: record.fields['pallets available'] || 0,
           };
           filteredProduceRecords.push(recordInfo);
         });
@@ -74,23 +89,12 @@ export default function MarketplaceScreen() {
       });
   }
 
-  // Get records from Airtable whenever DOM mounts and updates/changes
-  useEffect(() => {
-    getFarmRecords();
-    getProduceRecords();
-    console.log(history);
-    // history.pushState(null, null, '/all-produce');
-  }, []);
-
-  const shopByFarm = (farmID, farmName) => {
-    // let url = '\\';
-    // url += farmName; // TODO: might need to process the farm name to get this to work right
-    // history.pushState(null, null, url);
-    console.log(farmName);
-    const tempListings = [];
-    // currently has error where not all listings load on first attempt
+  const shopByFarm = (farmID) => {
+    // TODO: error check for no produce from farm + use some signal to show loading if needed
+    setShopByFarmProduce([]);
+    setFilteredShopByFarmProduce([]);
     base('Farms').find(farmID, (err, farm) => {
-      if (err) { setErrorMessage(err.message); } else {
+      if (err) { setErrorMessage(err.message); } else if (farm.fields.listings) {
         farm.fields.listings.forEach((id) => {
           base('Listings').find(id, (e, record) => {
             if (e) { setErrorMessage(e.message); }
@@ -104,12 +108,37 @@ export default function MarketplaceScreen() {
               palletPrice: palletPrice !== 0 ? palletPrice : -1,
               season: record.fields['growing season'] || 'No season',
             };
-            tempListings.push(recordInfo);
-            setShopByFarmProduce(tempListings); // TODO: handle any staggered loading errors
+            setShopByFarmProduce((lastProduce) => lastProduce.concat(recordInfo));
+            setFilteredShopByFarmProduce((lastProduce) => lastProduce.concat(recordInfo));
           });
         });
+      } else {
+        console.log('no listings for this farm');
+        console.log(farm);
       }
     });
+  };
+
+  // Get produce records from Airtable whenever DOM mounts and updates/changes
+  useEffect(() => {
+    getProduceRecords();
+    console.log('fetching produce');
+  }, []);
+
+  // Get farm records or produce of specific farm whenever DOM or link updates/changes
+  useEffect(() => {
+    if (shopByFarmID) {
+      shopByFarm(shopByFarmID);
+    } else {
+      getFarmRecords();
+    }
+  }, [shopByFarmID]);
+
+  const handleOpenCartPopup = () => {
+    setOpen(true);
+  };
+  const handleCloseCartPopup = () => {
+    setOpen(false);
   };
 
   // Get total number of results depending on if produce or farm
@@ -163,31 +192,31 @@ export default function MarketplaceScreen() {
   }
 
   // filter produce by name/farm match to user search terms
-  async function filterProducebySearch() {
-    const data = Array.from(produceListings);
+  async function filterProducebySearch(listings, setListings) {
+    const data = Array.from(listings);
     Promise.all(data.map((produce) => searchProduce(produce)))
     // Use the result of the promises to filter the produceListings
-      .then((result) => setFilteredProduce(data.filter((element, index) => result[index])));
+      .then((result) => setListings(data.filter((element, index) => result[index])));
   }
-
-  /*
-  async function filterShopByFarmBySearch() {
-    const data = Array.from(farmListings);
-    Promise.all(data.map((produce) => searchProduce(produce)))
-    // Use the result of the promises to filter the produceListings
-      .then((result) => setFilteredFarms(data.filter((element, index) => result[index])));
-  }
-  */
 
   // run on submit of search bar (search icon or enter clicked)
   // may be useful to add any side bar filtering methods here too
   const filterBySearch = () => {
-    filterProducebySearch();
-    filterFarmsBySearch();
+    filterProducebySearch(produceListings, setFilteredProduce);
+    if (shopByFarmID === undefined) {
+      filterFarmsBySearch();
+    } else {
+      filterProducebySearch(shopByFarmProduce, setFilteredShopByFarmProduce);
+    }
   };
 
   return (
     <Grid container className={classes.root}>
+      <AddCartPopup
+        popupProduce={popupProduce}
+        open={open}
+        handleCloseCartPopup={handleCloseCartPopup}
+      />
       <Grid item className={classes.sidebar}>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar />
@@ -209,10 +238,14 @@ export default function MarketplaceScreen() {
             tabValue === 'all' && filteredProduce.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
+                listingID={produce.listingID}
+                handleOpenCartPopup={handleOpenCartPopup}
+                setPopupProduce={setPopupProduce}
                 /* ProduceCard will get produce name, photo, + farm name by ids */
                 produceID={produce.produceID || null}
                 farmID={produce.farmID || null}
                 palletPrice={produce.palletPrice}
+                palletsAvailable={produce.palletsAvailable}
                 season={produce.season}
               />
             ))
@@ -221,7 +254,7 @@ export default function MarketplaceScreen() {
         {/* Map each array of farmListing info to render a FarmCard */
           tabValue === 'farm'
           && (
-            shopByFarmProduce === null
+            shopByFarmID === undefined
               ? filteredFarms.map((farm) => (
                 <FarmCard
                   key={farm.id}
@@ -237,11 +270,12 @@ export default function MarketplaceScreen() {
               ))
               : (
                 <Grid container direction="row" justify="flex-start">
-
-                  {shopByFarmProduce.map((produce) => (
+                  {filteredShopByFarmProduce.map((produce) => (
                     <ProduceCard
                       key={produce.listingID}
-                  /* ProduceCard will get produce name, photo, + farm name by ids */
+                      listingID={produce.listingID}
+                      handleOpenCartPopup={handleOpenCartPopup}
+                      setPopupProduce={setPopupProduce}
                       produceID={produce.produceID || null}
                       farmID={produce.farmID || null}
                       palletPrice={produce.palletPrice}

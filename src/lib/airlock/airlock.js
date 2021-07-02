@@ -6,19 +6,25 @@ import {
 
 const AUTHENTICATION_ERR_STRING = 'AUTHENTICATION_REQUIRED';
 
-const signupUser = async (email, password, fullname, role) => {
+const signupUser = async (email, password, role, org, zipcode,
+  fullname, phone, comments, regApproval) => {
   try {
     /* eslint-disable */
-    const { user, token } = base.register({
+    const res = base.register({
       username: email,
       password: password,
       fields: {
-        user_type: role,
-        display_name: fullname,
-        approval: 'unapproved',
+        'user type': role,
+        'organization': org,
+        'zipcode': zipcode,
+        'phone': phone,
+        'additional comments': comments,
+        'contact name': fullname,
+        'account approval': 'unapproved',
+        'registration approval': regApproval,
       },
     });
-    return user.id;
+    return res;
   } catch (err) {
     return null;
   }

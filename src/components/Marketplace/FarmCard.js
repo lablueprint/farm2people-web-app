@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     background: '#FFFFFF',
     borderWidth: '0px',
     borderColor: '#53AA48',
-    margin: '5%',
+    margin: '3%',
     borderRadius: '20px',
     fontFamily: 'Work Sans',
   },
@@ -48,7 +48,7 @@ const useStyles = makeStyles({
     width: '93%',
   },
   titleText: {
-    fontSize: '22px',
+    fontSize: '21px',
     textDecoration: 'underline',
     textDecorationColor: '#373737',
   },
@@ -57,8 +57,8 @@ const useStyles = makeStyles({
   },
   subTitleText: {
     fontFamily: 'Work Sans',
-    fontSize: '18px',
-    marginTop: '3px',
+    fontSize: '17px',
+    marginTop: '2px',
     marginLeft: '6%',
   },
   operationTagsContainer: {
@@ -69,8 +69,8 @@ const useStyles = makeStyles({
     background: '#DBE2ED',
     color: '#373737',
     borderRadius: '6px',
-    marginTop: '-5%',
-    marginRight: '2%',
+    marginTop: '6px',
+    marginRight: '7px',
     paddingLeft: '0.8%',
     paddingRight: '0.8%',
     fontFamily: 'Work Sans',
@@ -78,6 +78,7 @@ const useStyles = makeStyles({
     fontWeight: 'lighter',
   },
   farmingTagsContainer: {
+    marginTop: '-6px',
     fontFamily: 'Work Sans',
     fontSize: '15px',
     paddingLeft: '0.5%',
@@ -162,7 +163,7 @@ export default function FarmCard(props) {
           container
           direction="row"
           justify="space-between"
-          alignItems="start"
+          alignItems="flex-start"
           className={classes.titleContainer}
         >
           <div className={classes.titleText}>
@@ -172,7 +173,7 @@ export default function FarmCard(props) {
             container
             direction="row"
             justify="flex-end"
-            alignItems="start"
+            alignItems="flex-start"
             className={classes.addressContainer}
           >
             <Typography className={classes.subTitleText}>

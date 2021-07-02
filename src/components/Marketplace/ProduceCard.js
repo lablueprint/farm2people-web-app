@@ -1,29 +1,25 @@
-import Airtable from 'airtable';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import {
   Card, CardActions, CardContent, CardMedia, Grid, IconButton, Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import cabbageDog from '../../assets/images/cabbagedog.png';
 import '../../styles/fonts.css';
-
-// Airtable set-up
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-
-const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+import { base } from '../../lib/airtable/airtable';
 
 const useStyles = makeStyles({
+  loading: {
+    height: '100%',
+  },
   cardContainer: {
-    width: '18%',
+    width: '22%',
     background: 'white',
     borderWidth: '0px',
-    margin: '1.5%',
-    borderRadius: '8px',
+    margin: '5px 10px 20px 12px',
+    borderRadius: '6px',
     fontFamily: 'Work Sans',
   },
   img: { // Height must be specified for image to appear
@@ -32,38 +28,47 @@ const useStyles = makeStyles({
     marginTop: '4%',
     marginLeft: '5%',
     marginRight: '5%',
+    borderRadius: '6px',
   },
   titleText: {
     fontFamily: 'Work Sans',
-    fontSize: '18px',
-    marginBottom: '1.5%',
+    fontSize: '17px',
+    marginBottom: '2.5%',
     marginTop: '-4%',
     fontWeight: 'bold',
+    /* Make text hidden if it's too long, mark with ellipsis */
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   farmText: {
     fontFamily: 'Work Sans',
-    fontSize: '13px',
+    fontSize: '12.8px',
     marginBottom: '1.5%',
+    /* Make text hidden if it's too long, mark with ellipsis */
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   priceTextPadding: {
     marginBottom: '-4%',
   },
   priceText: {
     fontFamily: 'Work Sans',
-    fontSize: '16px',
+    fontSize: '15.5px',
     fontWeight: 'bolder',
     marginTop: '1%',
   },
   smallPriceText: {
     fontFamily: 'Work Sans',
-    fontSize: '12px',
+    fontSize: '11.5px',
     fontWeight: 'bolder',
-    marginTop: '1%',
-    marginBottom: '1%',
+    marginTop: '10px',
+    marginBottom: '1px',
   },
   cartButton: {
     width: '100%',
-    borderRadius: '8px',
+    borderRadius: '6px',
     backgroundColor: '#53AA48',
     color: 'white',
     fontFamily: 'Work Sans',
@@ -74,17 +79,27 @@ const useStyles = makeStyles({
     paddingTop: '2.5%',
     paddingBottom: '2.5%',
   },
+  loadingGrid: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
 });
 
 export default function ProduceCard(props) {
   const {
-    cropName, farmID, unitPrice, unitType,
+    // eslint-disable-next-line
+    produceID, farmID, palletPrice, handleOpenCartPopup, setPopupProduce, season, // (TODO: remove later when season is used)
+    palletsAvailable, listingID,
   } = props;
   const [farmName, setFarmName] = useState('');
+  const [produceName, setProduceName] = useState('');
+  // eslint-disable-next-line no-unused-vars
+  const [produceCategory, setProduceCategory] = useState(''); // (TODO: remove later when used)
+  const [produceImg, setProduceImg] = useState('');
 
   // Get farm name from Airtable if produce has farm id linked to it
   useEffect(() => {
-    if (farmID === null) {
+    if (farmID === null || farmID[0].length < 5) {
       setFarmName('Unnamed farm');
     } else {
       const farmArr = farmID.toString().split(',');
@@ -94,49 +109,94 @@ export default function ProduceCard(props) {
     }
   }, []);
 
+  // Get produce name, img, + produce type using produceID
+  useEffect(() => {
+    if (produceID === null || produceID.length < 5) {
+      setProduceName('Unnamed produce');
+    } else {
+      base('Farms').find(produceID).then((produceObj) => {
+        setProduceName(produceObj.fields['produce type'] || 'Produce not found');
+        const category = produceObj.fields['produce category'];
+        setProduceCategory(category || 'No category');
+      });
+      base('Produce Type').find(produceID).then((produceType) => {
+        if (produceType.fields['produce picture']) {
+          setProduceImg(produceType.fields['produce picture'][0].url);
+        } else { setProduceImg(cabbageDog); }
+      });
+    }
+  }, []);
+
+  const handleNewPopup = () => {
+    handleOpenCartPopup();
+    setPopupProduce({
+      crop: produceName,
+      price: palletPrice,
+      farmName,
+      palletsAvailable,
+      produceImg,
+      listingID,
+      farmID: farmID[0],
+    });
+  };
+
   const classes = useStyles();
   return (
     <Card className={classes.cardContainer} variant="outlined">
-      <CardMedia
-        className={classes.img}
-        image={cabbageDog} // Temporary dummy image
-        title="Produce Image"
-      />
-      <CardContent>
-        <Typography className={classes.titleText}>
-          {cropName}
-        </Typography>
-        <Typography className={classes.farmText}>
-          {farmName}
-        </Typography>
-        <Grid
-          container
-          direction="row"
-          justify="flex-start"
-          alignItems="flex-end"
-          className={classes.priceTextPadding}
-        >
-          <Typography className={classes.priceText}>
-            {`$${unitPrice}/`}
-          </Typography>
-          <Typography className={classes.smallPriceText}>
-            {unitType}
-          </Typography>
-        </Grid>
-      </CardContent>
-      <CardActions>
-        <IconButton className={classes.cartButton}>
-          <AddIcon />
-          ADD TO CART
-        </IconButton>
-      </CardActions>
+      {farmName === '' || produceName === '' || produceImg === ''
+        ? (
+          <Grid className={classes.loadingGrid}>
+            <CircularProgress align="center" className={classes.loading} />
+          </Grid>
+        )
+        : (
+          <>
+            <CardMedia
+              className={classes.img}
+              image={produceImg}
+              title="Produce Image"
+            />
+            <CardContent>
+              <Typography className={classes.titleText}>
+                {produceName}
+              </Typography>
+              <Typography className={classes.farmText}>
+                {farmName}
+              </Typography>
+              <Grid
+                container
+                direction="row"
+                justify="flex-start"
+                alignItems="flex-end"
+                className={classes.priceTextPadding}
+              >
+                <Typography className={classes.priceText}>
+                  {`$${palletPrice}/`}
+                </Typography>
+                <Typography className={classes.smallPriceText}>
+                  pallet
+                </Typography>
+              </Grid>
+            </CardContent>
+            <CardActions>
+              <IconButton onClick={handleNewPopup} className={classes.cartButton}>
+                <AddIcon />
+                ADD TO CART
+              </IconButton>
+            </CardActions>
+          </>
+        )}
     </Card>
   );
 }
 
 ProduceCard.propTypes = {
-  cropName: PropTypes.string.isRequired,
-  farmID: PropTypes.string.isRequired,
-  unitPrice: PropTypes.number.isRequired,
-  unitType: PropTypes.string.isRequired,
+  handleOpenCartPopup: PropTypes.func.isRequired,
+  setPopupProduce: PropTypes.func.isRequired,
+  produceID: PropTypes.string.isRequired,
+  farmID: PropTypes.arrayOf(PropTypes.string).isRequired,
+  palletPrice: PropTypes.number.isRequired,
+  season: PropTypes.string.isRequired,
+  palletsAvailable: PropTypes.number.isRequired,
+  listingID: PropTypes.string.isRequired,
 };

@@ -114,9 +114,15 @@ export default function PriceMenu({ priceOptions, itemsPerPrice, onFilterChange 
   const handleApply = () => {
     // If valid (non-neg #, max >= min), set actual min/max + limit results
     if (min.toString().length > 0 && max.toString().length > 0
-      && !Number.isNaN(min) && !Number.isNaN(max)
-      && Number(min) >= 0 && Number(max) >= min) {
+      && !Number.isNaN(min) && !Number.isNaN(max) && Number(min) >= 0 && Number(max) >= min) {
       // TODO: actually limit results based on min/max price
+
+      const newChecked = [...isChecked];
+      const appliedRange = `$${min} - $${max} APPLIED`;
+      console.log(appliedRange);
+      newChecked.push(appliedRange);
+
+      onFilterChange(newChecked); // Pass new price ranges back to marketplace to filter
     }
   };
 

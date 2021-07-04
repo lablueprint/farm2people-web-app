@@ -85,17 +85,22 @@ export default function MarketplaceScreen() {
   const [itemsPerProdType, setProdItems] = useState([]);
 
   // Manages pallet price filtering TODO remove eslint comments
-  // eslint-disable-next-line no-unused-vars
   const [priceFilters, setPriceFilters] = useState([]);
   const [priceRanges, setPriceRanges] = useState([]);
+  // eslint-disable-next-line no-unused-vars
+  const [appliedRange, setAppliedRange] = useState([]); // [] if no applied min/max
   const onPriceFilterChange = (newFilters) => {
     setPriceFilters(newFilters);
     // Parse the min + max #s from each range by splitting + filtering the string
     const newPriceRanges = [];
     newFilters.forEach((prices) => {
-      let num = prices.replace(/\D/g, '#'); // regex expr to replace non-digits w/ #
-      num = num.split('#').filter((elem) => elem !== ''); // split into array, filter to only get nums
-      newPriceRanges.push(num);
+      let nums = prices.replace(/\D/g, '#'); // regex expr to replace non-digits w/ #
+      nums = nums.split('#').filter((elem) => elem !== ''); // split into array, filter to only get nums
+      if (prices.includes('APPLIED')) {
+        setAppliedRange(nums);
+        console.log(`applied range = ${nums}`);
+      }
+      newPriceRanges.push(nums);
     });
     console.log(newPriceRanges);
     setPriceRanges(newPriceRanges);
@@ -149,8 +154,8 @@ export default function MarketplaceScreen() {
   }
   // TODO: sort by, item type
 
-  // Go through each of the selected ranges + check if this price w/in any of them
-  function inPriceRange(num) {
+  // Go through the selected filter ranges + check if this price w/in any of them
+  function inFilterPriceRange(num) {
     let output = false;
     priceRanges.forEach((range) => {
       const priceMin = parseInt(range[0], 10);
@@ -160,6 +165,17 @@ export default function MarketplaceScreen() {
       }
     });
     return output;
+  }
+
+  function inAppliedRange(num) {
+    const priceMin = parseInt(appliedRange[0], 10);
+    const priceMax = parseInt(appliedRange[1], 10);
+    console.log(`priceMin, priceMax = ${priceMin}, ${priceMax}`);
+    if (num >= priceMin && num <= priceMax) {
+      return true;
+    }
+    console.log(`num = ${num}output = false`);
+    return false;
   }
 
   // Limits rendered produced cards to only those matching the selected filters
@@ -176,9 +192,16 @@ export default function MarketplaceScreen() {
       );
     }
     if (priceFilters.length > 0) {
-      console.log(inPriceRange(10)); // always returns false
+      // console.log(inPriceRange(10));
       filteredListings = filteredListings.filter(
-        (listing) => inPriceRange(listing.palletPrice), // TODO: check if inpricerange always false?
+        (listing) => inFilterPriceRange(listing.palletPrice),
+      );
+    }
+    // If applied range exists, filter again to only output that range
+    if (appliedRange.length > 0) {
+      console.log(`in filter, applied range is = ${appliedRange}`);
+      filteredListings = filteredListings.filter(
+        (listing) => inAppliedRange(listing.palletPrice),
       );
     }
     setFilteredProduce(filteredListings);

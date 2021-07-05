@@ -82,6 +82,7 @@ const useStyles = makeStyles({
 export default function PriceMenu({ priceOptions, itemsPerPrice, onFilterChange }) {
   const classes = useStyles();
   const [isChecked, setIsChecked] = useState([]);
+  const [applied, setApplied] = useState(false); // True if min/max set, false if unset
   // Sort priceOptions in asc order + get highest price for default max
   priceOptions.sort();
   const [min, setMin] = useState(0);
@@ -112,17 +113,28 @@ export default function PriceMenu({ priceOptions, itemsPerPrice, onFilterChange 
 
   /* When apply clicked, checks if min/max are valid + limits results */
   const handleApply = () => {
-    // If valid (non-neg #, max >= min), set actual min/max + limit results
-    if (min.toString().length > 0 && max.toString().length > 0
-      && !Number.isNaN(min) && !Number.isNaN(max) && Number(min) >= 0 && Number(max) >= min) {
-      // TODO: actually limit results based on min/max price
+    // If no range applied + valid (non-neg #, max >= min), set actual min/max + limit results
+    if (applied === false) {
+      if (min.toString().length > 0 && max.toString().length > 0
+        && !Number.isNaN(min) && !Number.isNaN(max) && Number(min) >= 0 && Number(max) >= min) {
+        // TODO: actually limit results based on min/max price
 
+        const newChecked = [...isChecked];
+        const appliedRange = `$${min} - $${max} APPLIED`;
+        console.log(appliedRange);
+        newChecked.push(appliedRange);
+
+        onFilterChange(newChecked); // Pass new price ranges back to marketplace to filter
+        setApplied(true);
+      }
+    } else { // If range applied, unapply + reset min/max in parent component
       const newChecked = [...isChecked];
-      const appliedRange = `$${min} - $${max} APPLIED`;
+      const appliedRange = 'UNAPPLY';
       console.log(appliedRange);
       newChecked.push(appliedRange);
 
       onFilterChange(newChecked); // Pass new price ranges back to marketplace to filter
+      setApplied(false);
     }
   };
 
@@ -192,7 +204,8 @@ export default function PriceMenu({ priceOptions, itemsPerPrice, onFilterChange 
           size="small"
           onClick={handleApply}
         >
-          Apply
+          {!applied && 'Apply'}
+          {applied && 'Unapply'}
         </Button>
       </Grid>
       {/* Price options list */}

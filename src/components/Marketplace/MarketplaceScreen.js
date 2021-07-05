@@ -96,13 +96,15 @@ export default function MarketplaceScreen() {
     newFilters.forEach((prices) => {
       let nums = prices.replace(/\D/g, '#'); // regex expr to replace non-digits w/ #
       nums = nums.split('#').filter((elem) => elem !== ''); // split into array, filter to only get nums
-      if (prices.includes('APPLIED')) {
+      if (prices.includes('APPLIED')) { // Apply new min/max range
         setAppliedRange(nums);
-        console.log(`applied range = ${nums}`);
+        // console.log(`applied range = ${nums}`);
+      } else if (prices.includes('UNAPPLY')) { // Unapply range
+        setAppliedRange([]);
       }
       newPriceRanges.push(nums);
     });
-    console.log(newPriceRanges);
+    // console.log(newPriceRanges);
     setPriceRanges(newPriceRanges);
   };
   const priceOptions = [0, 15, 30, 45, 60, 75];
@@ -170,11 +172,11 @@ export default function MarketplaceScreen() {
   function inAppliedRange(num) {
     const priceMin = parseInt(appliedRange[0], 10);
     const priceMax = parseInt(appliedRange[1], 10);
-    console.log(`priceMin, priceMax = ${priceMin}, ${priceMax}`);
+    // console.log(`priceMin, priceMax = ${priceMin}, ${priceMax}`);
     if (num >= priceMin && num <= priceMax) {
       return true;
     }
-    console.log(`num = ${num}output = false`);
+    // console.log(`num = ${num}output = false`);
     return false;
   }
 
@@ -199,7 +201,7 @@ export default function MarketplaceScreen() {
     }
     // If applied range exists, filter again to only output that range
     if (appliedRange.length > 0) {
-      console.log(`in filter, applied range is = ${appliedRange}`);
+      // console.log(`in filter, applied range is = ${appliedRange}`);
       filteredListings = filteredListings.filter(
         (listing) => inAppliedRange(listing.palletPrice),
       );

@@ -235,7 +235,7 @@ export default function MarketplaceScreen() {
   // eslint-disable-next-line no-nested-ternary
   const totalResults = tabValue === 'all'
     ? (isFiltered ? filteredProduce.length : produceListings.length) : farmListings.length;
-  
+
   const handleOpenCartPopup = () => {
     setOpen(true);
   };

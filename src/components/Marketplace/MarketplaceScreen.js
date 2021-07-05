@@ -84,13 +84,10 @@ export default function MarketplaceScreen() {
   const produceTypeFilters = ['Vegetable', 'Fruit', 'Legume', 'Grain', 'Oat'];
   const [itemsPerProdType, setProdItems] = useState([]);
 
-  // Manages pallet price filtering TODO remove eslint comments
+  // Manages pallet price filtering
   const [priceFilters, setPriceFilters] = useState([]);
-  const [priceRanges, setPriceRanges] = useState([]);
-  // eslint-disable-next-line no-unused-vars
   const [appliedRange, setAppliedRange] = useState([]); // [] if no applied min/max
   const onPriceFilterChange = (newFilters) => {
-    setPriceFilters(newFilters);
     // Parse the min + max #s from each range by splitting + filtering the string
     const newPriceRanges = [];
     newFilters.forEach((prices) => {
@@ -98,14 +95,13 @@ export default function MarketplaceScreen() {
       nums = nums.split('#').filter((elem) => elem !== ''); // split into array, filter to only get nums
       if (prices.includes('APPLIED')) { // Apply new min/max range
         setAppliedRange(nums);
-        // console.log(`applied range = ${nums}`);
       } else if (prices.includes('UNAPPLY')) { // Unapply range
         setAppliedRange([]);
+      } else { // Filter option
+        newPriceRanges.push(nums);
       }
-      newPriceRanges.push(nums);
     });
-    // console.log(newPriceRanges);
-    setPriceRanges(newPriceRanges);
+    setPriceFilters(newPriceRanges);
   };
   const priceOptions = [0, 15, 30, 45, 60, 75];
   const [itemsPerPrice, setPriceItems] = useState([]);
@@ -159,7 +155,7 @@ export default function MarketplaceScreen() {
   // Go through the selected filter ranges + check if this price w/in any of them
   function inFilterPriceRange(num) {
     let output = false;
-    priceRanges.forEach((range) => {
+    priceFilters.forEach((range) => {
       const priceMin = parseInt(range[0], 10);
       const priceMax = parseInt(range[1], 10);
       if (num >= priceMin && num <= priceMax) {
@@ -172,11 +168,9 @@ export default function MarketplaceScreen() {
   function inAppliedRange(num) {
     const priceMin = parseInt(appliedRange[0], 10);
     const priceMax = parseInt(appliedRange[1], 10);
-    // console.log(`priceMin, priceMax = ${priceMin}, ${priceMax}`);
     if (num >= priceMin && num <= priceMax) {
       return true;
     }
-    // console.log(`num = ${num}output = false`);
     return false;
   }
 
@@ -193,17 +187,15 @@ export default function MarketplaceScreen() {
         (listing) => prodFilters.includes(listing.produceType),
       );
     }
-    if (priceFilters.length > 0) {
-      // console.log(inPriceRange(10));
-      filteredListings = filteredListings.filter(
-        (listing) => inFilterPriceRange(listing.palletPrice),
-      );
-    }
-    // If applied range exists, filter again to only output that range
+    // If applied range exists, hard limit to min/max
     if (appliedRange.length > 0) {
-      // console.log(`in filter, applied range is = ${appliedRange}`);
       filteredListings = filteredListings.filter(
         (listing) => inAppliedRange(listing.palletPrice),
+      );
+    }
+    if (priceFilters.length > 0) {
+      filteredListings = filteredListings.filter(
+        (listing) => inFilterPriceRange(listing.palletPrice),
       );
     }
     setFilteredProduce(filteredListings);
@@ -218,14 +210,14 @@ export default function MarketplaceScreen() {
   useEffect(() => {
     getNumItemsPerCategory();
   }, [produceListings]);
-  // Ma ke sure that filterProduce + isfilter bool updates whenever filters change
-  const [isFiltered, setIsFiltered] = useState(false); // True if any current filters
+  // Make sure that filterProduce + isfilter bool updates whenever any of the filters change
+  const [isFiltered, setIsFiltered] = useState(false); // True if any filter types are checked
   useEffect(() => {
     filterProduce();
-    const newIsFiltered = !(seasonFilters.length === 0
-      && prodFilters.length === 0 && priceFilters.length === 0);
+    const newIsFiltered = !(seasonFilters.length === 0 && prodFilters.length === 0
+      && priceFilters.length === 0 && appliedRange.length === 0);
     setIsFiltered(newIsFiltered);
-  }, [seasonFilters, prodFilters, priceFilters]);
+  }, [seasonFilters, prodFilters, priceFilters, appliedRange]);
 
   const classes = useStyles();
   // Get total number of results depending on if produce or farm

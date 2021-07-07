@@ -11,7 +11,7 @@ const useStyles = makeStyles({
 });
 
 export default function ListingsView({
-  cardListings, selectedCards, updateSelectedCards, editRecord, produceTypes,
+  cardListings, selectedCards, updateSelectedCards, editRecord, deleteRecord, produceTypes,
 }) {
   const getProduceRecord = (id) => (
     produceTypes.find((record) => record.id === id)
@@ -32,6 +32,7 @@ export default function ListingsView({
                 onSelect={updateSelectedCards}
                 selected={selectedCards[listing.id]}
                 editRecord={editRecord}
+                deleteRecord={deleteRecord}
                 produceRecord={produceRecord}
                 produceTypes={produceTypes}
               />
@@ -57,6 +58,7 @@ ListingsView.propTypes = {
   selectedCards: PropTypes.shape([]),
   updateSelectedCards: PropTypes.func.isRequired,
   editRecord: PropTypes.func.isRequired,
+  deleteRecord: PropTypes.func.isRequired,
   produceTypes: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     fields: PropTypes.shape({

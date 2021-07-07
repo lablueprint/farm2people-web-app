@@ -221,10 +221,12 @@ export default function InventoryManagerScreen() {
       });
     });
   }
-  function deleteSelectedRecords() {
-    const ids = Object.keys(selectedCards).filter((key) => (
+  const getSelectedRecordIDs = () => (
+    Object.keys(selectedCards).filter((key) => (
       selectedCards[key] === true
-    ));
+    ))
+  );
+  function deleteRecords(ids) {
     if (ids.length === 0) {
       return;
     }
@@ -264,7 +266,7 @@ export default function InventoryManagerScreen() {
                 <AddListingButton createRecord={createRecord} produceTypes={produceTypes} />
               </Grid>
               <Grid item xs={2}>
-                <DeleteButton deleteRecords={deleteSelectedRecords} />
+                <DeleteButton deleteRecords={() => deleteRecords(getSelectedRecordIDs())} />
               </Grid>
             </Grid>
             <Grid container item xs={12} className={classes.listings}>
@@ -273,6 +275,7 @@ export default function InventoryManagerScreen() {
                 selectedCards={selectedCards}
                 updateSelectedCards={updateSelectedCards}
                 editRecord={editRecord}
+                deleteRecord={deleteRecords}
                 produceTypes={produceTypes}
               />
             </Grid>

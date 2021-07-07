@@ -10,6 +10,9 @@ import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Typography from '@material-ui/core/Typography';
+import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
+import DeleteOutlineSharpIcon from '@material-ui/icons/DeleteOutlineSharp';
+import LockIcon from '@material-ui/icons/Lock';
 import EditListingBlock from './EditListingBlock';
 
 const useStyles = makeStyles({
@@ -32,10 +35,43 @@ const useStyles = makeStyles({
       backgroundColor: '#388e3c',
     },
   },
+  deleteButton: {
+    backgroundColor: '#FF765D',
+    color: '#FFFFFF',
+    fontFamily: 'Work Sans',
+    fontSize: '1.2rem',
+    marginTop: '1rem',
+    marginBottom: '1rem',
+    '&:hover': {
+      backgroundColor: '#ff3511',
+    },
+  },
+
+  publicizeButton: {
+    backgroundColor: '#FFFFFF',
+    color: '#373737',
+    fontFamily: 'Work Sans',
+    fontSize: '1.2rem',
+    marginTop: '1rem',
+    marginBottom: '1rem',
+    border: '.08rem solid black',
+    '&:hover': {
+      backgroundColor: '#e4e4e4',
+    },
+  },
+  dialogContent: {
+    '&::-webkit-scrollbar': {
+      width: '0px',
+      background: 'transparent',
+    },
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+  },
 });
 
 export default function EditListingPopup({
-  listing, closeDialog, isOpen, modifyListings, produceTypes, produceRecord,
+  listing, closeDialog, isOpen, editRecord,
+  deleteRecord, produceTypes, produceRecord, setPrivatized,
 }) {
   const classes = useStyles();
   const [listingRecord, setListingRecord] = useState(listing);
@@ -72,11 +108,6 @@ export default function EditListingPopup({
     setLocalProduceRecord(produceRecord);
     setListingRecord(listing);
   };
-  function onSubmit(e) {
-    e.preventDefault();
-    modifyListings(listingRecord);
-    closeDialog();
-  }
   function onChangeField(e, type) {
     const { name } = e.target;
     let { value } = e.target;
@@ -85,6 +116,22 @@ export default function EditListingPopup({
     }
     setListingRecord({ ...listingRecord, [name]: value });
   }
+
+  const onSaveClick = () => {
+    editRecord(listingRecord);
+    setPrivatized(listingRecord.privatized || false);
+    closeDialog();
+  };
+
+  const onDeleteClick = () => {
+    deleteRecord([listingRecord['listing id']]);
+    closeDialog();
+  };
+  // right now, saves the privatized change only after clicking save
+  const onPrivatizeClick = (newValue) => {
+    setListingRecord({ ...listingRecord, privatized: newValue });
+  };
+
   // props taken from AddListing steps to render ListingInputFields for each of these
   const getBasicInfo = () => (
     {
@@ -300,7 +347,7 @@ export default function EditListingPopup({
     }
   );
   return (
-    <Dialog open={isOpen} fullWidth maxWidth="lg">
+    <Dialog open={isOpen} fullWidth maxWidth="md">
       <DialogTitle id="form-dialog-title" className={classes.dialog}>
         <Box display="flex" alignItems="center">
           <Box flexGrow={1}>
@@ -315,31 +362,46 @@ export default function EditListingPopup({
           </Box>
         </Box>
       </DialogTitle>
-      <DialogContent className={classes.dialog}>
-        <form id="listing-form" onSubmit={onSubmit}>
-          <Grid spacing={3} container>
-            <Grid item xs={12}>
-              <EditListingBlock getListingRecord={getBasicInfo} name="Basic Information" index={1} />
+      <DialogContent className={classes.dialogContent}>
+        <Grid spacing={3} container>
+          <Grid item xs={12}>
+            <EditListingBlock getListingRecord={getBasicInfo} name="Basic Information" index={1} />
+          </Grid>
+          <Grid item xs={12}>
+            <EditListingBlock getListingRecord={getUnitInfo} name="Units" index={2} />
+          </Grid>
+          <Grid item xs={12}>
+            <EditListingBlock getListingRecord={getPriceInfo} name="Price" index={3} />
+          </Grid>
+          <Grid item xs={12}>
+            <EditListingBlock getListingRecord={getDateInfo} name="Available Dates" index={4} />
+          </Grid>
+          <Grid item xs={12}>
+            <EditListingBlock getListingRecord={getPhotoInfo} name="Photo" index={5} image />
+          </Grid>
+          <Grid container item xs={12} justify="flex-start" spacing={4}>
+            <Grid item>
+              <Button variant="outlined" size="large" type="submit" className={classes.publicizeButton} startIcon={<LockIcon />} onClick={() => onPrivatizeClick(true)}>
+                MAKE PRIVATE
+              </Button>
             </Grid>
-            <Grid item xs={12}>
-              <EditListingBlock getListingRecord={getUnitInfo} name="Units" index={2} />
+            <Grid item>
+              <Button variant="outlined" size="large" type="submit" className={classes.publicizeButton} startIcon={<LockOpenOutlinedIcon />} onClick={() => onPrivatizeClick(false)}>
+                MAKE PUBLIC
+              </Button>
             </Grid>
-            <Grid item xs={12}>
-              <EditListingBlock getListingRecord={getPriceInfo} name="Price" index={3} />
-            </Grid>
-            <Grid item xs={12}>
-              <EditListingBlock getListingRecord={getDateInfo} name="Available Dates" index={4} />
-            </Grid>
-            <Grid item xs={12}>
-              <EditListingBlock getListingRecord={getPhotoInfo} name="Photo" index={5} image />
-            </Grid>
-            <Grid container item xs={12} justify="center">
-              <Button variant="contained" size="medium" type="submit" className={classes.saveButton}>
-                SAVE CHANGES
+            <Grid item>
+              <Button variant="outlined" size="large" type="submit" className={classes.deleteButton} startIcon={<DeleteOutlineSharpIcon />} onClick={onDeleteClick}>
+                DELETE LISTING
               </Button>
             </Grid>
           </Grid>
-        </form>
+          <Grid container item xs={12} justify="center">
+            <Button variant="contained" size="large" type="submit" className={classes.saveButton} onClick={onSaveClick}>
+              SAVE CHANGES
+            </Button>
+          </Grid>
+        </Grid>
       </DialogContent>
     </Dialog>
   );
@@ -353,7 +415,8 @@ EditListingPopup.propTypes = {
   listing: PropTypes.shape({}).isRequired,
   closeDialog: PropTypes.func.isRequired,
   isOpen: PropTypes.bool,
-  modifyListings: PropTypes.func.isRequired,
+  editRecord: PropTypes.func.isRequired,
+  deleteRecord: PropTypes.func.isRequired,
   produceTypes: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.string,
     fields: PropTypes.shape({}),
@@ -367,4 +430,5 @@ EditListingPopup.propTypes = {
       })),
     }),
   }).isRequired,
+  setPrivatized: PropTypes.func.isRequired,
 };

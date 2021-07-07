@@ -15,6 +15,7 @@
     "@unicef/material-ui-currency-textfield": "^0.8.6",
     "airlock-server": "^0.3.1",
     "airtable": "^0.10.1",
+    "bcryptjs": "^2.4.3",
     "clsx": "^1.1.1",
     "connected-react-router": "^6.8.0",
     "emailjs-com": "^2.6.4",

@@ -40,8 +40,8 @@ const useStyles = makeStyles({
 
 /* Sidebar with filter selections for types + sorting */
 export default function MarketplaceSidebar({
-  prodTypeFilters, farmSeasonFilters, itemsPerProdType, itemsPerFarmSeason, onProduceFilterChange,
-  onSeasonFilterChange,
+  prodTypeFilters, itemsPerProdType, onProduceFilterChange, priceOptions, itemsPerPrice,
+  onPriceFilterChange, farmSeasonFilters, itemsPerFarmSeason, onSeasonFilterChange,
 }) {
   const classes = useStyles();
 
@@ -69,7 +69,11 @@ export default function MarketplaceSidebar({
         isLast={false}
         onFilterChange={onProduceFilterChange}
       />
-      <PriceMenu priceOptions={[0, 15, 30, 45, 75, 60]} />
+      <PriceMenu
+        priceOptions={priceOptions}
+        itemsPerPrice={itemsPerPrice}
+        onFilterChange={onPriceFilterChange}
+      />
       <FilterMenu
         menuTitle="Farming Season"
         filterOptions={farmSeasonFilters}
@@ -83,9 +87,12 @@ export default function MarketplaceSidebar({
 
 MarketplaceSidebar.propTypes = {
   prodTypeFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
-  farmSeasonFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
   itemsPerProdType: PropTypes.arrayOf(PropTypes.number).isRequired,
-  itemsPerFarmSeason: PropTypes.arrayOf(PropTypes.number).isRequired,
   onProduceFilterChange: PropTypes.func.isRequired,
+  priceOptions: PropTypes.arrayOf(PropTypes.number).isRequired,
+  itemsPerPrice: PropTypes.arrayOf(PropTypes.number).isRequired,
+  onPriceFilterChange: PropTypes.func.isRequired,
+  farmSeasonFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
+  itemsPerFarmSeason: PropTypes.arrayOf(PropTypes.number).isRequired,
   onSeasonFilterChange: PropTypes.func.isRequired,
 };

@@ -6,6 +6,7 @@ import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
 import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
+import { base } from '../../lib/airtable/airtable';
 import '../../styles/fonts.css';
 import { base } from '../../lib/airtable/airtable';
 
@@ -29,7 +30,6 @@ const INITIAL_POPUP_PRODUCE = {
   listingID: '',
   farmID: '',
 };
-
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
   const [filteredFarms, setFilteredFarms] = useState([]);

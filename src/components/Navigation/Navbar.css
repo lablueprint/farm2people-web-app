@@ -107,6 +107,7 @@ color: #373737;
 
   .nav-links:hover {
     background-color: #242424;
+    height: 40%;
     color: #ffffff;
     border-radius: 0;
     text-decoration: none;

@@ -22,10 +22,10 @@ const useStyles = makeStyles({
     textTransform: 'none',
   },
   expandIcon: {
-    color: '#2D5496',
+    color: '#53AA48',
   },
   iconColour: {
-    color: '#2D5496',
+    color: '#53AA48',
   },
   // Styling for filter menu items
   filterOptionText: {
@@ -37,10 +37,10 @@ const useStyles = makeStyles({
   filterNumText: {
     fontFamily: 'Work Sans',
     fontSize: '1rem',
-    color: '#2D5496',
+    color: '#53AA48',
   },
   padding: {
-    paddingLeft: '1rem',
+    paddingLeft: '.5rem',
   },
 });
 
@@ -55,21 +55,18 @@ export default function FilterMenu({
   useEffect(() => {
     setIsChecked(Object.fromEntries(filterOptions.map((option) => [option.label, false])));
   }, []);
-  /* Resets all filters to be unchecked when reset clicked */
   const handleReset = () => {
     const newChecked = [];
     setIsChecked({});
     updateFilter(newChecked);
   };
 
-  /* Sets checkboxes to checked/unchecked when toggled */
   const handleToggle = (value) => {
     const current = isChecked[value];
     setIsChecked({ ...isChecked, [value]: !current });
     updateFilter(value.toLowerCase());
   };
 
-  // TODO: actually filter results based on selected filters
   return (
     <>
       <Grid
@@ -78,7 +75,6 @@ export default function FilterMenu({
         justify="space-between"
         className={classes.padding}
       >
-        {/* On click, calls fx to reset filters */}
         <Grid item container xs={6} alignContent="center">
           <Typography className={classes.menuTitleText}>{menuTitle}</Typography>
         </Grid>

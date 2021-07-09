@@ -18,6 +18,7 @@ const useStyles = makeStyles({
   dashboard: {
     marginTop: '2%',
     marginBottom: '2%',
+    paddingLeft: '5rem',
   },
   text: {
     fontFamily: 'Work Sans',
@@ -39,7 +40,8 @@ export default function InventoryManagerScreen() {
   const [produceCategoryFilter, setProduceCategoryFilter] = useState([]);
   const [sellByFilter, setSellByFilter] = useState([]);
   const [availabilityFilter, setAvailabilityFilter] = useState([]);
-  const [sortOrder, setSortOrder] = useState('');
+  const [sortOrder, setSortOrder] = useState('sell by date');
+  console.log(sortOrder);
   const [priceFilter, setPriceFilter] = useState([-1, -1]);
   // remove filter if it is in the array, add it if not
   const updateFilter = (option, filter, setFilter) => {
@@ -98,10 +100,10 @@ export default function InventoryManagerScreen() {
     let condition = true;
     const price = listing.fields['standard price per grouped produce type'];
     if (filter[0] > 0) {
-      condition = condition && price > priceFilter[0];
+      condition = condition && price >= priceFilter[0];
     }
     if (filter[1] > 0) {
-      condition = condition && price < priceFilter[1];
+      condition = condition && price <= priceFilter[1];
     }
     return condition;
   };
@@ -119,8 +121,6 @@ export default function InventoryManagerScreen() {
         });
         setSelectedCards(initialCardSelect);
       });
-  }, []);
-  useEffect(() => {
     base('Produce Type')
       .select({ view: 'Grid view' })
       .all().then((records) => {
@@ -178,7 +178,7 @@ export default function InventoryManagerScreen() {
   ));
   // sort by provided sortOrder if there is one, otherwise no sort
   filteredListings.sort((firstListing, secondListing) => (
-    sortOrder ? firstListing.fields[sortOrder] > secondListing.fields[sortOrder] : true
+    firstListing.fields[sortOrder] > secondListing.fields[sortOrder] ? 1 : -1
   ));
   function createRecord(rec) {
     const record = {
@@ -250,10 +250,9 @@ export default function InventoryManagerScreen() {
   return (
     <>
       <div className={classes.root}>
-        <Grid container spacing={0} className={classes.dashboard}>
-          <Grid item xs={1} />
+        <Grid container spacing={3} className={classes.dashboard} justify="center">
           <Grid container item spacing={0} xs={9} alignContent="flex-start">
-            <Grid item xs={12}>
+            <Grid container item xs={12} alignContent="flex-start">
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
               </Typography>
@@ -267,7 +266,7 @@ export default function InventoryManagerScreen() {
                 <DeleteButton deleteRecords={deleteSelectedRecords} />
               </Grid>
             </Grid>
-            <Grid container item xs={12} className={classes.listings}>
+            <Grid container item className={classes.listings}>
               <ListingsView
                 cardListings={filteredListings}
                 selectedCards={selectedCards}
@@ -277,21 +276,23 @@ export default function InventoryManagerScreen() {
               />
             </Grid>
           </Grid>
-          <Grid item xs={2}>
-            <InventoryManagerSidebar
-              updateProduceCategoryFilter={
-                (option) => updateFilter(option, produceCategoryFilter, setProduceCategoryFilter)
-              }
-              updateSellByFilter={
-                (option) => updateFilter(option, sellByFilter, setSellByFilter)
-              }
-              updateAvailabilityFilter={
-                (option) => updateFilter(option, availabilityFilter, setAvailabilityFilter)
-              }
-              updatePriceFilter={setPriceFilter}
-              updateSortOrder={setSortOrder}
-              optionsInfo={getFilterOptionsAndAmounts()}
-            />
+          <Grid container item xs={3} justify="center">
+            <Grid item md={11} lg={10}>
+              <InventoryManagerSidebar
+                updateProduceCategoryFilter={
+                  (option) => updateFilter(option, produceCategoryFilter, setProduceCategoryFilter)
+                }
+                updateSellByFilter={
+                  (option) => updateFilter(option, sellByFilter, setSellByFilter)
+                }
+                updateAvailabilityFilter={
+                  (option) => updateFilter(option, availabilityFilter, setAvailabilityFilter)
+                }
+                updatePriceFilter={setPriceFilter}
+                updateSortOrder={setSortOrder}
+                optionsInfo={getFilterOptionsAndAmounts()}
+              />
+            </Grid>
           </Grid>
         </Grid>
       </div>

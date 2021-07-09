@@ -16,6 +16,7 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '1.5rem',
     color: '#373737',
+    paddingLeft: '.5rem',
   },
   pageText: {
     fontFamily: 'Work Sans',
@@ -23,7 +24,7 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
   },
   divider: {
-    width: '80%',
+    width: '100%',
   },
 });
 
@@ -42,14 +43,13 @@ export default function InventoryManagerSidebar({
         </Typography>
       </Grid>
       <Grid container item xs={12}>
-        {/* TODO: Item type menu only shows for agency buyer view */}
         <FilterMenu
           menuTitle="Sell By Date"
           filterOptions={optionsInfo.sellByOptions}
           updateFilter={updateSellByFilter}
         />
       </Grid>
-      <Divider variant="middle" className={classes.divider} />
+      <Divider className={classes.divider} />
       <Grid container item xs={12}>
         <FilterMenu
           menuTitle="Availability"
@@ -57,7 +57,7 @@ export default function InventoryManagerSidebar({
           updateFilter={updateAvailabilityFilter}
         />
       </Grid>
-      <Divider variant="middle" className={classes.divider} />
+      <Divider className={classes.divider} />
       <Grid container item xs={12}>
         <FilterMenu
           menuTitle="Produce Type"
@@ -65,7 +65,7 @@ export default function InventoryManagerSidebar({
           updateFilter={updateProduceCategoryFilter}
         />
       </Grid>
-      <Divider variant="middle" className={classes.divider} />
+      <Divider className={classes.divider} />
       <Grid container item xs={12}>
         <SortMenu
           sortOptions={[
@@ -78,7 +78,7 @@ export default function InventoryManagerSidebar({
           updateSortOrder={updateSortOrder}
         />
       </Grid>
-      <Divider variant="middle" className={classes.divider} />
+      <Divider className={classes.divider} />
       <Grid container item xs={12}>
         <PriceMenu updatePriceFilter={updatePriceFilter} />
       </Grid>

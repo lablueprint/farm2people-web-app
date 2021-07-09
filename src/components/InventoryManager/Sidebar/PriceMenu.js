@@ -15,9 +15,6 @@ const useStyles = makeStyles({
     paddingTop: '.5rem',
     paddingBottom: '.5rem',
   },
-  iconColour: {
-    color: '#2D5496',
-  },
   dollarIcon: {
     fontFamily: 'Work Sans',
     fontSize: '.9rem',
@@ -57,7 +54,7 @@ const useStyles = makeStyles({
     color: '#2D5496',
   },
   padding: {
-    paddingLeft: '1rem',
+    paddingLeft: '.5rem',
   },
   resetText: {
     fontFamily: 'Work Sans',
@@ -93,8 +90,7 @@ export default function PriceMenu({ updatePriceFilter }) {
   const handleApply = () => {
     // If valid (non-neg #, max >= min), set actual min/max + limit results
     if (min.toString().length > 0 && max.toString().length > 0
-      && !Number.isNaN(min) && !Number.isNaN(max)
-      && Number(min) >= 0 && Number(max) >= min) {
+      && !Number.isNaN(min) && !Number.isNaN(max)) {
       updatePriceFilter([min, max]);
     }
   };

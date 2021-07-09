@@ -16,7 +16,7 @@ const useStyles = makeStyles({
   },
   optionText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
     fontWeight: 'bold',
   },
   optionMenu: {
@@ -24,8 +24,8 @@ const useStyles = makeStyles({
     paddingBottom: '1rem',
   },
   padding: {
-    paddingLeft: '1rem',
-    paddingRight: '1rem',
+    paddingLeft: '.5rem',
+    paddingRight: '.5rem',
   },
 });
 

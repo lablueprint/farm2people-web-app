@@ -89,7 +89,7 @@ const useStyles = makeStyles({
 /* Marketplace header: title, view results, search bar, and tab selector */
 export default function MarketplaceHeader({
   tabValue, setTabValue, totalResults, numResults, setNumResults, searchTerms, setSearchTerms,
-  filterBySearch,
+  filterBySearch, shopByFarmName,
 }) {
   const classes = useStyles();
 
@@ -159,7 +159,12 @@ export default function MarketplaceHeader({
         </Grid>
       </Grid>
       {/* Tab title text + 2 tab selectors */}
-      <TabHeader tabValue={tabValue} setTabValue={setTabValue} />
+      <TabHeader
+        tabValue={tabValue}
+        setTabValue={setTabValue}
+        shopByFarmName={shopByFarmName}
+        searchTerms={searchTerms}
+      />
       <img
         src={Fruit1}
         alt="fruit1"
@@ -183,4 +188,5 @@ MarketplaceHeader.propTypes = {
   searchTerms: PropTypes.string.isRequired,
   setSearchTerms: PropTypes.func.isRequired,
   filterBySearch: PropTypes.func.isRequired,
+  shopByFarmName: PropTypes.string.isRequired,
 };

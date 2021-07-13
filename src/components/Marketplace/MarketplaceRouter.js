@@ -8,7 +8,7 @@ export default function MarketplaceRouter() {
     <Router history={history}>
       <Switch>
         <Route exact path="/marketplace" component={MarketplaceScreen} />
-        <Route exact path="/marketplace/:farmId" component={MarketplaceScreen} />
+        <Route exact path="/marketplace/shopByFarm/:farmId" component={MarketplaceScreen} />
       </Switch>
     </Router>
   );

@@ -146,7 +146,7 @@ export default function FarmCard(props) {
 
   // Route to new link when shopping by specific farm
   const shopByFarm = () => {
-    history.push(`/marketplace/${farmID}`);
+    history.push(`/marketplace/shopByFarm/${farmID}`);
   };
 
   return (

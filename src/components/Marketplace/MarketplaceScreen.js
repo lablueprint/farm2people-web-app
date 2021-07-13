@@ -47,6 +47,7 @@ export default function MarketplaceScreen({ match }) {
   const [filteredProduce, setFilteredProduce] = useState([]);
   const [shopByFarmProduce, setShopByFarmProduce] = useState([]);
   const [filteredShopByFarmProduce, setFilteredShopByFarmProduce] = useState([]);
+  const [shopByFarmName, setShopByFarmName] = useState('');
   // TODO: filtering methods of shopByFarmProduce
   const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
   const [numResults, setNumResults] = useState(10); // # of results to display
@@ -57,7 +58,6 @@ export default function MarketplaceScreen({ match }) {
 
   const classes = useStyles();
   function getFarmRecords() {
-    setShopByFarmProduce([]);
     base('Farms').select({ view: 'Grid view' }).all()
       .then((farmRecords) => {
         setFarmListings(farmRecords);
@@ -91,30 +91,31 @@ export default function MarketplaceScreen({ match }) {
 
   const shopByFarm = (farmID) => {
     // TODO: error check for no produce from farm + use some signal to show loading if needed
-    setShopByFarmProduce([]);
-    setFilteredShopByFarmProduce([]);
     base('Farms').find(farmID, (err, farm) => {
-      if (err) { setErrorMessage(err.message); } else if (farm.fields.listings) {
-        farm.fields.listings.forEach((id) => {
-          base('Listings').find(id, (e, record) => {
-            if (e) { setErrorMessage(e.message); }
-            const pricePerGroup = record.fields['standard price per grouped produce type'] || 0;
-            const groupPerPallet = record.fields['grouped produce type per pallet'] || 0;
-            const palletPrice = pricePerGroup * groupPerPallet;
-            const recordInfo = {
-              listingID: record.fields['listing id'],
-              produceID: record.fields.produce ? record.fields.produce[0] : -1,
-              farmID: record.fields['farm id'],
-              palletPrice: palletPrice !== 0 ? palletPrice : -1,
-              season: record.fields['growing season'] || 'No season',
-            };
-            setShopByFarmProduce((lastProduce) => lastProduce.concat(recordInfo));
-            setFilteredShopByFarmProduce((lastProduce) => lastProduce.concat(recordInfo));
+      if (err) { setErrorMessage(err.message); } else {
+        setShopByFarmName(farm.fields['farm name']);
+        if (farm.fields.listings) {
+          farm.fields.listings.forEach((id) => {
+            base('Listings').find(id, (e, record) => {
+              if (e) { setErrorMessage(e.message); }
+              const pricePerGroup = record.fields['standard price per grouped produce type'] || 0;
+              const groupPerPallet = record.fields['grouped produce type per pallet'] || 0;
+              const palletPrice = pricePerGroup * groupPerPallet;
+              const recordInfo = {
+                listingID: record.fields['listing id'],
+                produceID: record.fields.produce ? record.fields.produce[0] : -1,
+                farmID: record.fields['farm id'],
+                palletPrice: palletPrice !== 0 ? palletPrice : -1,
+                season: record.fields['growing season'] || 'No season',
+              };
+              setShopByFarmProduce((lastProduce) => lastProduce.concat(recordInfo));
+              setFilteredShopByFarmProduce((lastProduce) => lastProduce.concat(recordInfo));
+            });
           });
-        });
-      } else {
-        console.log('no listings for this farm');
-        console.log(farm);
+        } else {
+          console.log('no listings for this farm');
+          console.log(farm);
+        }
       }
     });
   };
@@ -127,6 +128,11 @@ export default function MarketplaceScreen({ match }) {
 
   // Get farm records or produce of specific farm whenever DOM or link updates/changes
   useEffect(() => {
+    setSearchTerms('');
+    setShopByFarmProduce([]);
+    setFilteredShopByFarmProduce([]);
+    setShopByFarmName('');
+    setFilteredProduce(produceListings);
     if (shopByFarmID) {
       shopByFarm(shopByFarmID);
     } else {
@@ -232,6 +238,7 @@ export default function MarketplaceScreen({ match }) {
           searchTerms={searchTerms}
           setSearchTerms={setSearchTerms}
           filterBySearch={filterBySearch}
+          shopByFarmName={shopByFarmName}
         />
         <Grid container direction="row" justify="flex-start">
           {/* Map each array of produceListing info to render a ProduceCard */

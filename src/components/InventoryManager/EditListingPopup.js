@@ -59,6 +59,15 @@ const useStyles = makeStyles({
       backgroundColor: '#e4e4e4',
     },
   },
+  selectedButton: {
+    backgroundColor: '#cdcdcd',
+    color: '#373737',
+    fontFamily: 'Work Sans',
+    fontSize: '1.2rem',
+    marginTop: '1rem',
+    marginBottom: '1rem',
+    border: '.08rem solid black',
+  },
   dialogContent: {
     '&::-webkit-scrollbar': {
       width: '0px',
@@ -76,6 +85,7 @@ export default function EditListingPopup({
   const classes = useStyles();
   const [listingRecord, setListingRecord] = useState(listing);
   const [localProduceRecord, setLocalProduceRecord] = useState(produceRecord);
+  const [privatizedSelection, setPrivatizedSelection] = useState();
   useEffect(() => {
     setListingRecord(listing);
     setLocalProduceRecord(produceRecord);
@@ -107,6 +117,7 @@ export default function EditListingPopup({
     closeDialog();
     setLocalProduceRecord(produceRecord);
     setListingRecord(listing);
+    setPrivatizedSelection();
   };
   function onChangeField(e, type) {
     const { name } = e.target;
@@ -128,8 +139,14 @@ export default function EditListingPopup({
     closeDialog();
   };
   // right now, saves the privatized change only after clicking save
-  const onPrivatizeClick = (newValue) => {
-    setListingRecord({ ...listingRecord, privatized: newValue });
+  const onPrivatizeClick = () => {
+    setListingRecord({ ...listingRecord, privatized: true });
+    setPrivatizedSelection(false);
+  };
+
+  const onPublicizeClick = () => {
+    setListingRecord({ ...listingRecord, privatized: false });
+    setPrivatizedSelection(true);
   };
 
   // props taken from AddListing steps to render ListingInputFields for each of these
@@ -381,12 +398,12 @@ export default function EditListingPopup({
           </Grid>
           <Grid container item xs={12} justify="flex-start" spacing={4}>
             <Grid item>
-              <Button variant="outlined" size="large" type="submit" className={classes.publicizeButton} startIcon={<LockIcon />} onClick={() => onPrivatizeClick(true)}>
+              <Button variant="outlined" size="large" type="submit" className={privatizedSelection === false ? classes.selectedButton : classes.publicizeButton} startIcon={<LockIcon />} onClick={() => onPrivatizeClick()}>
                 MAKE PRIVATE
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="outlined" size="large" type="submit" className={classes.publicizeButton} startIcon={<LockOpenOutlinedIcon />} onClick={() => onPrivatizeClick(false)}>
+              <Button variant="outlined" size="large" type="submit" className={privatizedSelection ? classes.selectedButton : classes.publicizeButton} startIcon={<LockOpenOutlinedIcon />} onClick={() => onPublicizeClick()}>
                 MAKE PUBLIC
               </Button>
             </Grid>

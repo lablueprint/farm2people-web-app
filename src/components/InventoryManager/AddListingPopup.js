@@ -60,9 +60,6 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontSize: '1.2rem',
   },
-  popup: {
-
-  },
 });
 
 const today = (new Date()).toISOString().split('T')[0];
@@ -205,7 +202,7 @@ export default function AddListingPopup({
   }
 
   return (
-    <Dialog open={isOpen} fullWidth maxWidth="lg" className={classes.popup}>
+    <Dialog open={isOpen} fullWidth maxWidth="lg">
       <DialogTitle id="form-dialog-title" className={classes.dialogTitle}>
         <Box display="flex" alignItems="center">
           <Box flexGrow={1}>

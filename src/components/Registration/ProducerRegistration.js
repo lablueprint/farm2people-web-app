@@ -28,17 +28,10 @@ import {
   Checkbox,
 } from '@material-ui/core';
 
-import Airtable from 'airtable';
+import { base } from '../../lib/airtable/airtable';
 import { history, store } from '../../lib/redux/store';
 import Fruit4 from '../../assets/images/Fruit4.svg';
 import Fruit1 from '../../assets/images/Fruit1.svg';
-
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-const base = new Airtable({ apiKey: airtableConfig.apiKey })
-  .base(airtableConfig.baseKey);
 
 const theme = createMuiTheme({
   spacing: 4,
@@ -55,7 +48,6 @@ const MenuProps = {
   },
 };
 
-// The spaces before the terms, are for formatting purposes
 const MARKETS = [
   'SM',
   'SM/SF',
@@ -146,11 +138,13 @@ const useStyles = makeStyles({
     width: '100%',
   },
   titleText: {
+    fontFamily: 'Work Sans',
     fontWeight: 'bold',
     fontSize: '35px',
     color: '#53AA48',
   },
   underlinedSubtitleText: {
+    fontFamily: 'Work Sans',
     textDecoration: 'underline',
     textDecorationColor: '#53AA48',
     fontWeight: 'bold',
@@ -158,33 +152,42 @@ const useStyles = makeStyles({
     marginTop: '5%',
   },
   subtitleText: {
+    fontFamily: 'Work Sans',
     textAlign: 'left',
     fontSize: '30px',
     fontWeight: 'bold',
     marginBottom: '7%',
   },
   regSubtitleText: {
+    fontFamily: 'Work Sans',
     textAlign: 'left',
     marginBottom: '7%',
   },
   cenSubtitleText: {
+    fontFamily: 'Work Sans',
     textAlign: 'center',
     fontSize: '30px',
     fontWeight: 'bold',
     marginBottom: '7%',
   },
   cenRegSubtitleText: {
+    fontFamily: 'Work Sans',
     textAlign: 'center',
     paddingLeft: '10%',
     fontSize: '30px',
     marginBottom: '2%',
   },
   labelText: {
+    fontFamily: 'Work Sans',
     fontWeight: 'bold',
     paddingBottom: '3%',
   },
   valueText: {
+    fontFamily: 'Work Sans',
     paddingLeft: '10%',
+  },
+  plainText: {
+    fontFamily: 'Work Sans',
   },
   blackButton: {
     backgroundColor: '#FFFFFF',
@@ -514,7 +517,6 @@ export default function RegistrationScreen() {
                     currentStep={currentStep}
                     routeChange={routeChange}
                     classes={classes}
-                    onPrev={onPrev}
                   />
                 </Grid>
               </Container>
@@ -543,12 +545,12 @@ function Step1({
     >
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
           fullWidth
           id="legalname"
           label="Legal Farm Name"
           name="legalName"
           disabled
+          variant="filled"
           value={formState.legalName}
         >
           {formState.farmName}
@@ -580,12 +582,12 @@ function Step1({
 
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
           fullWidth
           name="zipcode"
           label="Location"
           id="location"
           value={formState.zipcode}
+          variant="filled"
           disabled
         >
           {formState.zipcode}
@@ -593,12 +595,12 @@ function Step1({
       </Grid>
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
           fullWidth
           id="fullname"
           label="Contact Name"
           name="contactName"
           value={formState.contactName}
+          variant="filled"
           disabled
         >
           {formState.contactName}
@@ -606,27 +608,25 @@ function Step1({
       </Grid>
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
-          required
           fullWidth
           id="phone"
           label="Phone"
           name="phone"
           value={formState.phone}
           onChange={handleChange}
+          variant="filled"
           disabled
         />
       </Grid>
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
-          required
           fullWidth
           id="email"
           label="Email"
           name="email"
           value={formState.email}
           onChange={handleChange}
+          variant="filled"
           disabled
         />
       </Grid>
@@ -638,6 +638,7 @@ function Step1({
           id="county"
           name="county"
           placeholder="County"
+          label="County"
           value={formState.county}
           onChange={handleChange}
         />
@@ -723,6 +724,7 @@ function Step2({
           id="website"
           name="website"
           placeholder="Website"
+          label="Website"
           value={formState.website}
           onChange={handleChange}
         />
@@ -735,6 +737,7 @@ function Step2({
           id="add1"
           name="addOne"
           placeholder="Address Line 1"
+          label="Address Line 1"
           value={formState.addOne}
           onChange={handleChange}
         />
@@ -746,6 +749,7 @@ function Step2({
           id="add2"
           name="addTwo"
           placeholder="Address Line 2"
+          label="Address Line 2"
           value={formState.addTwo}
           onChange={handleChange}
         />
@@ -763,6 +767,7 @@ function Step2({
           id="additionalContact"
           name="additionalContact"
           placeholder="Additional Contact Information"
+          label="Additional Contact Information"
           value={formState.additionalContact}
           onChange={handleChange}
         />
@@ -892,7 +897,7 @@ function Step3({
       </Grid>
       <Grid item xs={12}>
         <FormControl className={classes.formControl} variant="outlined">
-          <InputLabel id="mutiple-name-label" required>Ownership and Operation</InputLabel>
+          <InputLabel id="mutiple-name-label">Ownership and Operation</InputLabel>
           <Select
             id="demo-mutiple-name"
             multiple
@@ -901,6 +906,7 @@ function Step3({
             input={<Input />}
             MenuProps={MenuProps}
             name="opDemographic"
+            required
             label="Ownership and Operation"
           >
             {OPDEMOGRAPHICS.map((o) => (
@@ -1029,17 +1035,6 @@ function Step4({
   currentStep, formState, classes, onPrev, handleSubmit,
   onSelectStep, setFormState,
 }) {
-  if (currentStep !== 4) {
-    return null;
-  }
-  if (!formState.hideFarm) {
-    setFormState(
-      {
-        ...formState,
-        farmName: formState.legalName,
-      },
-    );
-  }
   const fields = [
     {
       heading: 'Basic Contact Information',
@@ -1081,6 +1076,21 @@ function Step4({
       ],
     },
   ];
+
+  useEffect(() => {
+    if (!formState.hideFarm) {
+      setFormState(
+        {
+          ...formState,
+          farmName: formState.legalName,
+        },
+      );
+    }
+  }, []);
+
+  if (currentStep !== 4) {
+    return null;
+  }
 
   return [
     <div className={classes.subtitleText}>
@@ -1145,7 +1155,7 @@ function Step4({
 }
 
 function Step5({
-  currentStep, routeChange, classes, onPrev,
+  currentStep, routeChange, classes,
 }) {
   if (currentStep !== 5) {
     return null;
@@ -1155,7 +1165,7 @@ function Step5({
       <div className={classes.cenSubtitleText}>
         Registration Completed!
       </div>
-      <div>
+      <div className={classes.plainText}>
         We have set up your profile linked to your account.
       </div>
     </div>,
@@ -1171,7 +1181,7 @@ function Step5({
         </div>
       </Grid>
 
-      <Grid item xs={6}>
+      <Grid item xs={12}>
         <Button
           type="button"
           className={classes.submitButton}
@@ -1182,19 +1192,6 @@ function Step5({
           fullWidth
         >
           Back To Home
-        </Button>
-      </Grid>
-      <Grid item xs={6}>
-        <Button
-          type="button"
-          className={classes.submitButton}
-          color="primary"
-          variant="contained"
-          style={{ backgroundColor: '#53AA48' }}
-          onClick={onPrev}
-          fullWidth
-        >
-          Add a Farm
         </Button>
       </Grid>
     </Grid>,

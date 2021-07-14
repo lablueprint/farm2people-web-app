@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Grid, TextField, Typography,
+  Grid, TextField, Typography, ButtonBase,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
@@ -16,6 +16,7 @@ const useStyles = makeStyles({
   headerContainer: {
     paddingLeft: '3%',
     paddingRight: '4%',
+    paddingBottom: '3%',
   },
   marketplaceTitleText: {
     fontFamily: 'Work Sans',
@@ -48,7 +49,6 @@ const useStyles = makeStyles({
   // Search bar styling
   searchBarContainer: {
     marginTop: '0.5%',
-    width: '68%',
     marginLeft: '3.5%',
   },
   inputText: {
@@ -73,24 +73,35 @@ const useStyles = makeStyles({
     width: '112px',
     height: 'auto',
     right: '63px',
-    top: '-20px',
+    top: '8px',
     zIndex: '-2',
   },
   fruit2: {
     position: 'absolute',
-    width: '92px',
+    width: '90px',
     height: 'auto',
-    right: '5px',
-    top: '10px',
+    right: '2px',
+    top: '33px',
     zIndex: '-1',
   },
 });
 
 /* Marketplace header: title, view results, search bar, and tab selector */
 export default function MarketplaceHeader({
-  tabValue, setTabValue, totalResults, numResults, setNumResults,
+  tabValue, setTabValue, totalResults, numResults, setNumResults, searchTerms, setSearchTerms,
+  filterBySearch,
 }) {
   const classes = useStyles();
+
+  // update search terms on text field input
+  const handleChange = (event) => {
+    setSearchTerms(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    filterBySearch();
+  };
 
   return (
     <div className={classes.headerContainer}>
@@ -115,7 +126,7 @@ export default function MarketplaceHeader({
           className={classes.searchContainer}
         >
           <LocationOnOutlinedIcon className={classes.locationIcon} />
-          <div>
+          <Grid item>
             <Typography className={classes.searchText}>
               Searching near
             </Typography>
@@ -123,23 +134,28 @@ export default function MarketplaceHeader({
               {/* TODO: Get location of user */ }
               Real location, CA
             </Typography>
-          </div>
-          <TextField
-            placeholder="Search for produce, farms, etc."
-            fullWidth
-            variant="outlined"
-            InputProps={{
-              disableUnderline: true,
-              classes: {
-                input: classes.inputText,
-                adornedEnd: classes.searchIcon,
-              },
-              endAdornment: <SearchIcon />,
-            }}
-            className={classes.searchBarContainer}
-            size="small"
-            // TODO: onChange fx to actually implement search
-          />
+          </Grid>
+          <Grid item xs>
+            <form onSubmit={handleSubmit}>
+              <TextField
+                placeholder="Search for produce, farms, etc."
+                fullWidth
+                variant="outlined"
+                InputProps={{
+                  disableUnderline: true,
+                  classes: {
+                    input: classes.inputText,
+                    adornedEnd: classes.searchIcon,
+                  },
+                  endAdornment: <ButtonBase type="submit"><SearchIcon /></ButtonBase>,
+                }}
+                className={classes.searchBarContainer}
+                size="small"
+                value={searchTerms}
+                onChange={handleChange}
+              />
+            </form>
+          </Grid>
         </Grid>
       </Grid>
       {/* Tab title text + 2 tab selectors */}
@@ -164,4 +180,7 @@ MarketplaceHeader.propTypes = {
   totalResults: PropTypes.number.isRequired,
   numResults: PropTypes.number.isRequired,
   setNumResults: PropTypes.func.isRequired,
+  searchTerms: PropTypes.string.isRequired,
+  setSearchTerms: PropTypes.func.isRequired,
+  filterBySearch: PropTypes.func.isRequired,
 };

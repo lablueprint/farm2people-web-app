@@ -14,6 +14,22 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
+### `npm generate-scheme`
+
+Auto generates airtable schema js files based on farm2people airtable. Ensure the following fields are entered in your .env file.
+
+```
+REACT_APP_AIRTABLE_BASE_ID=
+REACT_APP_AIRTABLE_API_KEY= // Only necessary if not using Airlock
+REACT_APP_AIRTABLE_ENDPOINT_URL= // Only necessary if using airlock
+```
+
+Refer to the following [website](https://github.com/aivantg/airtable-schema-generator).
+
+## Needed if using Auto mode
+AIRTABLE_EMAIL=
+AIRTABLE_PASSWORD=
+
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.\

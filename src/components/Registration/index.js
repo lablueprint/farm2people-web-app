@@ -1,4 +1,4 @@
-// import RegistrationScreen from './ProducerRegistration';
-import RegistrationScreen from './AgencyRegistration';
+import ProducerRegistrationScreen from './ProducerRegistration';
+import AgencyRegistrationScreen from './AgencyRegistration';
 
-export default RegistrationScreen;
+export { AgencyRegistrationScreen, ProducerRegistrationScreen };

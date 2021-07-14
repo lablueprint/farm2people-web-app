@@ -22,18 +22,12 @@ import {
   InputLabel,
   Box,
 } from '@material-ui/core';
-import Airtable from 'airtable';
+
+import { base } from '../../lib/airtable/airtable';
 import { history, store } from '../../lib/redux/store';
 
 import Fruit2 from '../../assets/images/Fruit2.svg';
 import Fruit3 from '../../assets/images/Fruit3.svg';
-
-const airtableConfig = {
-  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-};
-const base = new Airtable({ apiKey: airtableConfig.apiKey })
-  .base(airtableConfig.baseKey);
 
 const theme = createMuiTheme({
   spacing: 4,
@@ -50,7 +44,6 @@ const MenuProps = {
   },
 };
 
-// The spaces before the terms, are for formatting purposes
 const POPULATIONS = [
   'Serves Black',
   'Serves BIPOC',
@@ -66,11 +59,13 @@ const useStyles = makeStyles({
     width: '100%',
   },
   titleText: {
+    fontFamily: 'Work Sans',
     fontWeight: 'bold',
     fontSize: '35px',
     color: '#2D5496',
   },
   underlinedSubtitleText: {
+    fontFamily: 'Work Sans',
     textDecoration: 'underline',
     textDecorationColor: '#2D5496',
     fontWeight: 'bold',
@@ -78,27 +73,35 @@ const useStyles = makeStyles({
     marginTop: '5%',
   },
   subtitleText: {
+    fontFamily: 'Work Sans',
     textAlign: 'left',
     fontSize: '30px',
     fontWeight: 'bold',
     marginBottom: '7%',
   },
   regSubtitleText: {
+    fontFamily: 'Work Sans',
     textAlign: 'left',
     marginBottom: '7%',
   },
   cenSubtitleText: {
+    fontFamily: 'Work Sans',
     textAlign: 'center',
     fontSize: '30px',
     fontWeight: 'bold',
     marginBottom: '7%',
   },
   labelText: {
+    fontFamily: 'Work Sans',
     fontWeight: 'bold',
     paddingBottom: '3%',
   },
   valueText: {
+    fontFamily: 'Work Sans',
     paddingLeft: '10%',
+  },
+  plainText: {
+    fontFamily: 'Work Sans',
   },
   blackButton: {
     backgroundColor: '#FFFFFF',
@@ -311,14 +314,13 @@ export default function RegistrationScreen() {
   }, [currentStep]);
 
   const step3IsInvalid = useMemo(() => (
-    formState.addOne === '' || formState.addTwo === ''
-      || formState.additonalContact === '' || formState.socials === ''
+    formState.addOne === ''
   ),
   [formState]);
 
   const federalTaxIDCheck = useMemo(() => {
-    if (formState.taxID !== '' && !Number(formState.taxID)) {
-      return 'Make sure your Tax ID is a number!';
+    if (formState.taxID !== '' && (!Number(formState.taxID) || formState.taxID.length !== 9)) {
+      return 'Make sure your Tax ID is a nine digit number!';
     }
     return '';
   },
@@ -441,11 +443,11 @@ function Step1({
     >
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
           fullWidth
           id="agencyname"
           label="Legal Agency Name"
           name="agencyname"
+          variant="filled"
           disabled
           value={formState.agencyName}
         >
@@ -454,12 +456,12 @@ function Step1({
       </Grid>
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
           fullWidth
           name="zipcode"
           label="Location"
           id="location"
           value={formState.zipcode}
+          variant="filled"
           disabled
         >
           {formState.zipcode}
@@ -467,12 +469,12 @@ function Step1({
       </Grid>
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
           fullWidth
           id="fullname"
           label="Contact Name"
           name="contactName"
           value={formState.contactName}
+          variant="filled"
           disabled
         >
           {formState.contactName}
@@ -563,27 +565,25 @@ function Step2({
     >
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
-          required
           fullWidth
           id="phone"
           label="Phone"
           name="phone"
           value={formState.phone}
           onChange={handleChange}
+          variant="filled"
           disabled
         />
       </Grid>
       <Grid item xs={12}>
         <TextField
-          variant="outlined"
-          required
           fullWidth
           id="email"
           label="Email"
           name="email"
           value={formState.email}
           onChange={handleChange}
+          variant="filled"
           disabled
         />
       </Grid>
@@ -595,6 +595,7 @@ function Step2({
           id="add1"
           name="addOne"
           placeholder="Address Line 1"
+          label="Address Line 1"
           value={formState.addOne}
           onChange={handleChange}
         />
@@ -602,11 +603,11 @@ function Step2({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="add2"
           name="addTwo"
           placeholder="Address Line 2"
+          label="Address Line 2"
           value={formState.addTwo}
           onChange={handleChange}
         />
@@ -614,11 +615,11 @@ function Step2({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="additionalContact"
           name="additionalContact"
           placeholder="Additional Contact Information"
+          label="Additional Contact Information"
           value={formState.additionalContact}
           onChange={handleChange}
         />
@@ -626,11 +627,11 @@ function Step2({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="socials"
           name="socials"
           placeholder="Social Media"
+          label="Social Media"
           value={formState.socials}
           onChange={handleChange}
         />
@@ -638,11 +639,11 @@ function Step2({
       <Grid item xs={12}>
         <TextField
           variant="outlined"
-          required
           fullWidth
           id="additionalComments"
           name="additionalComments"
           placeholder="Additional Comments"
+          label="Additional Comments"
           value={formState.additionalComments}
           onChange={handleChange}
           rows={3}
@@ -788,7 +789,7 @@ function Step4({
       <div className={classes.cenSubtitleText}>
         Registration Completed!
       </div>
-      <div>
+      <div className={classes.plainText}>
         We have set up your profile linked to your account.
       </div>
     </div>,

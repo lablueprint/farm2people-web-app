@@ -8,6 +8,7 @@ import MarketplaceHeader from './Header/MarketplaceHeader';
 import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
 import '../../styles/fonts.css';
 import { base } from '../../lib/airtable/airtable';
+import { store } from '../../lib/redux/store';
 
 const useStyles = makeStyles({
   root: {
@@ -49,6 +50,7 @@ export default function MarketplaceScreen() {
       });
   }
 
+  const getInitialRole = () => (store.getState().userData == null ? '' : store.getState().userData.user.fields['user type']);
   // Get prod id, grouped unit type, price per grouped unit for each produce record
   function getProduceRecords() {
     base('Listings').select({ view: 'Grid view' }).all()
@@ -56,8 +58,15 @@ export default function MarketplaceScreen() {
         const processedProduceRecords = [];
         produceRecords.forEach((record) => {
           const pricePerGroup = record.fields['standard price per grouped produce type'] || 0;
+          const agencyPricePerGroup = record.fields['agency price per grouped produce type'] || 0;
           const groupPerPallet = record.fields['grouped produce type per pallet'] || 0;
-          const palletPrice = pricePerGroup * groupPerPallet;
+          let palletPrice = pricePerGroup * groupPerPallet;
+          let hasAgencyPrice = false;
+          const userRole = getInitialRole();
+          if (userRole === 'agency' && agencyPricePerGroup < pricePerGroup) {
+            hasAgencyPrice = true;
+            palletPrice = agencyPricePerGroup * groupPerPallet;
+          }
           // Capitalise 1st letter of produce type to match filtering
           let produceType = record.fields['produce category'] ? record.fields['produce category'][0] : 'No category';
           produceType = produceType.charAt(0).toUpperCase() + produceType.slice(1);
@@ -65,10 +74,11 @@ export default function MarketplaceScreen() {
             listingID: record.fields['listing id'],
             produceID: record.fields.produce ? record.fields.produce[0] : -1,
             farmID: record.fields['farm id'],
-            palletPrice: palletPrice !== 0 ? palletPrice : -1,
+            palletPrice,
             season: record.fields['growing season'] || 'No season',
             produceType,
             palletsAvailable: record.fields['pallets available'] || 0,
+            hasAgencyPrice,
           };
           processedProduceRecords.push(recordInfo);
         });
@@ -343,11 +353,16 @@ export default function MarketplaceScreen() {
             tabValue === 'all' && !isFiltered && produceListings.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
+                listingID={produce.listingID}
+                handleOpenCartPopup={handleOpenCartPopup}
+                setPopupProduce={setPopupProduce}
                 /* ProduceCard will get produce name, photo, + farm name by ids */
                 produceID={produce.produceID || null}
                 farmID={produce.farmID || null}
                 palletPrice={produce.palletPrice}
+                palletsAvailable={produce.palletsAvailable}
                 season={produce.season}
+                hasAgencyPrice={produce.hasAgencyPrice}
               />
             ))
           }
@@ -364,6 +379,7 @@ export default function MarketplaceScreen() {
                 palletPrice={produce.palletPrice}
                 palletsAvailable={produce.palletsAvailable}
                 season={produce.season}
+                hasAgencyPrice={produce.hasAgencyPrice}
               />
             ))
           }

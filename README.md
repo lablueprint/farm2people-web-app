@@ -14,7 +14,7 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 The page will reload if you make edits.\
 You will also see any lint errors in the console.
 
-### `npm generate-scheme`
+### `npm generate-schema`
 
 Auto generates airtable schema js files based on farm2people airtable. Ensure the following fields are entered in your .env file.
 

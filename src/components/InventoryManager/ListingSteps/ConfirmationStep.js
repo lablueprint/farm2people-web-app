@@ -73,14 +73,7 @@ export default function ConfirmationStep({
 
 ConfirmationStep.propTypes = {
   listingRecord: PropTypes.shape({
-    produce: PropTypes.shape({
-      fields: PropTypes.shape({
-        'produce type': PropTypes.string,
-        'produce picture': PropTypes.arrayOf(PropTypes.shape({
-          url: PropTypes.string,
-        })),
-      }),
-    }),
+    produce: PropTypes.arrayOf(PropTypes.string),
     'growing season': '',
     details: '',
     'individual produce unit': PropTypes.string,

@@ -35,7 +35,7 @@ export default function AddListingButton({
   };
   return (
     <>
-      <Button variant="contained" size="medium" color="primary" onClick={handleClickOpen} className={classes.button} classes={{ label: classes.text }}>
+      <Button variant="contained" size="medium" color="primary" onClick={handleClickOpen} className={classes.button}>
         <AddIcon />
         <Typography variant="button" display="block" className={classes.text}>
           Add Listing

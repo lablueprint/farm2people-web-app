@@ -130,7 +130,7 @@ export default function UnitsStep({
         <Grid item container xs={12}>
           <Typography className={classes.heading}>{questions[0]}</Typography>
         </Grid>
-        <Grid container item xs={12} spacing={1}>
+        <Grid container item xs={12} spacing={2}>
           <Grid item xs={12}>
             <Typography className={classes.subheading}>
               Individual Produce Unit
@@ -147,7 +147,7 @@ export default function UnitsStep({
             </Grid>
           ))}
         </Grid>
-        <Grid container item xs={12} spacing={1}>
+        <Grid container item xs={12} spacing={2}>
           <Grid item xs={12}>
             <Typography className={classes.subheading}>
               Grouped Produce Type

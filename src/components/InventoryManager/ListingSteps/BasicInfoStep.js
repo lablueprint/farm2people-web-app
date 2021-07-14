@@ -66,7 +66,7 @@ export default function BasicInfoStep({
             label="Produce Details"
             name="details"
             onChange={onChangeField}
-            val={listingRecord.details}
+            val={listingRecord.details || ''}
             type="multiline"
             placeholder="Enter any details about the produce such as grade,
             cosmetic defects, and overall condition of the produce. Don't

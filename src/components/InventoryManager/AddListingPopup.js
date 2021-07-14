@@ -21,6 +21,7 @@ import PricesStep from './ListingSteps/PricesStep';
 import DatesStep from './ListingSteps/DatesStep';
 import PhotoStep from './ListingSteps/PhotoStep';
 import ConfirmationStep from './ListingSteps/ConfirmationStep';
+import SuccessStep from './ListingSteps/SuccessStep';
 import { store } from '../../lib/redux/store';
 
 const useStyles = makeStyles({
@@ -28,7 +29,13 @@ const useStyles = makeStyles({
     padding: '1rem 3rem 0rem 3rem',
   },
   dialogContent: {
-    padding: '0rem 3rem 1rem 3rem',
+    padding: '1rem 3rem 0rem 3rem',
+    '&::-webkit-scrollbar': {
+      width: '0px',
+      background: 'transparent',
+    },
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
   },
   dialogButtons: {
     padding: '1rem 3rem',
@@ -138,13 +145,11 @@ export default function AddListingPopup({
 
   function handleNext(e) {
     e.preventDefault();
-    if (activeStep < 5) {
-      handleStepComplete(activeStep);
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    } else {
+    if (activeStep === 5) {
       modifyListings(listingRecord);
-      handleClose();
     }
+    handleStepComplete(activeStep);
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
   }
   const onChangeField = (e, type) => {
     const { name, value } = e.target;
@@ -189,6 +194,8 @@ export default function AddListingPopup({
             setStep={setActiveStep}
           />
         );
+      case 6:
+        return (<SuccessStep closeDialog={handleClose} />);
       default:
         return 'Finished';
     }
@@ -210,7 +217,7 @@ export default function AddListingPopup({
           </Box>
         </Box>
       </DialogTitle>
-      <DialogContent className={classes.dialogTitle}>
+      <DialogContent className={classes.dialogContent}>
         <Stepper
           alternativeLabel
           activeStep={activeStep}
@@ -231,18 +238,20 @@ export default function AddListingPopup({
           {getStepContent(activeStep)}
         </form>
       </DialogContent>
-      <DialogActions className={classes.dialogButtons}>
-        <Box flexGrow={1}>
-          <Button onClick={handleBack} className={classes.backButton} variant="contained">
-            {activeStep > 0 ? 'Back' : 'Cancel' }
-          </Button>
-        </Box>
-        <Box>
-          <Button form="listing-form" type="submit" className={classes.nextButton} variant="contained">
-            {activeStep < 5 ? 'Next' : 'Submit Changes' }
-          </Button>
-        </Box>
-      </DialogActions>
+      {activeStep < 6 && (
+        <DialogActions className={classes.dialogButtons}>
+          <Box flexGrow={1}>
+            <Button onClick={handleBack} className={classes.backButton} variant="contained">
+              {activeStep > 0 ? 'Back' : 'Cancel' }
+            </Button>
+          </Box>
+          <Box>
+            <Button form="listing-form" type="submit" className={classes.nextButton} variant="contained">
+              {activeStep < 5 ? 'Next' : 'Submit Changes' }
+            </Button>
+          </Box>
+        </DialogActions>
+      )}
     </Dialog>
   );
 }

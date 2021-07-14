@@ -17,7 +17,7 @@ import Step2 from './Step2';
 import Step3 from './Step3';
 import Step4 from './Step4';
 
-const ROLE_NAMES = ['buyer', 'vendor', 'agency'];
+const ROLE_NAMES = ['buyer', 'agency', 'vendor'];
 const ROLE_TITLES = ['buyer', 'nonprofit', 'seller'];
 
 const theme = createMuiTheme({

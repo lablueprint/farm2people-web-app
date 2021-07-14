@@ -154,7 +154,7 @@ export default function Step3(props) {
           fullWidth
           color="primary"
           variant="contained"
-          disabled={step3EmptyInputCheck || loading}
+          disabled={step3EmptyInputCheck || loading || validPhoneAndZipcodeCheck || errorMsg}
         >
           Finish
         </Button>

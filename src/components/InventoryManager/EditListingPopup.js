@@ -382,39 +382,95 @@ export default function EditListingPopup({
       <DialogContent className={classes.dialogContent}>
         <Grid spacing={3} container>
           <Grid item xs={12}>
-            <EditListingBlock getListingRecord={getBasicInfo} name="Basic Information" index={1} />
+            <EditListingBlock
+              getListingRecord={getBasicInfo}
+              name="Basic Information"
+              index={1}
+            />
           </Grid>
           <Grid item xs={12}>
-            <EditListingBlock getListingRecord={getUnitInfo} name="Units" index={2} />
+            <EditListingBlock
+              getListingRecord={getUnitInfo}
+              name="Units"
+              index={2}
+            />
           </Grid>
           <Grid item xs={12}>
-            <EditListingBlock getListingRecord={getPriceInfo} name="Price" index={3} />
+            <EditListingBlock
+              getListingRecord={getPriceInfo}
+              name="Price"
+              index={3}
+            />
           </Grid>
           <Grid item xs={12}>
-            <EditListingBlock getListingRecord={getDateInfo} name="Available Dates" index={4} />
+            <EditListingBlock
+              getListingRecord={getDateInfo}
+              name="Available Dates"
+              index={4}
+            />
           </Grid>
           <Grid item xs={12}>
-            <EditListingBlock getListingRecord={getPhotoInfo} name="Photo" index={5} image />
+            <EditListingBlock
+              getListingRecord={getPhotoInfo}
+              name="Photo"
+              index={5}
+              image
+            />
           </Grid>
           <Grid container item xs={12} justify="flex-start" spacing={4}>
             <Grid item>
-              <Button variant="outlined" size="large" type="submit" className={privatizedSelection === false ? classes.selectedButton : classes.publicizeButton} startIcon={<LockIcon />} onClick={() => onPrivatizeClick()}>
+              <Button
+                variant="outlined"
+                size="large"
+                type="submit"
+                className={
+                privatizedSelection === false
+                  ? classes.selectedButton
+                  : classes.publicizeButton
+                }
+                startIcon={<LockIcon />}
+                onClick={() => onPrivatizeClick()}
+              >
                 MAKE PRIVATE
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="outlined" size="large" type="submit" className={privatizedSelection ? classes.selectedButton : classes.publicizeButton} startIcon={<LockOpenOutlinedIcon />} onClick={() => onPublicizeClick()}>
+              <Button
+                variant="outlined"
+                size="large"
+                type="submit"
+                className={
+                privatizedSelection
+                  ? classes.selectedButton
+                  : classes.publicizeButton
+                }
+                startIcon={<LockOpenOutlinedIcon />}
+                onClick={() => onPublicizeClick()}
+              >
                 MAKE PUBLIC
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="outlined" size="large" type="submit" className={classes.deleteButton} startIcon={<DeleteOutlineSharpIcon />} onClick={onDeleteClick}>
+              <Button
+                variant="outlined"
+                size="large"
+                type="submit"
+                className={classes.deleteButton}
+                startIcon={<DeleteOutlineSharpIcon />}
+                onClick={onDeleteClick}
+              >
                 DELETE LISTING
               </Button>
             </Grid>
           </Grid>
           <Grid container item xs={12} justify="center">
-            <Button variant="contained" size="large" type="submit" className={classes.saveButton} onClick={onSaveClick}>
+            <Button
+              variant="contained"
+              size="large"
+              type="submit"
+              className={classes.saveButton}
+              onClick={onSaveClick}
+            >
               SAVE CHANGES
             </Button>
           </Grid>

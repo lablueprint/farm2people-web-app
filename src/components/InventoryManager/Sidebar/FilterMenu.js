@@ -11,13 +11,13 @@ import GreenCheckbox from '../GreenCheckbox';
 const useStyles = makeStyles({
   menuTitleText: {
     fontFamily: 'Work Sans',
-    fontSize: '1.2rem',
+    fontSize: '1.1rem',
     color: '#373737',
     fontWeight: 'bold',
   },
   resetText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
     color: '#373737',
     textTransform: 'none',
   },
@@ -30,13 +30,13 @@ const useStyles = makeStyles({
   // Styling for filter menu items
   filterOptionText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
     color: '#373737',
     width: '15rem',
   },
   filterNumText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
     color: '#53AA48',
   },
   padding: {
@@ -111,7 +111,6 @@ export default function FilterMenu({
                   </Typography>
                 </Grid>
                 <Grid item container xs={3} alignContent="center">
-                  {/* TODO: Get real #, may need to make this a component for airtable calls */}
                   <Typography className={classes.filterNumText}>
                     {option.amount}
                   </Typography>

@@ -7,21 +7,11 @@ import PriceMenu from './PriceMenu';
 import SortMenu from './SortMenu';
 
 const useStyles = makeStyles({
-  marketplaceText: {
-    fontFamily: 'Work Sans',
-    fontSize: '1rem',
-    color: '#373737',
-  },
   filterText: {
     fontFamily: 'Work Sans',
-    fontSize: '1.5rem',
+    fontSize: '1.2rem',
     color: '#373737',
     paddingLeft: '.5rem',
-  },
-  pageText: {
-    fontFamily: 'Work Sans',
-    fontSize: '1rem',
-    fontWeight: 'bold',
   },
   divider: {
     width: '100%',

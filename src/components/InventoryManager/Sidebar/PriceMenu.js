@@ -9,7 +9,7 @@ import { green } from '@material-ui/core/colors';
 const useStyles = makeStyles({
   menuTitleText: {
     fontFamily: 'Work Sans',
-    fontSize: '1.2rem',
+    fontSize: '1.1rem',
     color: '#373737',
     fontWeight: 'bold',
     paddingTop: '.5rem',
@@ -17,19 +17,18 @@ const useStyles = makeStyles({
   },
   dollarIcon: {
     fontFamily: 'Work Sans',
-    fontSize: '.9rem',
-    fontWeight: 'bold',
+    fontSize: '.7rem',
   },
   inputText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
   },
   inputContainer: {
     maxWidth: '5rem',
   },
   middleText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
   },
   applyButton: {
     color: '#373737',
@@ -45,12 +44,12 @@ const useStyles = makeStyles({
   // Styling for menu items
   filterOptionText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
     color: '#373737',
   },
   filterNumText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
     color: '#2D5496',
   },
   padding: {
@@ -58,22 +57,17 @@ const useStyles = makeStyles({
   },
   resetText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
     color: '#373737',
     textTransform: 'none',
   },
 });
 
-/* Menu in the sidebar for selecting filters, takes in array of filter options */
+/* Menu in the sidebar for selecting filters, takes in function to update price min/max */
 export default function PriceMenu({ updatePriceFilter }) {
   const classes = useStyles();
-  // Sort priceOptions in asc order + get highest price for default max
   const [min, setMin] = useState(0);
   const [max, setMax] = useState(0);
-
-  /* Sets checkboxes to checked/unchecked when toggled */
-
-  /* Sets min + max when input entered */
   const handleMinChange = (event) => {
     setMin(event.target.value);
   };
@@ -85,10 +79,9 @@ export default function PriceMenu({ updatePriceFilter }) {
     setMax(0);
     updatePriceFilter([-1, -1]);
   };
-  // When apply clicked, checks if min/max are valid + limits results
+
   // TODO : add functionality for only specifying one of min or max
   const handleApply = () => {
-    // If valid (non-neg #, max >= min), set actual min/max + limit results
     if (min.toString().length > 0 && max.toString().length > 0
       && !Number.isNaN(min) && !Number.isNaN(max)) {
       updatePriceFilter([min, max]);
@@ -115,7 +108,6 @@ export default function PriceMenu({ updatePriceFilter }) {
         </Grid>
         <Grid container item xs={2} />
       </Grid>
-      {/* Min-max manual input + apply button */}
       <Grid
         container
         direction="row"
@@ -166,7 +158,7 @@ export default function PriceMenu({ updatePriceFilter }) {
             className={classes.applyButton}
             variant="contained"
             color="primary"
-            style={{ textTransform: 'none' }} // Removes auto-caps
+            style={{ textTransform: 'none' }}
             size="medium"
             onClick={handleApply}
             disableElevation

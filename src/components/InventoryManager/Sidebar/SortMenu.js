@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 const useStyles = makeStyles({
   menuTitleText: {
     fontFamily: 'Work Sans',
-    fontSize: '1.2rem',
+    fontSize: '1.1rem',
     color: '#373737',
     fontWeight: 'bold',
     paddingTop: '.5rem',

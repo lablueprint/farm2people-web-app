@@ -54,7 +54,9 @@ const useStyles = makeStyles({
 });
 
 /* Menu in the sidebar for selecting filters, takes in array of filter options */
-export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
+export default function FilterMenu({
+  menuTitle, filterOptions, itemsPerOption, isLast, onFilterChange,
+}) {
   const classes = useStyles();
   const [isChecked, setIsChecked] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -62,6 +64,7 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
   /* Resets all filters to be unchecked when reset clicked */
   const resetFilters = () => {
     const newChecked = [];
+    onFilterChange(newChecked); // Pass empty [] back to markplace to reset filters
     setIsChecked(newChecked);
   };
 
@@ -76,10 +79,10 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
       newChecked.splice(currentIndex, 1);
     }
 
+    onFilterChange(newChecked); // Pass new filters back to markplace to display
     setIsChecked(newChecked);
   };
 
-  // TODO: actually filter results based on selected filters
   return (
     <div>
       <Grid
@@ -106,7 +109,7 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
       </Grid>
       {/* List of filter options only shows if expanded */}
       <List dense>
-        {isExpanded && (filterOptions.map((option) => (
+        {isExpanded && (filterOptions.map((option, index) => (
           <ListItem
             dense
             key={option}
@@ -128,12 +131,11 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
               primary={option}
               className={classes.filterOptionText}
             />
-            {/* TODO: Get real #, may need to make this a component for airtable calls */}
+            {/* # of items that match this option */}
             <ListItemSecondaryAction className={classes.filterNumText}>
-              100
+              {itemsPerOption[index]}
             </ListItemSecondaryAction>
           </ListItem>
-
         )))}
       </List>
       {!isLast && <Divider variant="middle" />}
@@ -144,5 +146,7 @@ export default function FilterMenu({ menuTitle, filterOptions, isLast }) {
 FilterMenu.propTypes = {
   menuTitle: PropTypes.string.isRequired,
   filterOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+  itemsPerOption: PropTypes.arrayOf(PropTypes.number).isRequired,
   isLast: PropTypes.bool.isRequired,
+  onFilterChange: PropTypes.func.isRequired,
 };

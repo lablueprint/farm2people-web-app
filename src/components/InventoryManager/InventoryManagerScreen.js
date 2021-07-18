@@ -7,6 +7,7 @@ import { base } from '../../lib/airtable/airtable';
 import ListingsView from './ListingsView';
 import AddListingButton from './AddListingButton';
 import DeleteButton from './DeleteButton';
+import InventoryManagerSidebar from './Sidebar/InventoryManagerSidebar';
 
 const useStyles = makeStyles({
   root: {
@@ -35,6 +36,150 @@ export default function InventoryManagerScreen() {
   const [produceTypes, setProduceTypes] = useState([]);
   const [cardListings, setCardListings] = useState([]);
   const [selectedCards, setSelectedCards] = useState({});
+  const [produceCategoryFilter, setProduceCategoryFilter] = useState([]);
+  const [sellByFilter, setSellByFilter] = useState([]);
+  const [availabilityFilter, setAvailabilityFilter] = useState([]);
+  const [sortOrder, setSortOrder] = useState('');
+  const [priceFilter, setPriceFilter] = useState([-1, -1]);
+  // remove filter if it is in the array, add it if not
+  const updateFilter = (option, filter, setFilter) => {
+    // reset array if option is an empty array
+    if (Array.isArray(option)) {
+      const newFilter = [];
+      setFilter(newFilter);
+      return;
+    }
+    // add option to array if not already in
+    // remove otherwise
+    const newFilter = [...filter];
+    const index = newFilter.indexOf(option);
+    if (index > -1) {
+      newFilter.splice(index, 1);
+    } else {
+      newFilter.push(option);
+    }
+    setFilter(newFilter);
+  };
+
+  const filterByProduceCategory = (listing, filter) => (
+    // filter length of zero means no filters to apply
+    filter.length === 0
+    || (listing.fields['produce category']
+      ? filter.includes(listing.fields['produce category'][0])
+      : false)
+  );
+  const filterByAvailability = (listing, filter) => {
+    if (filter.length === 0) {
+      return true;
+    }
+    let condition = false;
+    if (filter.includes('available')) {
+      condition = condition || listing.fields['pallets available'] > 0;
+    }
+    if (filter.includes('sold out')) {
+      condition = condition || listing.fields['pallets available'] <= 0;
+    }
+    return condition;
+  };
+  const filterBySellByDate = (listing, filter) => {
+    if (filter.length === 0) {
+      return true;
+    }
+    let condition = false;
+    if (filter.includes('past sell by date')) {
+      condition = condition || Date.parse(listing.fields['sell by date']) < new Date();
+    }
+    if (filter.includes('before sell by date')) {
+      condition = condition || Date.parse(listing.fields['sell by date']) > new Date();
+    }
+    return condition;
+  };
+  const filterByPrice = (listing, filter) => {
+    let condition = true;
+    const price = listing.fields['standard price per grouped produce type'];
+    if (filter[0] > 0) {
+      condition = condition && price > priceFilter[0];
+    }
+    if (filter[1] > 0) {
+      condition = condition && price < priceFilter[1];
+    }
+    return condition;
+  };
+
+  useEffect(() => {
+    base('Listings')
+      .select({
+        view: 'Grid view',
+        filterByFormula: `{user} = "${store.getState().userData.user.id}"`,
+      })
+      .all().then((records) => {
+        setCardListings(records);
+        records.forEach((listing) => {
+          initialCardSelect = { ...initialCardSelect, [listing.id]: false };
+        });
+        setSelectedCards(initialCardSelect);
+      });
+  }, []);
+  useEffect(() => {
+    base('Produce Type')
+      .select({ view: 'Grid view' })
+      .all().then((records) => {
+        setProduceTypes(records);
+      });
+  }, []);
+
+  // calculate listings from each filter
+  // RETURNS : object of shape {
+  //   [optionType] : {
+  //     label: [option]
+  //     amount: [numberOfListings]
+  //   }
+  // }
+  const getFilterOptionsAndAmounts = () => {
+    // options for each type of filter
+    // to add a new option, just change up here
+    const sellByOptions = ['Past Sell By Date', 'Before Sell By Date'];
+    const availabilityOptions = ['Available', 'Sold Out'];
+    const produceCategoryOptions = ['Vegetable', 'Fruit', 'Legume', 'Grain', 'Oat'];
+    return {
+
+      sellByOptions: sellByOptions.map((option) => (
+        {
+          label: option,
+          amount: cardListings.filter((listing) => (
+            filterBySellByDate(listing, option.toLowerCase())
+          )).length,
+        }
+      )),
+      availabilityOptions: availabilityOptions.map((option) => (
+        {
+          label: option,
+          amount: cardListings.filter((listing) => (
+            filterByAvailability(listing, option.toLowerCase())
+          )).length,
+        }
+      )),
+      produceCategoryOptions: produceCategoryOptions.map((option) => (
+        {
+          label: option,
+          amount: cardListings.filter((listing) => (
+            filterByProduceCategory(listing, option.toLowerCase())
+          )).length,
+        }
+      )),
+    };
+  };
+  // filter listings by each possible filter
+  const filteredListings = cardListings.filter((listing) => (
+    filterByProduceCategory(listing, produceCategoryFilter)
+    && filterBySellByDate(listing, sellByFilter)
+    && filterByAvailability(listing, availabilityFilter)
+    && filterByPrice(listing, priceFilter)
+  ));
+  // sort by provided sortOrder if there is one, otherwise no sort
+  filteredListings.sort((firstListing, secondListing) => (
+    sortOrder ? firstListing.fields[sortOrder] > secondListing.fields[sortOrder] : true
+  ));
   function createRecord(rec) {
     const record = {
       fields: rec,
@@ -49,7 +194,14 @@ export default function InventoryManagerScreen() {
     });
   }
   function editRecord(rec) {
-    const { 'listing id': id, user, ...fields } = rec;
+    // take out any lookup fields before sending the update
+    const {
+      'listing id': id,
+      user,
+      'produce category': category,
+      'produce name': name,
+      ...fields
+    } = rec;
     const record = {
       id,
       fields,
@@ -69,10 +221,12 @@ export default function InventoryManagerScreen() {
       });
     });
   }
-  function deleteSelectedRecords() {
-    const ids = Object.keys(selectedCards).filter((key) => (
+  const getSelectedRecordIDs = () => (
+    Object.keys(selectedCards).filter((key) => (
       selectedCards[key] === true
-    ));
+    ))
+  );
+  function deleteRecords(ids) {
     if (ids.length === 0) {
       return;
     }
@@ -95,33 +249,12 @@ export default function InventoryManagerScreen() {
   function updateSelectedCards(key, value) {
     setSelectedCards({ ...selectedCards, [key]: value });
   }
-  useEffect(() => {
-    base('Listings')
-      .select({
-        view: 'Grid view',
-        filterByFormula: `{user} = "${store.getState().userData.user.id}"`,
-      })
-      .all().then((records) => {
-        setCardListings(records);
-        records.forEach((listing) => {
-          initialCardSelect = { ...initialCardSelect, [listing.id]: false };
-        });
-        setSelectedCards(initialCardSelect);
-      });
-  }, []);
-  useEffect(() => {
-    base('Produce Type')
-      .select({ view: 'Grid view' })
-      .all().then((records) => {
-        setProduceTypes(records);
-      });
-  }, []);
   return (
     <>
       <div className={classes.root}>
         <Grid container spacing={0} className={classes.dashboard}>
           <Grid item xs={1} />
-          <Grid container item spacing={3} xs={9} alignItems="center">
+          <Grid container item spacing={0} xs={9} alignContent="flex-start">
             <Grid item xs={12}>
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
@@ -133,20 +266,36 @@ export default function InventoryManagerScreen() {
                 <AddListingButton createRecord={createRecord} produceTypes={produceTypes} />
               </Grid>
               <Grid item xs={2}>
-                <DeleteButton deleteRecords={deleteSelectedRecords} />
+                <DeleteButton deleteRecords={() => deleteRecords(getSelectedRecordIDs())} />
               </Grid>
             </Grid>
             <Grid container item xs={12} className={classes.listings}>
               <ListingsView
-                cardListings={cardListings}
+                cardListings={filteredListings}
                 selectedCards={selectedCards}
                 updateSelectedCards={updateSelectedCards}
                 editRecord={editRecord}
+                deleteRecord={deleteRecords}
                 produceTypes={produceTypes}
               />
             </Grid>
           </Grid>
-          <Grid item xs={2} />
+          <Grid item xs={2}>
+            <InventoryManagerSidebar
+              updateProduceCategoryFilter={
+                (option) => updateFilter(option, produceCategoryFilter, setProduceCategoryFilter)
+              }
+              updateSellByFilter={
+                (option) => updateFilter(option, sellByFilter, setSellByFilter)
+              }
+              updateAvailabilityFilter={
+                (option) => updateFilter(option, availabilityFilter, setAvailabilityFilter)
+              }
+              updatePriceFilter={setPriceFilter}
+              updateSortOrder={setSortOrder}
+              optionsInfo={getFilterOptionsAndAmounts()}
+            />
+          </Grid>
         </Grid>
       </div>
     </>

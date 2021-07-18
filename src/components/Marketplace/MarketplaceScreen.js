@@ -8,7 +8,6 @@ import MarketplaceHeader from './Header/MarketplaceHeader';
 import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
 import { base } from '../../lib/airtable/airtable';
 import '../../styles/fonts.css';
-import { base } from '../../lib/airtable/airtable';
 import { store } from '../../lib/redux/store';
 
 const useStyles = makeStyles({
@@ -21,7 +20,6 @@ const useStyles = makeStyles({
     width: '21%',
   },
 });
-
 
 const INITIAL_POPUP_PRODUCE = {
   crop: '',

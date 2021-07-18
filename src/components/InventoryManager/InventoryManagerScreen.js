@@ -258,12 +258,11 @@ export default function InventoryManagerScreen() {
                 Seller Dashboard
               </Typography>
             </Grid>
-            <Grid container item direction="row" spacing={1} xs={12}>
-              <Grid item xs={8} />
-              <Grid item xs={2}>
+            <Grid container item spacing={1} xs={12} justify="flex-end">
+              <Grid item>
                 <AddListingButton createRecord={createRecord} produceTypes={produceTypes} />
               </Grid>
-              <Grid item xs={2}>
+              <Grid item>
                 <DeleteButton deleteRecords={() => deleteRecords(getSelectedRecordIDs())} />
               </Grid>
             </Grid>

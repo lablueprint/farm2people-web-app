@@ -18,13 +18,14 @@ const useStyles = makeStyles({
   dollarIcon: {
     fontFamily: 'Work Sans',
     fontSize: '.7rem',
+    marginLeft: '-.4rem',
   },
   inputText: {
     fontFamily: 'Work Sans',
-    fontSize: '.9rem',
+    fontSize: '.75rem',
   },
   inputContainer: {
-    maxWidth: '5rem',
+    maxWidth: '4rem',
   },
   middleText: {
     fontFamily: 'Work Sans',
@@ -32,25 +33,16 @@ const useStyles = makeStyles({
   },
   applyButton: {
     color: '#373737',
-    borderRadius: '.5rem',
+    borderRadius: '.3rem',
     fontFamily: 'Work Sans',
     fontWeight: 'lighter',
-    fontSize: '0.9rem',
+    fontSize: '0.75rem',
     backgroundColor: '#E7F3E5',
     '&:hover': {
       backgroundColor: green[300],
     },
-  },
-  // Styling for menu items
-  filterOptionText: {
-    fontFamily: 'Work Sans',
-    fontSize: '.9rem',
-    color: '#373737',
-  },
-  filterNumText: {
-    fontFamily: 'Work Sans',
-    fontSize: '.9rem',
-    color: '#2D5496',
+    maxWidth: '3rem',
+    maxHeight: '3rem',
   },
   padding: {
     paddingLeft: '.5rem',
@@ -109,13 +101,11 @@ export default function PriceMenu({ updatePriceFilter }) {
       </Grid>
       <Grid
         container
-        direction="row"
         justify="center"
-        alignItems="center"
-        alignContent="center"
+        spacing={1}
         className={classes.minMaxContainer}
       >
-        <Grid item xs={3} container justify="flex-end">
+        <Grid item>
           <TextField
             placeholder="Min"
             variant="outlined"
@@ -132,10 +122,10 @@ export default function PriceMenu({ updatePriceFilter }) {
             className={classes.inputContainer}
           />
         </Grid>
-        <Grid item xs={1} container justify="center">
+        <Grid item>
           <Typography className={classes.middleText}>to</Typography>
         </Grid>
-        <Grid item xs={3} container justify="flex-start">
+        <Grid item>
           <TextField
             placeholder="Max"
             variant="outlined"
@@ -152,7 +142,7 @@ export default function PriceMenu({ updatePriceFilter }) {
             className={classes.inputContainer}
           />
         </Grid>
-        <Grid item xs={4} container justify="center">
+        <Grid item>
           <Button
             className={classes.applyButton}
             variant="contained"

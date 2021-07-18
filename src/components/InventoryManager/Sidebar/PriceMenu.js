@@ -79,7 +79,6 @@ export default function PriceMenu({ updatePriceFilter }) {
     setMax(0);
     updatePriceFilter([-1, -1]);
   };
-
   // TODO : add functionality for only specifying one of min or max
   const handleApply = () => {
     if (min.toString().length > 0 && max.toString().length > 0

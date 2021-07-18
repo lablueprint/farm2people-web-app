@@ -41,7 +41,6 @@ export default function InventoryManagerScreen() {
   const [sellByFilter, setSellByFilter] = useState([]);
   const [availabilityFilter, setAvailabilityFilter] = useState([]);
   const [sortOrder, setSortOrder] = useState('sell by date');
-  console.log(sortOrder);
   const [priceFilter, setPriceFilter] = useState([-1, -1]);
   // remove filter if it is in the array, add it if not
   const updateFilter = (option, filter, setFilter) => {
@@ -221,10 +220,12 @@ export default function InventoryManagerScreen() {
       });
     });
   }
-  function deleteSelectedRecords() {
-    const ids = Object.keys(selectedCards).filter((key) => (
+  const getSelectedRecordIDs = () => (
+    Object.keys(selectedCards).filter((key) => (
       selectedCards[key] === true
-    ));
+    ))
+  );
+  function deleteRecords(ids) {
     if (ids.length === 0) {
       return;
     }
@@ -263,7 +264,7 @@ export default function InventoryManagerScreen() {
                 <AddListingButton createRecord={createRecord} produceTypes={produceTypes} />
               </Grid>
               <Grid item xs={2}>
-                <DeleteButton deleteRecords={deleteSelectedRecords} />
+                <DeleteButton deleteRecords={() => deleteRecords(getSelectedRecordIDs())} />
               </Grid>
             </Grid>
             <Grid container item className={classes.listings}>
@@ -272,6 +273,7 @@ export default function InventoryManagerScreen() {
                 selectedCards={selectedCards}
                 updateSelectedCards={updateSelectedCards}
                 editRecord={editRecord}
+                deleteRecord={deleteRecords}
                 produceTypes={produceTypes}
               />
             </Grid>

@@ -8,7 +8,6 @@ import MarketplaceHeader from './Header/MarketplaceHeader';
 import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
 import { base } from '../../lib/airtable/airtable';
 import '../../styles/fonts.css';
-import { base } from '../../lib/airtable/airtable';
 import { store } from '../../lib/redux/store';
 
 const useStyles = makeStyles({
@@ -22,7 +21,6 @@ const useStyles = makeStyles({
   },
 });
 
-
 const INITIAL_POPUP_PRODUCE = {
   crop: '',
   price: 0,
@@ -32,7 +30,6 @@ const INITIAL_POPUP_PRODUCE = {
   listingID: '',
   farmID: '',
 };
-
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
   const [filteredFarms, setFilteredFarms] = useState([]);

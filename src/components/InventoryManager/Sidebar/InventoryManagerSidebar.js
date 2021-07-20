@@ -7,23 +7,14 @@ import PriceMenu from './PriceMenu';
 import SortMenu from './SortMenu';
 
 const useStyles = makeStyles({
-  marketplaceText: {
-    fontFamily: 'Work Sans',
-    fontSize: '1rem',
-    color: '#373737',
-  },
   filterText: {
     fontFamily: 'Work Sans',
-    fontSize: '1.5rem',
+    fontSize: '1.2rem',
     color: '#373737',
-  },
-  pageText: {
-    fontFamily: 'Work Sans',
-    fontSize: '1rem',
-    fontWeight: 'bold',
+    paddingLeft: '.5rem',
   },
   divider: {
-    width: '80%',
+    width: '100%',
   },
 });
 
@@ -42,14 +33,13 @@ export default function InventoryManagerSidebar({
         </Typography>
       </Grid>
       <Grid container item xs={12}>
-        {/* TODO: Item type menu only shows for agency buyer view */}
         <FilterMenu
           menuTitle="Sell By Date"
           filterOptions={optionsInfo.sellByOptions}
           updateFilter={updateSellByFilter}
         />
       </Grid>
-      <Divider variant="middle" className={classes.divider} />
+      <Divider className={classes.divider} />
       <Grid container item xs={12}>
         <FilterMenu
           menuTitle="Availability"
@@ -57,7 +47,7 @@ export default function InventoryManagerSidebar({
           updateFilter={updateAvailabilityFilter}
         />
       </Grid>
-      <Divider variant="middle" className={classes.divider} />
+      <Divider className={classes.divider} />
       <Grid container item xs={12}>
         <FilterMenu
           menuTitle="Produce Type"
@@ -65,7 +55,7 @@ export default function InventoryManagerSidebar({
           updateFilter={updateProduceCategoryFilter}
         />
       </Grid>
-      <Divider variant="middle" className={classes.divider} />
+      <Divider className={classes.divider} />
       <Grid container item xs={12}>
         <SortMenu
           sortOptions={[
@@ -78,7 +68,7 @@ export default function InventoryManagerSidebar({
           updateSortOrder={updateSortOrder}
         />
       </Grid>
-      <Divider variant="middle" className={classes.divider} />
+      <Divider className={classes.divider} />
       <Grid container item xs={12}>
         <PriceMenu updatePriceFilter={updatePriceFilter} />
       </Grid>

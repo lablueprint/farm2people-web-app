@@ -26,13 +26,12 @@ const useStyles = makeStyles({
     border: '1px solid #F1F2F2',
     boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
     borderRadius: '8px',
-    width: '95%',
-    maxWidth: '400px',
+    width: '250px',
   },
   listingCardPicture: {
     height: '200px',
-    objectFit: 'cover',
-    width: '100%',
+    objectFit: 'scale-down',
+    width: '250px',
   },
   listingCardContent: {
     backgroundColor: '#ffffff',

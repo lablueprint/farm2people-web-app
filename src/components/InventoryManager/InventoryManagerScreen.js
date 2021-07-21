@@ -22,12 +22,7 @@ const useStyles = makeStyles({
   text: {
     fontFamily: 'Work Sans',
   },
-  listings: {
-    border: '1px solid #F1F2F2',
-    boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
-    borderRadius: '10px',
-    marginTop: '3%',
-  },
+
 });
 
 let initialCardSelect = {};
@@ -41,6 +36,7 @@ export default function InventoryManagerScreen() {
   const [availabilityFilter, setAvailabilityFilter] = useState([]);
   const [sortOrder, setSortOrder] = useState('');
   const [priceFilter, setPriceFilter] = useState([-1, -1]);
+  const [privatizedFilter, setPrivatizedFilter] = useState();
   // remove filter if it is in the array, add it if not
   const updateFilter = (option, filter, setFilter) => {
     // reset array if option is an empty array
@@ -105,7 +101,12 @@ export default function InventoryManagerScreen() {
     }
     return condition;
   };
-
+  const filterByPrivatized = (listing, filter) => {
+    if (filter !== undefined) {
+      return (listing.fields.privatized || false) === filter;
+    }
+    return true;
+  };
   useEffect(() => {
     base('Listings')
       .select({
@@ -169,12 +170,28 @@ export default function InventoryManagerScreen() {
       )),
     };
   };
+  const getTabLabelsAndAmounts = () => {
+    const tabs = [
+      { label: 'All Listings', filter: undefined },
+      { label: 'Privatize', filter: true },
+      { label: 'Public', filter: false },
+    ];
+    return tabs.map((tab) => (
+      {
+        ...tab,
+        amount: cardListings.filter((listing) => (
+          filterByPrivatized(listing, tab.filter)
+        )).length,
+      }
+    ));
+  };
   // filter listings by each possible filter
   const filteredListings = cardListings.filter((listing) => (
     filterByProduceCategory(listing, produceCategoryFilter)
     && filterBySellByDate(listing, sellByFilter)
     && filterByAvailability(listing, availabilityFilter)
     && filterByPrice(listing, priceFilter)
+    && filterByPrivatized(listing, privatizedFilter)
   ));
   // sort by provided sortOrder if there is one, otherwise no sort
   filteredListings.sort((firstListing, secondListing) => (
@@ -269,7 +286,7 @@ export default function InventoryManagerScreen() {
                 <DeleteButton deleteRecords={() => deleteRecords(getSelectedRecordIDs())} />
               </Grid>
             </Grid>
-            <Grid container item xs={12} className={classes.listings}>
+            <Grid container item xs={12} className={classes.listings} spacing={0}>
               <ListingsView
                 cardListings={filteredListings}
                 selectedCards={selectedCards}
@@ -277,6 +294,8 @@ export default function InventoryManagerScreen() {
                 editRecord={editRecord}
                 deleteRecord={deleteRecords}
                 produceTypes={produceTypes}
+                tabLabels={getTabLabelsAndAmounts()}
+                setPrivatizedFilter={setPrivatizedFilter}
               />
             </Grid>
           </Grid>

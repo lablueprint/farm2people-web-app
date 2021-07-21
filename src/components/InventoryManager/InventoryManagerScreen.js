@@ -18,6 +18,7 @@ const useStyles = makeStyles({
   dashboard: {
     marginTop: '2%',
     marginBottom: '2%',
+    paddingLeft: '5rem',
   },
   text: {
     fontFamily: 'Work Sans',
@@ -107,6 +108,7 @@ export default function InventoryManagerScreen() {
     }
     return true;
   };
+
   useEffect(() => {
     base('Listings')
       .select({
@@ -120,8 +122,6 @@ export default function InventoryManagerScreen() {
         });
         setSelectedCards(initialCardSelect);
       });
-  }, []);
-  useEffect(() => {
     base('Produce Type')
       .select({ view: 'Grid view' })
       .all().then((records) => {
@@ -195,7 +195,7 @@ export default function InventoryManagerScreen() {
   ));
   // sort by provided sortOrder if there is one, otherwise no sort
   filteredListings.sort((firstListing, secondListing) => (
-    sortOrder ? firstListing.fields[sortOrder] > secondListing.fields[sortOrder] : true
+    firstListing.fields[sortOrder] > secondListing.fields[sortOrder] ? 1 : -1
   ));
   function createRecord(rec) {
     const record = {
@@ -269,24 +269,22 @@ export default function InventoryManagerScreen() {
   return (
     <>
       <div className={classes.root}>
-        <Grid container spacing={0} className={classes.dashboard}>
-          <Grid item xs={1} />
+        <Grid container spacing={3} className={classes.dashboard} justify="center">
           <Grid container item spacing={0} xs={9} alignContent="flex-start">
-            <Grid item xs={12}>
+            <Grid container item xs={12} alignContent="flex-start">
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
               </Typography>
             </Grid>
-            <Grid container item direction="row" spacing={1} xs={12}>
-              <Grid item xs={8} />
-              <Grid item xs={2}>
+            <Grid container item spacing={1} xs={12} justify="flex-end">
+              <Grid item>
                 <AddListingButton createRecord={createRecord} produceTypes={produceTypes} />
               </Grid>
-              <Grid item xs={2}>
+              <Grid item>
                 <DeleteButton deleteRecords={() => deleteRecords(getSelectedRecordIDs())} />
               </Grid>
             </Grid>
-            <Grid container item xs={12} className={classes.listings} spacing={0}>
+            <Grid container item className={classes.listings}>
               <ListingsView
                 cardListings={filteredListings}
                 selectedCards={selectedCards}
@@ -299,21 +297,23 @@ export default function InventoryManagerScreen() {
               />
             </Grid>
           </Grid>
-          <Grid item xs={2}>
-            <InventoryManagerSidebar
-              updateProduceCategoryFilter={
-                (option) => updateFilter(option, produceCategoryFilter, setProduceCategoryFilter)
-              }
-              updateSellByFilter={
-                (option) => updateFilter(option, sellByFilter, setSellByFilter)
-              }
-              updateAvailabilityFilter={
-                (option) => updateFilter(option, availabilityFilter, setAvailabilityFilter)
-              }
-              updatePriceFilter={setPriceFilter}
-              updateSortOrder={setSortOrder}
-              optionsInfo={getFilterOptionsAndAmounts()}
-            />
+          <Grid container item xs={3} justify="center">
+            <Grid item md={11} lg={10}>
+              <InventoryManagerSidebar
+                updateProduceCategoryFilter={
+                  (option) => updateFilter(option, produceCategoryFilter, setProduceCategoryFilter)
+                }
+                updateSellByFilter={
+                  (option) => updateFilter(option, sellByFilter, setSellByFilter)
+                }
+                updateAvailabilityFilter={
+                  (option) => updateFilter(option, availabilityFilter, setAvailabilityFilter)
+                }
+                updatePriceFilter={setPriceFilter}
+                updateSortOrder={setSortOrder}
+                optionsInfo={getFilterOptionsAndAmounts()}
+              />
+            </Grid>
           </Grid>
         </Grid>
       </div>

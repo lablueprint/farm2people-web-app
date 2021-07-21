@@ -9,74 +9,57 @@ import { green } from '@material-ui/core/colors';
 const useStyles = makeStyles({
   menuTitleText: {
     fontFamily: 'Work Sans',
-    fontSize: '1.2rem',
+    fontSize: '1.1rem',
     color: '#373737',
     fontWeight: 'bold',
     paddingTop: '.5rem',
     paddingBottom: '.5rem',
   },
-  iconColour: {
-    color: '#2D5496',
-  },
   dollarIcon: {
     fontFamily: 'Work Sans',
-    fontSize: '.9rem',
-    fontWeight: 'bold',
+    fontSize: '.7rem',
+    marginLeft: '-.4rem',
   },
   inputText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.75rem',
   },
   inputContainer: {
-    maxWidth: '5rem',
+    maxWidth: '4rem',
   },
   middleText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
   },
   applyButton: {
     color: '#373737',
-    borderRadius: '.5rem',
+    borderRadius: '.3rem',
     fontFamily: 'Work Sans',
     fontWeight: 'lighter',
-    fontSize: '0.9rem',
+    fontSize: '0.75rem',
     backgroundColor: '#E7F3E5',
     '&:hover': {
       backgroundColor: green[300],
     },
-  },
-  // Styling for menu items
-  filterOptionText: {
-    fontFamily: 'Work Sans',
-    fontSize: '1rem',
-    color: '#373737',
-  },
-  filterNumText: {
-    fontFamily: 'Work Sans',
-    fontSize: '1rem',
-    color: '#2D5496',
+    maxWidth: '3rem',
+    maxHeight: '3rem',
   },
   padding: {
-    paddingLeft: '1rem',
+    paddingLeft: '.5rem',
   },
   resetText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
+    fontSize: '.9rem',
     color: '#373737',
     textTransform: 'none',
   },
 });
 
-/* Menu in the sidebar for selecting filters, takes in array of filter options */
+/* Menu in the sidebar for selecting filters, takes in function to update price min/max */
 export default function PriceMenu({ updatePriceFilter }) {
   const classes = useStyles();
-  // Sort priceOptions in asc order + get highest price for default max
   const [min, setMin] = useState(0);
   const [max, setMax] = useState(0);
-
-  /* Sets checkboxes to checked/unchecked when toggled */
-
-  /* Sets min + max when input entered */
   const handleMinChange = (event) => {
     setMin(event.target.value);
   };
@@ -88,13 +71,10 @@ export default function PriceMenu({ updatePriceFilter }) {
     setMax(0);
     updatePriceFilter([-1, -1]);
   };
-  // When apply clicked, checks if min/max are valid + limits results
   // TODO : add functionality for only specifying one of min or max
   const handleApply = () => {
-    // If valid (non-neg #, max >= min), set actual min/max + limit results
     if (min.toString().length > 0 && max.toString().length > 0
-      && !Number.isNaN(min) && !Number.isNaN(max)
-      && Number(min) >= 0 && Number(max) >= min) {
+      && !Number.isNaN(min) && !Number.isNaN(max)) {
       updatePriceFilter([min, max]);
     }
   };
@@ -119,16 +99,13 @@ export default function PriceMenu({ updatePriceFilter }) {
         </Grid>
         <Grid container item xs={2} />
       </Grid>
-      {/* Min-max manual input + apply button */}
       <Grid
         container
-        direction="row"
         justify="center"
-        alignItems="center"
-        alignContent="center"
+        spacing={1}
         className={classes.minMaxContainer}
       >
-        <Grid item xs={3} container justify="flex-end">
+        <Grid item>
           <TextField
             placeholder="Min"
             variant="outlined"
@@ -145,10 +122,10 @@ export default function PriceMenu({ updatePriceFilter }) {
             className={classes.inputContainer}
           />
         </Grid>
-        <Grid item xs={1} container justify="center">
+        <Grid item>
           <Typography className={classes.middleText}>to</Typography>
         </Grid>
-        <Grid item xs={3} container justify="flex-start">
+        <Grid item>
           <TextField
             placeholder="Max"
             variant="outlined"
@@ -165,12 +142,12 @@ export default function PriceMenu({ updatePriceFilter }) {
             className={classes.inputContainer}
           />
         </Grid>
-        <Grid item xs={4} container justify="center">
+        <Grid item>
           <Button
             className={classes.applyButton}
             variant="contained"
             color="primary"
-            style={{ textTransform: 'none' }} // Removes auto-caps
+            style={{ textTransform: 'none' }}
             size="medium"
             onClick={handleApply}
             disableElevation

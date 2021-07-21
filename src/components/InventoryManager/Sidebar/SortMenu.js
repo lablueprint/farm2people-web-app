@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 const useStyles = makeStyles({
   menuTitleText: {
     fontFamily: 'Work Sans',
-    fontSize: '1.2rem',
+    fontSize: '1.1rem',
     color: '#373737',
     fontWeight: 'bold',
     paddingTop: '.5rem',
@@ -16,16 +16,16 @@ const useStyles = makeStyles({
   },
   optionText: {
     fontFamily: 'Work Sans',
-    fontSize: '1rem',
-    fontWeight: 'bold',
+    fontSize: '.8rem',
+    marginLeft: '-.4rem',
   },
   optionMenu: {
     width: '100%',
     paddingBottom: '1rem',
   },
   padding: {
-    paddingLeft: '1rem',
-    paddingRight: '1rem',
+    paddingLeft: '.5rem',
+    paddingRight: '.5rem',
   },
 });
 

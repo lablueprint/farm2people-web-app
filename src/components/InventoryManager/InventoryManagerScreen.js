@@ -173,8 +173,8 @@ export default function InventoryManagerScreen() {
   const getTabLabelsAndAmounts = () => {
     const tabs = [
       { label: 'All Listings', filter: undefined },
-      { label: 'Privatize', filter: true },
       { label: 'Public', filter: false },
+      { label: 'Private', filter: true },
     ];
     return tabs.map((tab) => (
       {
@@ -270,7 +270,7 @@ export default function InventoryManagerScreen() {
     <>
       <div className={classes.root}>
         <Grid container spacing={3} className={classes.dashboard} justify="center">
-          <Grid container item spacing={0} xs={9} alignContent="flex-start">
+          <Grid container item spacing={3} xs={9} alignContent="flex-start">
             <Grid container item xs={12} alignContent="flex-start">
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
@@ -284,7 +284,7 @@ export default function InventoryManagerScreen() {
                 <DeleteButton deleteRecords={() => deleteRecords(getSelectedRecordIDs())} />
               </Grid>
             </Grid>
-            <Grid container item className={classes.listings}>
+            <Grid container item className={classes.listings} xs={12}>
               <ListingsView
                 cardListings={filteredListings}
                 selectedCards={selectedCards}

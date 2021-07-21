@@ -1,8 +1,4 @@
 import React, { useEffect, useState } from 'react';
-<<<<<<< HEAD
-// import Airtable from 'airtable';
-=======
->>>>>>> origin/master
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 import AddCartPopup from './Checkout/AddCartPopup';
@@ -25,16 +21,6 @@ const useStyles = makeStyles({
   },
 });
 
-<<<<<<< HEAD
-// Airtable set-up
-// const airtableConfig = {
-//   apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
-//   baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
-// };
-
-// const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
-
-=======
 const INITIAL_POPUP_PRODUCE = {
   crop: '',
   price: 0,
@@ -44,7 +30,6 @@ const INITIAL_POPUP_PRODUCE = {
   listingID: '',
   farmID: '',
 };
->>>>>>> origin/master
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
   const [filteredFarms, setFilteredFarms] = useState([]);

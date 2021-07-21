@@ -9,11 +9,11 @@ import PropTypes from 'prop-types';
 
 const useStyles = makeStyles({
   listingCard: {
-    maxWidth: '90%',
+    maxWidth: '100%',
     height: '235px',
   },
   selectedCard: {
-    maxWidth: '90%',
+    maxWidth: '100%',
     height: '235px',
     border: '2px solid gray',
   },
@@ -22,6 +22,7 @@ const useStyles = makeStyles({
     objectFit: 'cover',
     width: '100%',
     display: 'flex',
+    borderBottom: '.08rem solid #171717',
   },
   listingCardContent: {
     textAlign: 'center',

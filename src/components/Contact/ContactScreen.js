@@ -133,7 +133,6 @@ const INITIAL_FORM_STATE = {
 
 export default function ContactScreen() {
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
-
   const onChange = (event) => {
     event.preventDefault();
     setFormState(
@@ -143,7 +142,6 @@ export default function ContactScreen() {
       },
     );
   };
-
   const onSubmit = (event) => {
     event.preventDefault();
     base('Email').create([{
@@ -161,7 +159,6 @@ export default function ContactScreen() {
   };
   const classes = useStyles();
   return (
-
     <div className={classes.root}>
       <img src={ContactBanner} alt="" className={classes.contactBanner} />
       <div>
@@ -175,7 +172,6 @@ export default function ContactScreen() {
         <img className={classes.img} src={TW} alt="" />
       </div>
       <div className={classes.topList}>
-
         <ul className={classes.list}>
           <li className={classes.listItemTitle}>
             Location
@@ -190,7 +186,6 @@ export default function ContactScreen() {
             Operating Times
           </li>
         </ul>
-
         <ul className={classes.list}>
           <li className={classes.listItem}>
             Los Angeles - CA
@@ -226,7 +221,6 @@ export default function ContactScreen() {
                   Saturday
                 </li>
               </ul>
-
               <ul className={classes.list}>
                 <li className={classes.listItem}>
                   9AM - 5PM
@@ -254,7 +248,6 @@ export default function ContactScreen() {
           </li>
         </ul>
       </div>
-
       <form onSubmit={onSubmit}>
         <div className={classes.lower}>
           <br />
@@ -368,7 +361,6 @@ export default function ContactScreen() {
                   placeholder="Message"
                 />
               </Grid>
-
               <Grid item xs={12}>
                 <Button classname={classes.btn} color="primary" variant="contained" type="submit">
                   Submit

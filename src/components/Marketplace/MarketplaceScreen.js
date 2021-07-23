@@ -57,6 +57,10 @@ export default function MarketplaceScreen() {
       .then((produceRecords) => {
         const processedProduceRecords = [];
         produceRecords.forEach((record) => {
+          // If this record is private, skip it so it's not displayed
+          if (record.fields.privatized) {
+            return;
+          }
           const pricePerGroup = record.fields['standard price per grouped produce type'] || 0;
           const agencyPricePerGroup = record.fields['agency price per grouped produce type'] || 0;
           const groupPerPallet = record.fields['grouped produce type per pallet'] || 0;

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
@@ -94,6 +95,14 @@ export default function MarketplaceScreen() {
   const farmSeasonFilters = ['Fall', 'Winter', 'Summer', 'Spring'];
   const [itemsPerFarmSeason, setSeasonItems] = useState([]);
 
+  // Manages item type filtering TODO: remove disable unused vars
+  const [checkedItemTypes, setCheckedItemTypes] = useState([]);
+  const onItemFilterChange = (newFilters) => {
+    setCheckedItemTypes(newFilters);
+  };
+  const itemTypeFilters = ['Agency Price', 'Standard Items'];
+  const [itemsPerItemType, setItemsPerItemType] = useState([]);
+
   // Manages produce type filtering
   const [prodFilters, setProdFilters] = useState([]);
   // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
@@ -137,6 +146,11 @@ export default function MarketplaceScreen() {
     });
     setSeasonItems(perSeason);
 
+    // Get items per item type (agency or standard)
+    const numAgencyItems = produceListings.filter((listing) => listing.hasAgencyPrice).length;
+    const numStandardItems = produceListings.length - numAgencyItems;
+    setItemsPerItemType([numAgencyItems, numStandardItems]);
+
     // Get items per produce type
     const perProdType = [];
     produceTypeFilters.forEach((prodType) => {
@@ -169,7 +183,7 @@ export default function MarketplaceScreen() {
     });
     setPriceItems(perPrice);
   }
-  // TODO: sort by, item type
+  // TODO: sort by
 
   // Go through the selected filter ranges + check if this price w/in any of them
   function inFilterPriceRange(num) {
@@ -217,6 +231,18 @@ export default function MarketplaceScreen() {
         (listing) => inFilterPriceRange(listing.palletPrice),
       );
     }
+    // Only filter if 1 of standard/agency options checked (if both, filtering is redundant)
+    if (checkedItemTypes.length === 1) {
+      if (checkedItemTypes[0] === 'Agency Price') {
+        filteredListings = filteredListings.filter(
+          (listing) => listing.hasAgencyPrice === true,
+        );
+      } else {
+        filteredListings = filteredListings.filter(
+          (listing) => listing.hasAgencyPrice === false,
+        );
+      }
+    }
     setFilteredProduce(filteredListings);
   }
 
@@ -229,14 +255,15 @@ export default function MarketplaceScreen() {
   useEffect(() => {
     getNumItemsPerCategory();
   }, [produceListings]);
+
   // Make sure that filterProduce + isfilter bool updates whenever any of the filters change
   const [isFiltered, setIsFiltered] = useState(false); // True if any filter types are checked
   useEffect(() => {
     filterProduce();
     const newIsFiltered = !(seasonFilters.length === 0 && prodFilters.length === 0
-      && priceFilters.length === 0 && appliedRange.length === 0);
+      && priceFilters.length === 0 && appliedRange.length === 0 && checkedItemTypes.length === 0);
     setIsFiltered(newIsFiltered);
-  }, [seasonFilters, prodFilters, priceFilters, appliedRange]);
+  }, [seasonFilters, prodFilters, priceFilters, appliedRange, checkedItemTypes]);
 
   const classes = useStyles();
 
@@ -324,6 +351,9 @@ export default function MarketplaceScreen() {
       <Grid item className={classes.sidebar}>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar
+          itemTypeFilters={itemTypeFilters}
+          itemsPerItemType={itemsPerItemType}
+          onItemFilterChange={onItemFilterChange}
           prodTypeFilters={produceTypeFilters}
           itemsPerProdType={itemsPerProdType}
           onProduceFilterChange={onProduceFilterChange}

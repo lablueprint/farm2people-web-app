@@ -75,6 +75,7 @@ const useStyles = makeStyles({
   amountIcon: {
     position: 'absolute',
     right: '1rem',
+    alignSelf: 'center',
   },
   startIcon: {
     position: 'absolute',
@@ -90,8 +91,7 @@ const useStyles = makeStyles({
     fontFamily: 'Work Sans',
     fontColor: '#000000',
     whiteSpace: 'nowrap',
-    fontSize: '1rem',
-    display: 'inline',
+    display: 'flex',
   },
   text: {
     fontFamily: 'Work Sans',

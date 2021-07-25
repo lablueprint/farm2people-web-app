@@ -1,7 +1,6 @@
 /* Container for all Cart Screen display components */
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-// import Airtable from 'airtable';
 import {
   Card, CardContent, Grid, Typography, ButtonBase, makeStyles,
 } from '@material-ui/core';

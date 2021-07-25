@@ -9,8 +9,9 @@ import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
 import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
 import MarketplaceBreadcrumbs from './MarketplaceBreadcrumbs';
-import '../../styles/fonts.css';
 import { base } from '../../lib/airtable/airtable';
+import '../../styles/fonts.css';
+import { store } from '../../lib/redux/store';
 
 const useStyles = makeStyles({
   root: {
@@ -52,6 +53,8 @@ export default function MarketplaceScreen({
   const [popupProduce, setPopupProduce] = useState(INITIAL_POPUP_PRODUCE);
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+
+  const getInitialRole = () => (store.getState().userData == null ? '' : store.getState().userData.user.fields['user type']);
 
   // SEARCH FUNCTIONS
   const search = () => {
@@ -407,7 +410,9 @@ export default function MarketplaceScreen({
                 produceID={produce.produceID || null}
                 farmID={produce.farmID || null}
                 palletPrice={produce.palletPrice}
+                palletsAvailable={produce.palletsAvailable}
                 season={produce.season}
+                hasAgencyPrice={produce.hasAgencyPrice}
               />
             ))
           }
@@ -424,6 +429,7 @@ export default function MarketplaceScreen({
                 palletPrice={produce.palletPrice}
                 palletsAvailable={produce.palletsAvailable}
                 season={produce.season}
+                hasAgencyPrice={produce.hasAgencyPrice}
               />
             ))
           }

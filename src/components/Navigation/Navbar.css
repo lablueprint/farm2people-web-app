@@ -5,7 +5,7 @@ integrate media queries with makeStyles */
   position: sticky; 
   top: 0;
   background: white;
-  z-index:1; 
+  z-index:4; 
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
   min-height: 90px;
   display: flex;

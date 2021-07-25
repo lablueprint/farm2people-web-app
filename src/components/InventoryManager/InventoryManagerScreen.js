@@ -23,12 +23,7 @@ const useStyles = makeStyles({
   text: {
     fontFamily: 'Work Sans',
   },
-  listings: {
-    border: '1px solid #F1F2F2',
-    boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
-    borderRadius: '10px',
-    marginTop: '3%',
-  },
+
 });
 
 let initialCardSelect = {};
@@ -40,8 +35,9 @@ export default function InventoryManagerScreen() {
   const [produceCategoryFilter, setProduceCategoryFilter] = useState([]);
   const [sellByFilter, setSellByFilter] = useState([]);
   const [availabilityFilter, setAvailabilityFilter] = useState([]);
-  const [sortOrder, setSortOrder] = useState('sell by date');
+  const [sortOrder, setSortOrder] = useState('');
   const [priceFilter, setPriceFilter] = useState([-1, -1]);
+  const [privatizedFilter, setPrivatizedFilter] = useState();
   // remove filter if it is in the array, add it if not
   const updateFilter = (option, filter, setFilter) => {
     // reset array if option is an empty array
@@ -99,12 +95,18 @@ export default function InventoryManagerScreen() {
     let condition = true;
     const price = listing.fields['standard price per grouped produce type'];
     if (filter[0] > 0) {
-      condition = condition && price >= priceFilter[0];
+      condition = condition && price > priceFilter[0];
     }
     if (filter[1] > 0) {
-      condition = condition && price <= priceFilter[1];
+      condition = condition && price < priceFilter[1];
     }
     return condition;
+  };
+  const filterByPrivatized = (listing, filter) => {
+    if (filter !== undefined) {
+      return (listing.fields.privatized || false) === filter;
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -168,12 +170,28 @@ export default function InventoryManagerScreen() {
       )),
     };
   };
+  const getTabLabelsAndAmounts = () => {
+    const tabs = [
+      { label: 'All Listings', filter: undefined },
+      { label: 'Public', filter: false },
+      { label: 'Private', filter: true },
+    ];
+    return tabs.map((tab) => (
+      {
+        ...tab,
+        amount: cardListings.filter((listing) => (
+          filterByPrivatized(listing, tab.filter)
+        )).length,
+      }
+    ));
+  };
   // filter listings by each possible filter
   const filteredListings = cardListings.filter((listing) => (
     filterByProduceCategory(listing, produceCategoryFilter)
     && filterBySellByDate(listing, sellByFilter)
     && filterByAvailability(listing, availabilityFilter)
     && filterByPrice(listing, priceFilter)
+    && filterByPrivatized(listing, privatizedFilter)
   ));
   // sort by provided sortOrder if there is one, otherwise no sort
   filteredListings.sort((firstListing, secondListing) => (
@@ -252,7 +270,7 @@ export default function InventoryManagerScreen() {
     <>
       <div className={classes.root}>
         <Grid container spacing={3} className={classes.dashboard} justify="center">
-          <Grid container item spacing={0} xs={9} alignContent="flex-start">
+          <Grid container item spacing={3} xs={9} alignContent="flex-start">
             <Grid container item xs={12} alignContent="flex-start">
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
@@ -266,7 +284,7 @@ export default function InventoryManagerScreen() {
                 <DeleteButton deleteRecords={() => deleteRecords(getSelectedRecordIDs())} />
               </Grid>
             </Grid>
-            <Grid container item className={classes.listings}>
+            <Grid container item className={classes.listings} xs={12}>
               <ListingsView
                 cardListings={filteredListings}
                 selectedCards={selectedCards}
@@ -274,6 +292,8 @@ export default function InventoryManagerScreen() {
                 editRecord={editRecord}
                 deleteRecord={deleteRecords}
                 produceTypes={produceTypes}
+                tabLabels={getTabLabelsAndAmounts()}
+                setPrivatizedFilter={setPrivatizedFilter}
               />
             </Grid>
           </Grid>

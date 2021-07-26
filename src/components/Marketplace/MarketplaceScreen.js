@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
@@ -83,6 +82,12 @@ export default function MarketplaceScreen() {
             produceType,
             palletsAvailable: record.fields['pallets available'] || 0,
             hasAgencyPrice,
+            // fields for sorting
+            'sell by date': record.fields['sell by date'] || 0,
+            'first available date': record.fields['first available date'],
+            'available until': record.fields['available until'],
+            'date entered': record.fields['data entered'],
+            'produce name': record.fields['produce name'],
           };
           processedProduceRecords.push(recordInfo);
         });
@@ -90,16 +95,19 @@ export default function MarketplaceScreen() {
       });
   }
 
+  // Passed to sidebar and sort menu component, tracks current sort option
+  const [sortOrder, setSortOrder] = useState('sell by date');
+
   // Manages farm season filtering (fx, filter options, # of items per option)
-  const [seasonFilters, setSeasonFilters] = useState([]);
+  const [checkedSeasonFilters, setCheckedSeasonFilters] = useState([]);
   // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
   const onSeasonFilterChange = (newFilters) => {
-    setSeasonFilters(newFilters);
+    setCheckedSeasonFilters(newFilters);
   };
   const farmSeasonFilters = ['Fall', 'Winter', 'Summer', 'Spring'];
   const [itemsPerFarmSeason, setSeasonItems] = useState([]);
 
-  // Manages item type filtering TODO: remove disable unused vars
+  // Manages item type filtering
   const [checkedItemTypes, setCheckedItemTypes] = useState([]);
   const onItemFilterChange = (newFilters) => {
     setCheckedItemTypes(newFilters);
@@ -108,16 +116,16 @@ export default function MarketplaceScreen() {
   const [itemsPerItemType, setItemsPerItemType] = useState([]);
 
   // Manages produce type filtering
-  const [prodFilters, setProdFilters] = useState([]);
+  const [checkedProdFilters, setCheckedProdFilters] = useState([]);
   // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
   const onProduceFilterChange = (newFilters) => {
-    setProdFilters(newFilters);
+    setCheckedProdFilters(newFilters);
   };
   const produceTypeFilters = ['Vegetable', 'Fruit', 'Legume', 'Grain', 'Oat'];
   const [itemsPerProdType, setProdItems] = useState([]);
 
   // Manages pallet price filtering
-  const [priceFilters, setPriceFilters] = useState([]);
+  const [checkedPriceFilters, setCheckedPriceFilters] = useState([]);
   const [appliedRange, setAppliedRange] = useState([]); // [] if no applied min/max
   const onPriceFilterChange = (newFilters) => {
     // Parse the min + max #s from each range by splitting + filtering the string
@@ -133,7 +141,7 @@ export default function MarketplaceScreen() {
         newPriceRanges.push(nums);
       }
     });
-    setPriceFilters(newPriceRanges);
+    setCheckedPriceFilters(newPriceRanges);
   };
   const priceOptions = [0, 15, 30, 45, 60, 75];
   const [itemsPerPrice, setPriceItems] = useState([]);
@@ -187,12 +195,11 @@ export default function MarketplaceScreen() {
     });
     setPriceItems(perPrice);
   }
-  // TODO: sort by
 
   // Go through the selected filter ranges + check if this price w/in any of them
   function inFilterPriceRange(num) {
     let output = false;
-    priceFilters.forEach((range) => {
+    checkedPriceFilters.forEach((range) => {
       const priceMin = parseInt(range[0], 10);
       const priceMax = parseInt(range[1], 10);
       if (num >= priceMin && num <= priceMax) {
@@ -211,17 +218,24 @@ export default function MarketplaceScreen() {
     return false;
   }
 
+  // sortedListings needs to be separate and non-state to prevent display lag
+  const sortedListings = produceListings;
+  // sort by provided sortOrder if there is one, otherwise no sort
+  sortedListings.sort((firstListing, secondListing) => (
+    firstListing[sortOrder] > secondListing[sortOrder] ? 1 : -1
+  ));
+
   // Limits rendered produced cards to only those matching the selected filters
   function filterProduce() {
-    let filteredListings = produceListings;
-    if (seasonFilters.length > 0) {
+    let filteredListings = sortedListings;
+    if (checkedSeasonFilters.length > 0) {
       filteredListings = filteredListings.filter(
-        (listing) => seasonFilters.includes(listing.season),
+        (listing) => checkedSeasonFilters.includes(listing.season),
       );
     }
-    if (prodFilters.length > 0) {
+    if (checkedProdFilters.length > 0) {
       filteredListings = filteredListings.filter(
-        (listing) => prodFilters.includes(listing.produceType),
+        (listing) => checkedProdFilters.includes(listing.produceType),
       );
     }
     // If applied range exists, hard limit to min/max
@@ -230,7 +244,7 @@ export default function MarketplaceScreen() {
         (listing) => inAppliedRange(listing.palletPrice),
       );
     }
-    if (priceFilters.length > 0) {
+    if (checkedPriceFilters.length > 0) {
       filteredListings = filteredListings.filter(
         (listing) => inFilterPriceRange(listing.palletPrice),
       );
@@ -260,14 +274,16 @@ export default function MarketplaceScreen() {
     getNumItemsPerCategory();
   }, [produceListings]);
 
-  // Make sure that filterProduce + isfilter bool updates whenever any of the filters change
+  // Make sure that filterProduce + isfilter bool updates whenever any of the filters/sort changes
   const [isFiltered, setIsFiltered] = useState(false); // True if any filter types are checked
   useEffect(() => {
     filterProduce();
-    const newIsFiltered = !(seasonFilters.length === 0 && prodFilters.length === 0
-      && priceFilters.length === 0 && appliedRange.length === 0 && checkedItemTypes.length === 0);
+    const newIsFiltered = !(checkedSeasonFilters.length === 0 && checkedProdFilters.length === 0
+      && checkedPriceFilters.length === 0 && appliedRange.length === 0
+      && checkedItemTypes.length === 0);
     setIsFiltered(newIsFiltered);
-  }, [seasonFilters, prodFilters, priceFilters, appliedRange, checkedItemTypes]);
+  }, [checkedSeasonFilters, checkedProdFilters, checkedPriceFilters, appliedRange,
+    checkedItemTypes, sortOrder]);
 
   const classes = useStyles();
 
@@ -355,6 +371,7 @@ export default function MarketplaceScreen() {
       <Grid item className={classes.sidebar}>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
         <MarketplaceSidebar
+          updateSortOrder={setSortOrder}
           itemTypeFilters={itemTypeFilters}
           itemsPerItemType={itemsPerItemType}
           onItemFilterChange={onItemFilterChange}
@@ -383,7 +400,7 @@ export default function MarketplaceScreen() {
         />
         <Grid container direction="row" justify="flex-start">
           {/* Map each array of produceListing info to render a ProduceCard */
-            tabValue === 'all' && !isFiltered && produceListings.map((produce) => (
+            tabValue === 'all' && !isFiltered && sortedListings.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
                 listingID={produce.listingID}
@@ -399,7 +416,7 @@ export default function MarketplaceScreen() {
               />
             ))
           }
-          {/* Map each array of produceListing info to render a ProduceCard */
+          {/* Map each array of produceListing info to render a Pr oduceCard */
             tabValue === 'all' && isFiltered && filteredProduce.map((produce) => (
               <ProduceCard
                 key={produce.listingID}

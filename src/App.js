@@ -19,6 +19,7 @@ import {
 } from './components/PublicView';
 import { base } from './lib/airtable/airtable';
 import { RegistrationLimbo, SignupLimbo } from './components/Limbo';
+import { logoutUser } from './lib/airlock/airlock';
 
 export function Buffer() {
   return (
@@ -62,6 +63,7 @@ export default function App() {
   };
 
   const getInitialAuth = () => (store.getState().authenticated);
+
   const [userRole, setUserRole] = useState(getInitialRole());
   const [authenticated, setAuthenticated] = useState(getInitialAuth());
   const [registrationApproved, setRegistrationApproved] = useState(false);
@@ -70,6 +72,7 @@ export default function App() {
   const [hasRegistration, setHasRegistration] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [showAlert, setAlert] = useState(false);
+
   const getHomeComponent = () => {
     if (authenticated === true && accountApproved === 'approved' && registrationApproved === 'approved') {
       return userRole === 'vendor' ? InventoryManagerScreen : MarketplaceScreen;
@@ -130,6 +133,24 @@ export default function App() {
     return null;
   };
 
+  const handleLogOut = async (evt) => {
+    evt.preventDefault();
+    try {
+      const status = await logoutUser();
+      if (!status) {
+        setErrorMsg('Error logging out.');
+        setAlert(true);
+      } else {
+        setAuthenticated(false);
+        setUserRole('');
+        history.push('/');
+      }
+    } catch (err) {
+      setErrorMsg('Error logging out.');
+      setAlert(true);
+    }
+  };
+
   useEffect(() => {
     if (authenticated) {
       setLoading(true);
@@ -164,8 +185,7 @@ export default function App() {
             registrationApproved={registrationApproved}
             authenticated={authenticated}
             userRole={userRole}
-            setAuthAndRefreshNavbar={setAuthenticated}
-            setUserRoleAndRefreshNavbar={setUserRole}
+            handleLogOut={handleLogOut}
           />
           <Switch>
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions path="/" exact component={getHomeComponent()} />
@@ -192,7 +212,12 @@ export default function App() {
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions={eitherUnapprovedPermission(accountApproved, registrationApproved)} path="/forsellers" exact component={ForSellersScreen} />
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions={eitherUnapprovedPermission(accountApproved, registrationApproved)} path="/about" exact component={AboutScreen} />
           </Switch>
-          <Footer />
+          <Footer
+            loading={loading}
+            accountApproved={accountApproved}
+            registrationApproved={registrationApproved}
+            handleLogOut={handleLogOut}
+          />
         </Router>
       </div>
     </>

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Router, Switch, Route } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {
-  Grid,
-} from '@material-ui/core';
+import { Grid } from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
 import { store, history } from './lib/redux/store';
 import { Navbar, Footer, PrivateRoute } from './components/Navigation';
 import InventoryManagerScreen from './components/InventoryManager';
@@ -69,6 +68,8 @@ export default function App() {
   const [accountApproved, setAccountApproved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hasRegistration, setHasRegistration] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const [showAlert, setAlert] = useState(false);
   const getHomeComponent = () => {
     if (authenticated === true && accountApproved === 'approved' && registrationApproved === 'approved') {
       return userRole === 'vendor' ? InventoryManagerScreen : MarketplaceScreen;
@@ -134,16 +135,27 @@ export default function App() {
       setLoading(true);
       const userID = store.getState().userData.user.id;
       base('Users').find(userID, (err, record) => {
-        if (err) { console.log(err.message); return; }
-        setRegistrationApproved(record.fields['registration approval']);
-        setAccountApproved(record.fields['account approval']);
-        setLoading(false);
+        if (err) {
+          setAlert(true);
+          setErrorMsg(err);
+        } else {
+          setRegistrationApproved(record.fields['registration approval']);
+          setAccountApproved(record.fields['account approval']);
+          setLoading(false);
+        }
       });
     }
   }, [authenticated]);
 
   return (
     <>
+      {(showAlert && errorMsg)
+        && (
+          <Alert severity="error" className="errorAlert" onClose={() => setAlert(false)}>
+            <AlertTitle> Input error </AlertTitle>
+            {errorMsg}
+          </Alert>
+        )}
       <div className="App">
         <Router history={history}>
           <Navbar

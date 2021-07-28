@@ -9,10 +9,13 @@ import {
   Grid,
   Container,
   Box,
-  Button,
 } from '@material-ui/core';
 
 const useStyles = makeStyles({
+  root: {
+    position: 'relative',
+    minHeight: '60vh',
+  },
   submitButton: {
     backgroundColor: '#53AA48',
     '&:hover': {
@@ -44,7 +47,7 @@ export default function SignupLimbo() {
   const classes = useStyles();
   return (
     <>
-      <Box mt={5} mb={5}>
+      <Box className={classes.root} mt={5} mb={5}>
         <Container component="main" maxWidth="md">
           <div>
             <ThemeProvider theme={theme}>
@@ -84,21 +87,7 @@ export default function SignupLimbo() {
                       container
                       spacing={2}
                       alignItems="center"
-                    >
-                      <Grid item xs={12}>
-                        <Box mt={5}>
-                          <Button
-                            type="button"
-                            className={classes.submitButton}
-                            color="primary"
-                            variant="contained"
-                            style={{ backgroundColor: '#53AA48' }}
-                          >
-                            Done
-                          </Button>
-                        </Box>
-                      </Grid>
-                    </Grid>
+                    />
                   </div>
                 </Container>
               </Grid>

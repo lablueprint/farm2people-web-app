@@ -84,10 +84,10 @@ export default function MarketplaceScreen() {
             hasAgencyPrice,
             // fields for sorting
             'sell by date': record.fields['sell by date'] || 0,
-            'first available date': record.fields['first available date'],
-            'available until': record.fields['available until'],
-            'date entered': record.fields['data entered'],
-            'produce name': record.fields['produce name'],
+            'first available date': record.fields['first available date'] || 0,
+            'available until': record.fields['available until'] || 0,
+            'date entered': record.fields['data entered'] || 0,
+            'produce name': record.fields['produce name'] || 'No name',
           };
           processedProduceRecords.push(recordInfo);
         });
@@ -416,7 +416,7 @@ export default function MarketplaceScreen() {
               />
             ))
           }
-          {/* Map each array of produceListing info to render a Pr oduceCard */
+          {/* Map each array of produceListing info to render a ProduceCard */
             tabValue === 'all' && isFiltered && filteredProduce.map((produce) => (
               <ProduceCard
                 key={produce.listingID}

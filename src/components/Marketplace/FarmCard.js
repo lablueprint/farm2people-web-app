@@ -9,7 +9,6 @@ import DoneRoundedIcon from '@material-ui/icons/DoneRounded';
 import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import PropTypes from 'prop-types';
 import '../../styles/fonts.css';
-// import cabbageDog from '../../assets/images/cabbagedog.png';
 
 const useStyles = makeStyles({
   cardContainer: { // Overall card container
@@ -74,27 +73,14 @@ const useStyles = makeStyles({
     borderRadius: '6px',
     marginTop: '6px',
     marginRight: '9px',
-    // paddingLeft: '0.8%',
-    // paddingRight: '0.8%',
-    // padding: '0.8% 0.4%',
     fontFamily: 'Work Sans',
     fontSize: '90%',
     fontWeight: 'lighter',
-    // fontSize: '90%',
-    // fontFamily: 'Work Sans',
-    // // background: '#EBD7D0',
-    // borderRadius: '7px',
-    // marginLeft: '8px',
-    // marginTop: '0.8%',
-    // marginBottom: '0.8%',
-    // fontWeight: 'lighter',
   },
   farmingTagsContainer: {
     marginTop: '3px',
     fontFamily: 'Work Sans',
     fontSize: '15px',
-    // paddingLeft: '0.5%',
-    // paddingRight: '0.5%',
     width: '100%',
   },
   farmingText: {
@@ -117,18 +103,11 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
   },
   produceTypesTags: {
-    // background: '#DBE2ED',
-    // color: '#373737',
-    // borderRadius: '6px',
-    // marginTop: '1.5%',
-    // marginRight: '1.5%',
-    // paddingLeft: '0.7%',
-    // paddingRight: '0.7%',
-    // fontFamily: 'Work Sans',
-    // fontSize: '90%',
-    // fontWeight: 'lighter',
     marginTop: '10px',
-    width: '70%',
+    maxWidth: '550px',
+  },
+  produceTypography: {
+    fontFamily: 'Work Sans',
   },
   descriptionContainer: {
     fontFamily: 'Work Sans',
@@ -164,6 +143,7 @@ export default function FarmCard(props) {
     farmName, address, zipCode, description, operationTypeTags, farmingPracticeTags,
   } = props;
 
+  // TODO: get farm card photo and implement farm photo styling
   return (
     <Card
       className={[
@@ -238,7 +218,6 @@ export default function FarmCard(props) {
               />
             ))}
           </div>
-          {/* // */}
           { isExpanded
          && (
          <Grid
@@ -263,9 +242,6 @@ export default function FarmCard(props) {
            ))}
          </Grid>
          )}
-          {/* // */}
-
-          {/* original farm tag content here */}
         </Grid>
       </CardContent>
       {/* If uncollapsed, shows description and additional tags */}
@@ -282,23 +258,7 @@ export default function FarmCard(props) {
             justify="space-between"
             alignItems="flex-start"
           >
-            {/* { // TODO: replace w/ actual produce types and update icons
-              farmingPracticeTags.length >= 1 && (
-                <div className={classes.produceTypesContainer}>
-                  <div>
-                    Produce Types Sold:
-                  </div>
-                  {farmingPracticeTags.map((tag) => (
-                    <Chip
-                      label={tag}
-                      className={classes.produceTypesTags}
-                      size="small"
-                      variant="default"
-                    />
-                  ))}
-                </div>
-              )
-            } */}
+            {/* TODO: replace w/ actual produce types and corresponding icons from airtable */}
             <div className={classes.produceTypesContainer}>
               <div>
                 Produce Types Sold:
@@ -311,23 +271,23 @@ export default function FarmCard(props) {
                   alignItems="flex-start"
                 >
                   <DoneRoundedIcon className={classes.produceIconCheck} />
-                  <Typography>
+                  <Typography className={classes.produceTypography}>
                     Vegetables
                   </Typography>
                   <DoneRoundedIcon className={classes.produceIconCheck} />
-                  <Typography>
+                  <Typography className={classes.produceTypography}>
                     Fruits
                   </Typography>
                   <CloseRoundedIcon className={classes.produceIconCross} />
-                  <Typography>
+                  <Typography className={classes.produceTypography}>
                     Legumes
                   </Typography>
                   <DoneRoundedIcon className={classes.produceIconCheck} />
-                  <Typography>
+                  <Typography className={classes.produceTypography}>
                     Grains
                   </Typography>
                   <CloseRoundedIcon className={classes.produceIconCross} />
-                  <Typography>
+                  <Typography className={classes.produceTypography}>
                     Oats
                   </Typography>
 

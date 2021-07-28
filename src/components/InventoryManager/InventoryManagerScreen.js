@@ -4,9 +4,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { store } from '../../lib/redux/store';
 import { base } from '../../lib/airtable/airtable';
-import ListingsView from './ListingsView';
-import AddListingButton from './AddListingButton';
-import DeleteButton from './DeleteButton';
+import ListingsView from './ListingsView/ListingsView';
+import AddListingButton from './Header/AddListingButton';
+import DeleteButton from './Header/DeleteButton';
 import InventoryManagerSidebar from './Sidebar/InventoryManagerSidebar';
 
 const useStyles = makeStyles({

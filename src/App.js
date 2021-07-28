@@ -140,7 +140,7 @@ export default function App() {
         setLoading(false);
       });
     }
-  }, []);
+  }, [authenticated]);
 
   return (
     <>

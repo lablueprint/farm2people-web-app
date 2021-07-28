@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Router, Switch, Route } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {
-  Grid,
-} from '@material-ui/core';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import { Grid } from '@material-ui/core';
 import { store, history } from './lib/redux/store';
 import { Navbar, Footer, PrivateRoute } from './components/Navigation';
 import InventoryManagerScreen from './components/InventoryManager';
@@ -20,6 +19,7 @@ import {
 } from './components/PublicView';
 import { base } from './lib/airtable/airtable';
 import { RegistrationLimbo, SignupLimbo } from './components/Limbo';
+import { logoutUser } from './lib/airlock/airlock';
 
 export function Buffer() {
   return (
@@ -47,6 +47,7 @@ export default function App() {
   const purchasingPermissions = ['buyer', 'agency'];
   const allAuthenticatedPermissions = ['buyer', 'agency', 'vendor'];
   const allPermissions = ['buyer', 'agency', 'vendor', ''];
+  const [errorMsg, setErrorMsg] = useState('');
 
   const getInitialRole = () => (store.getState().userData == null ? '' : store.getState().userData.user.fields['user type']);
   const eitherUnapprovedPermission = (accountApproved, registrationApproved) => {
@@ -69,6 +70,7 @@ export default function App() {
   const [accountApproved, setAccountApproved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hasRegistration, setHasRegistration] = useState(false);
+  const [showAlert, setAlert] = useState(false);
   const getHomeComponent = () => {
     if (authenticated === true && accountApproved === 'approved' && registrationApproved === 'approved') {
       return userRole === 'vendor' ? InventoryManagerScreen : MarketplaceScreen;
@@ -129,6 +131,24 @@ export default function App() {
     return null;
   };
 
+  const handleLogOut = async (evt) => {
+    evt.preventDefault();
+    try {
+      const status = await logoutUser();
+      if (!status) {
+        setErrorMsg('Error logging out.');
+        setAlert(true);
+      } else {
+        setAuthenticated(false);
+        setUserRole('');
+        history.push('/');
+      }
+    } catch (err) {
+      setErrorMsg('Error logging out.');
+      setAlert(true);
+    }
+  };
+
   useEffect(() => {
     if (authenticated) {
       setLoading(true);
@@ -144,6 +164,13 @@ export default function App() {
 
   return (
     <>
+      {(showAlert && errorMsg)
+        && (
+          <Alert severity="error" className="errorAlert" onClose={() => setAlert(false)}>
+            <AlertTitle> Input error </AlertTitle>
+            {errorMsg}
+          </Alert>
+        )}
       <div className="App">
         <Router history={history}>
           <Navbar
@@ -152,8 +179,7 @@ export default function App() {
             registrationApproved={registrationApproved}
             authenticated={authenticated}
             userRole={userRole}
-            setAuthAndRefreshNavbar={setAuthenticated}
-            setUserRoleAndRefreshNavbar={setUserRole}
+            handleLogOut={handleLogOut}
           />
           <Switch>
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions path="/" exact component={getHomeComponent()} />
@@ -180,7 +206,12 @@ export default function App() {
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions={eitherUnapprovedPermission(accountApproved, registrationApproved)} path="/forsellers" exact component={ForSellersScreen} />
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions={eitherUnapprovedPermission(accountApproved, registrationApproved)} path="/about" exact component={AboutScreen} />
           </Switch>
-          <Footer />
+          <Footer
+            loading={loading}
+            accountApproved={accountApproved}
+            registrationApproved={registrationApproved}
+            handleLogOut={handleLogOut}
+          />
         </Router>
       </div>
     </>

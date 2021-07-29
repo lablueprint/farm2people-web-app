@@ -11,7 +11,6 @@ import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
 import MarketplaceBreadcrumbs from './MarketplaceBreadcrumbs';
 import { base } from '../../lib/airtable/airtable';
 import '../../styles/fonts.css';
-import { store } from '../../lib/redux/store';
 
 const useStyles = makeStyles({
   root: {
@@ -45,16 +44,13 @@ export default function MarketplaceScreen({
   const [filteredProduce, setFilteredProduce] = useState(allProduceListings);
   const [shopByFarmName, setShopByFarmName] = useState('');
   const [shopByFarmProduce, setShopByFarmProduce] = useState([]);
-  // TODO: filtering methods of shopByFarmProduce
-  const [filteredShopByFarmProduce, setFilteredShopByFarmProduce] = useState([]);
+  // TODO: filtering methods + state for shopByFarmProduce
   const [searchBarInput, setSearchBarInput] = useState(''); // user entered search terms
   const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
   const [numResults, setNumResults] = useState(10); // # of results to display
   const [popupProduce, setPopupProduce] = useState(INITIAL_POPUP_PRODUCE);
   const [open, setOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-
-  const getInitialRole = () => (store.getState().userData == null ? '' : store.getState().userData.user.fields['user type']);
 
   // SEARCH FUNCTIONS
   const search = () => {
@@ -121,21 +117,17 @@ export default function MarketplaceScreen({
   }
 
   // run on submit of search bar (search icon or enter clicked)
-  // may be useful to add any side bar filtering methods here too
   const filterBySearch = () => {
     filterProducebySearch(allProduceListings, setProduceListings);
     if (shopByFarmID === undefined) {
       filterFarmsBySearch();
     }
-    // else the shopByFarm method is called and will filter after fetching records
   };
 
-  // Get prod id, grouped unit type, price per grouped unit for each of a farm's produce records
-  // run if shopping by farm
+  // fetch produce records for given farmID
   function shopByFarm(farmID) {
     // TODO: error check for no produce from farm + use some signal to show loading if needed
     setShopByFarmProduce([]);
-    setFilteredShopByFarmProduce([]);
     setShopByFarmName('');
     let tempProduce = [];
 
@@ -166,13 +158,8 @@ export default function MarketplaceScreen({
                 tempProduce = tempProduce.concat(recordInfo);
               }
               setShopByFarmProduce(tempProduce);
-              setFilteredShopByFarmProduce(tempProduce);
             });
           });
-        } else {
-          console.log('no listings for this farm');
-          console.log(farm);
-          console.log(shopByFarmProduce);
         }
       }
     });
@@ -453,7 +440,7 @@ export default function MarketplaceScreen({
               ))
               : (
                 <Grid container direction="row" justify="flex-start">
-                  {filteredShopByFarmProduce.map((produce) => (
+                  {shopByFarmProduce.map((produce) => (
                     <ProduceCard
                       key={produce.listingID}
                       listingID={produce.listingID}

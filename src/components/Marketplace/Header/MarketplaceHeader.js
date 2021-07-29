@@ -98,6 +98,7 @@ export default function MarketplaceHeader({
     setSearchBarInput(event.target.value);
   };
 
+  // search on submit
   const handleSubmit = (event) => {
     event.preventDefault();
     search();

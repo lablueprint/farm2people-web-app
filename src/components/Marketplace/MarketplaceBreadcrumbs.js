@@ -67,8 +67,6 @@ export default function MarketplaceRouter({
 
   // map setup helper
   async function setup() {
-    // pathnames = history.location.pathname.split('/').filter((x) => x);
-    // pathnames = pathnames.length === 0 ? ['marketplace'] : pathnames;
     let map = {};
     await makeMap().then((value) => { map = value; });
     if (map !== breadcrumbMap) {

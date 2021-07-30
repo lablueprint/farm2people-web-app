@@ -180,37 +180,26 @@ export default function MarketplaceScreen({
     }
   }, [shopByFarmID, searchTerms, allFarmListings, allProduceListings]);
 
-  // Passed to sidebar and sort menu component, tracks current sort option
-  const [sortOrder, setSortOrder] = useState('sell by date');
-
   // Manages farm season filtering (fx, filter options, # of items per option)
-  const [checkedSeasonFilters, setCheckedSeasonFilters] = useState([]);
+  const [seasonFilters, setSeasonFilters] = useState([]);
   // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
   const onSeasonFilterChange = (newFilters) => {
-    setCheckedSeasonFilters(newFilters);
+    setSeasonFilters(newFilters);
   };
   const farmSeasonFilters = ['Fall', 'Winter', 'Summer', 'Spring'];
   const [itemsPerFarmSeason, setSeasonItems] = useState([]);
 
-  // Manages item type filtering
-  const [checkedItemTypes, setCheckedItemTypes] = useState([]);
-  const onItemFilterChange = (newFilters) => {
-    setCheckedItemTypes(newFilters);
-  };
-  const itemTypeFilters = ['Agency Price', 'Standard Items'];
-  const [itemsPerItemType, setItemsPerItemType] = useState([]);
-
   // Manages produce type filtering
-  const [checkedProdFilters, setCheckedProdFilters] = useState([]);
+  const [prodFilters, setProdFilters] = useState([]);
   // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
   const onProduceFilterChange = (newFilters) => {
-    setCheckedProdFilters(newFilters);
+    setProdFilters(newFilters);
   };
   const produceTypeFilters = ['Vegetable', 'Fruit', 'Legume', 'Grain', 'Oat'];
   const [itemsPerProdType, setProdItems] = useState([]);
 
   // Manages pallet price filtering
-  const [checkedPriceFilters, setCheckedPriceFilters] = useState([]);
+  const [priceFilters, setPriceFilters] = useState([]);
   const [appliedRange, setAppliedRange] = useState([]); // [] if no applied min/max
   const onPriceFilterChange = (newFilters) => {
     // Parse the min + max #s from each range by splitting + filtering the string
@@ -226,7 +215,7 @@ export default function MarketplaceScreen({
         newPriceRanges.push(nums);
       }
     });
-    setCheckedPriceFilters(newPriceRanges);
+    setPriceFilters(newPriceRanges);
   };
   const priceOptions = [0, 15, 30, 45, 60, 75];
   const [itemsPerPrice, setPriceItems] = useState([]);
@@ -242,11 +231,6 @@ export default function MarketplaceScreen({
       perSeason.push(currentSeasonItems.length);
     });
     setSeasonItems(perSeason);
-
-    // Get items per item type (agency or standard)
-    const numAgencyItems = produceListings.filter((listing) => listing.hasAgencyPrice).length;
-    const numStandardItems = produceListings.length - numAgencyItems;
-    setItemsPerItemType([numAgencyItems, numStandardItems]);
 
     // Get items per produce type
     const perProdType = [];
@@ -280,11 +264,12 @@ export default function MarketplaceScreen({
     });
     setPriceItems(perPrice);
   }
+  // TODO: sort by, item type
 
   // Go through the selected filter ranges + check if this price w/in any of them
   function inFilterPriceRange(num) {
     let output = false;
-    checkedPriceFilters.forEach((range) => {
+    priceFilters.forEach((range) => {
       const priceMin = parseInt(range[0], 10);
       const priceMax = parseInt(range[1], 10);
       if (num >= priceMin && num <= priceMax) {
@@ -303,24 +288,17 @@ export default function MarketplaceScreen({
     return false;
   }
 
-  // sortedListings needs to be separate and non-state to prevent display lag
-  const sortedListings = produceListings;
-  // sort by provided sortOrder if there is one, otherwise no sort
-  sortedListings.sort((firstListing, secondListing) => (
-    firstListing[sortOrder] > secondListing[sortOrder] ? 1 : -1
-  ));
-
   // Limits rendered produced cards to only those matching the selected filters
   function filterProduce() {
-    let filteredListings = sortedListings;
-    if (checkedSeasonFilters.length > 0) {
+    let filteredListings = produceListings;
+    if (seasonFilters.length > 0) {
       filteredListings = filteredListings.filter(
-        (listing) => checkedSeasonFilters.includes(listing.season),
+        (listing) => seasonFilters.includes(listing.season),
       );
     }
-    if (checkedProdFilters.length > 0) {
+    if (prodFilters.length > 0) {
       filteredListings = filteredListings.filter(
-        (listing) => checkedProdFilters.includes(listing.produceType),
+        (listing) => prodFilters.includes(listing.produceType),
       );
     }
     // If applied range exists, hard limit to min/max
@@ -329,22 +307,10 @@ export default function MarketplaceScreen({
         (listing) => inAppliedRange(listing.palletPrice),
       );
     }
-    if (checkedPriceFilters.length > 0) {
+    if (priceFilters.length > 0) {
       filteredListings = filteredListings.filter(
         (listing) => inFilterPriceRange(listing.palletPrice),
       );
-    }
-    // Only filter if 1 of standard/agency options checked (if both, filtering is redundant)
-    if (checkedItemTypes.length === 1) {
-      if (checkedItemTypes[0] === 'Agency Price') {
-        filteredListings = filteredListings.filter(
-          (listing) => listing.hasAgencyPrice === true,
-        );
-      } else {
-        filteredListings = filteredListings.filter(
-          (listing) => listing.hasAgencyPrice === false,
-        );
-      }
     }
     setFilteredProduce(filteredListings);
   }
@@ -354,16 +320,14 @@ export default function MarketplaceScreen({
     getNumItemsPerCategory();
   }, [produceListings]);
 
-  // Make sure that filterProduce + isfilter bool updates whenever any of the filters/sort changes
+  // Make sure that filterProduce + isfilter bool updates whenever any of the filters change
   const [isFiltered, setIsFiltered] = useState(false); // True if any filter types are checked
   useEffect(() => {
     filterProduce();
-    const newIsFiltered = !(checkedSeasonFilters.length === 0 && checkedProdFilters.length === 0
-      && checkedPriceFilters.length === 0 && appliedRange.length === 0
-      && checkedItemTypes.length === 0);
+    const newIsFiltered = !(seasonFilters.length === 0 && prodFilters.length === 0
+      && priceFilters.length === 0 && appliedRange.length === 0);
     setIsFiltered(newIsFiltered);
-  }, [checkedSeasonFilters, checkedProdFilters, checkedPriceFilters, appliedRange,
-    checkedItemTypes, sortOrder]);
+  }, [seasonFilters, prodFilters, priceFilters, appliedRange]);
 
   const classes = useStyles();
 
@@ -405,10 +369,6 @@ export default function MarketplaceScreen({
             farmSeasonFilters={farmSeasonFilters}
             itemsPerFarmSeason={itemsPerFarmSeason}
             onSeasonFilterChange={onSeasonFilterChange}
-            updateSortOrder={setSortOrder}
-            itemTypeFilters={itemTypeFilters}
-            itemsPerItemType={itemsPerItemType}
-            onItemFilterChange={onItemFilterChange}
           />
         </Grid>
         <Grid item xs>

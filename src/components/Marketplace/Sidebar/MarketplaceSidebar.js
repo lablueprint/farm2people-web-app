@@ -40,8 +40,11 @@ const useStyles = makeStyles({
 
 /* Sidebar with filter selections for types + sorting */
 export default function MarketplaceSidebar({
-  prodTypeFilters, itemsPerProdType, onProduceFilterChange, priceOptions, itemsPerPrice,
-  onPriceFilterChange, farmSeasonFilters, itemsPerFarmSeason, onSeasonFilterChange,
+  updateSortOrder,
+  itemTypeFilters, itemsPerItemType, onItemFilterChange,
+  prodTypeFilters, itemsPerProdType, onProduceFilterChange,
+  priceOptions, itemsPerPrice, onPriceFilterChange,
+  farmSeasonFilters, itemsPerFarmSeason, onSeasonFilterChange,
 }) {
   const classes = useStyles();
 
@@ -51,9 +54,23 @@ export default function MarketplaceSidebar({
       <Typography className={classes.filterText}>
         FILTERS
       </Typography>
-      <SortMenu sortOptions={['Sell by date: earliest first', 'First available date: earliest first', 'Available until: earliest first', 'Recently added first', 'Alphabetical order']} />
-      {/* TODO: Item type menu only shows for agency buyer view */}
-      <FilterMenu menuTitle="Item Type" filterOptions={['Agency Price', 'Standard Items']} isLast={false} />
+      <SortMenu
+        sortOptions={[
+          { label: 'Sell by date: earliest first', target: 'sell by date' },
+          { label: 'First available date: earliest first', target: 'first available date' },
+          { label: 'Available until: earliest first', target: 'available until' },
+          { label: 'Recently added first', target: 'date entered' },
+          { label: 'Alphabetical order', target: 'produce name' },
+        ]}
+        updateSortOrder={updateSortOrder}
+      />
+      <FilterMenu
+        menuTitle="Item Type"
+        filterOptions={itemTypeFilters}
+        itemsPerOption={itemsPerItemType}
+        onFilterChange={onItemFilterChange}
+        isLast={false}
+      />
       <FilterMenu
         menuTitle="Produce Type"
         filterOptions={prodTypeFilters}
@@ -78,6 +95,10 @@ export default function MarketplaceSidebar({
 }
 
 MarketplaceSidebar.propTypes = {
+  updateSortOrder: PropTypes.func.isRequired,
+  itemTypeFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
+  onItemFilterChange: PropTypes.func.isRequired,
+  itemsPerItemType: PropTypes.arrayOf(PropTypes.number).isRequired,
   prodTypeFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
   itemsPerProdType: PropTypes.arrayOf(PropTypes.number).isRequired,
   onProduceFilterChange: PropTypes.func.isRequired,

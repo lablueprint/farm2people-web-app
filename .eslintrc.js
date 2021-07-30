@@ -24,4 +24,11 @@ module.exports = {
     // 'react-hooks/exhaustive-deps': 'warn', // part of react hooks
     'linebreak-style': 0,
   },
+  settings: { // To fix import no-unresolved error on Windows
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
+  },
 };

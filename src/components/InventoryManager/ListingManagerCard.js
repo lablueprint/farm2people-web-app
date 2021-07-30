@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
-import Checkbox from '@material-ui/core/Checkbox';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import LockIcon from '@material-ui/icons/Lock';
 import IconButton from '@material-ui/core/IconButton';
+import GreenCheckbox from './GreenCheckbox';
 import EditListingPopup from './EditListingPopup';
 import OrangeCat from '../../assets/images/OrangeCat.jpeg';
 
@@ -26,13 +26,12 @@ const useStyles = makeStyles({
     border: '1px solid #F1F2F2',
     boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
     borderRadius: '8px',
-    width: '100%',
-    maxWidth: '425px',
+    width: '250px',
   },
   listingCardPicture: {
     height: '200px',
-    objectFit: 'cover',
-    width: '100%',
+    objectFit: 'scale-down',
+    width: '250px',
   },
   listingCardContent: {
     backgroundColor: '#ffffff',
@@ -95,27 +94,27 @@ const useStyles = makeStyles({
   },
 });
 
-const GreenCheckbox = withStyles({
-  root: {
-    color: '#53AA48',
-    '&$checked': {
-      color: '#53AA48',
-    },
-  },
-  checked: {},
-})((props) => <Checkbox color="default" {...props} />);
-
 // TODO : validation for unit type selection
 export default function ListingManagerCard({
-  id, listing, onSelect, selected, editRecord, produceRecord, produceTypes,
+  id, listing, onSelect, selected, editRecord, deleteRecord, produceRecord, produceTypes,
 }) {
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
+  const [isPrivatized, setPrivatized] = useState(listing.privatized || false);
   const handleClickOpen = () => {
     setEditActive(true);
   };
   const handleClose = () => {
     setEditActive(false);
+  };
+  const handlePrivatize = () => {
+    // if the record has no privatized value, it's assumed false, so swap it
+    const record = {
+      ...listing,
+      privatized: !isPrivatized,
+    };
+    setPrivatized(!isPrivatized);
+    editRecord(record);
   };
   return (
     <>
@@ -151,8 +150,8 @@ export default function ListingManagerCard({
               <Button size="medium" onClick={handleClickOpen} variant="contained" className={classes.editButton}>
                 Edit
               </Button>
-              <IconButton>
-                { listing.privatized ? <LockOutlinedIcon /> : <LockOpenOutlinedIcon /> }
+              <IconButton onClick={handlePrivatize}>
+                { isPrivatized ? <LockIcon fontSize="large" /> : <LockOpenOutlinedIcon fontSize="large" /> }
               </IconButton>
               <GreenCheckbox
                 checked={selected || false}
@@ -167,9 +166,11 @@ export default function ListingManagerCard({
                 edit
                 closeDialog={handleClose}
                 isOpen={editActive}
-                modifyListings={editRecord}
+                editRecord={editRecord}
+                deleteRecord={deleteRecord}
                 produceRecord={produceRecord}
                 produceTypes={produceTypes}
+                setPrivatized={setPrivatized}
               />
             </CardActions>
           </Card>
@@ -214,6 +215,7 @@ ListingManagerCard.propTypes = {
   onSelect: PropTypes.func.isRequired,
   selected: PropTypes.bool,
   editRecord: PropTypes.func.isRequired,
+  deleteRecord: PropTypes.func.isRequired,
   produceRecord: PropTypes.shape({
     id: PropTypes.string,
     fields: PropTypes.shape({

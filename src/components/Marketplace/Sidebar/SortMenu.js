@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Divider, MenuItem, TextField, Typography,
 } from '@material-ui/core';
@@ -29,14 +29,13 @@ const useStyles = makeStyles({
   },
 });
 
-/* Contains view results text + selection menu for # of results */
-export default function SortMenu({ sortOptions }) {
+/* Drop-down menu for sorting listings */
+export default function SortMenu({ sortOptions, updateSortOrder }) {
   const classes = useStyles();
-  const [selectedOption, setOption] = useState(sortOptions[0]);
 
-  // TODO: update to sort results based on chosen option
+  // When new sort selected, update field displayed and (re)sort the listings
   const handleChange = (event) => {
-    setOption(event.target.value);
+    updateSortOrder(event.target.value);
   };
 
   return (
@@ -48,17 +47,17 @@ export default function SortMenu({ sortOptions }) {
         select
         variant="outlined"
         size="small"
-        value={selectedOption}
         onChange={handleChange}
         className={classes.optionMenu}
+        defaultValue={sortOptions[0].target}
       >
-        {sortOptions.map((option) => (
+        {sortOptions.map((option) => ( // Options shown in the dropdown menu
           <MenuItem
-            key={option}
-            value={option}
+            key={option.label}
+            value={option.target}
           >
             <Typography className={classes.optionText}>
-              {option}
+              {option.label}
             </Typography>
           </MenuItem>
         ))}
@@ -69,5 +68,9 @@ export default function SortMenu({ sortOptions }) {
 }
 
 SortMenu.propTypes = {
-  sortOptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+  sortOptions: PropTypes.arrayOf(PropTypes.shape({
+    label: PropTypes.string,
+    target: PropTypes.string,
+  })).isRequired,
+  updateSortOrder: PropTypes.func.isRequired,
 };

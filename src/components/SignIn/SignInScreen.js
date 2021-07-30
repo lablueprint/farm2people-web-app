@@ -85,6 +85,10 @@ export default function SignInScreen(props) {
 
   const classes = useStyles();
 
+  const onSignUpClick = () => {
+    history.push('/signup');
+  };
+
   const onSubmit = async (evt) => {
     evt.preventDefault();
     setLoading(true);
@@ -169,7 +173,12 @@ export default function SignInScreen(props) {
               >
                 Don&apos;t have an account?&nbsp;&nbsp;&nbsp;
               </Typography>
-              <Typography className={classes.signupText}>Sign Up</Typography>
+              <Typography
+                onClick={onSignUpClick}
+                className={classes.signupText}
+              >
+                Sign Up
+              </Typography>
             </div>
           </Grid>
         </Grid>

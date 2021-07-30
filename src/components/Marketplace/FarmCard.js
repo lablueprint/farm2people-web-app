@@ -245,7 +245,7 @@ export default function FarmCard(props) {
         </Grid>
       </CardContent>
       {/* If uncollapsed, shows description and additional tags */}
-      <Collapse in={isExpanded} timout="auto" unmountOnExit>
+      <Collapse in={isExpanded} unmountOnExit>
         <CardContent className={classes.expandedContent}>
           <div>
             <Typography className={classes.descriptionContainer}>

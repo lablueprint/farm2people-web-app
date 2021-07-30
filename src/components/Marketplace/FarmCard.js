@@ -5,6 +5,8 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import DoneRoundedIcon from '@material-ui/icons/DoneRounded';
+import CloseRoundedIcon from '@material-ui/icons/CloseRounded';
 import PropTypes from 'prop-types';
 import '../../styles/fonts.css';
 
@@ -62,7 +64,7 @@ const useStyles = makeStyles({
     marginLeft: '6%',
   },
   operationTagsContainer: {
-    width: '50%',
+    width: '100%',
     fontSize: '15px',
   },
   operationTags: {
@@ -70,20 +72,16 @@ const useStyles = makeStyles({
     color: '#373737',
     borderRadius: '6px',
     marginTop: '6px',
-    marginRight: '7px',
-    paddingLeft: '0.8%',
-    paddingRight: '0.8%',
+    marginRight: '9px',
     fontFamily: 'Work Sans',
     fontSize: '90%',
     fontWeight: 'lighter',
   },
   farmingTagsContainer: {
-    marginTop: '-6px',
+    marginTop: '3px',
     fontFamily: 'Work Sans',
     fontSize: '15px',
-    paddingLeft: '0.5%',
-    paddingRight: '0.5%',
-    width: '50%',
+    width: '100%',
   },
   farmingText: {
     fontFamily: 'Work Sans',
@@ -92,8 +90,8 @@ const useStyles = makeStyles({
     fontSize: '90%',
     fontFamily: 'Work Sans',
     background: '#EBD7D0',
-    borderRadius: '6px',
-    marginLeft: '3%',
+    borderRadius: '8px',
+    marginLeft: '6px',
     marginTop: '0.8%',
     marginBottom: '0.8%',
     fontWeight: 'lighter',
@@ -105,16 +103,11 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
   },
   produceTypesTags: {
-    background: '#DBE2ED',
-    color: '#373737',
-    borderRadius: '6px',
-    marginTop: '1.5%',
-    marginRight: '1.5%',
-    paddingLeft: '0.7%',
-    paddingRight: '0.7%',
+    marginTop: '10px',
+    maxWidth: '550px',
+  },
+  produceTypography: {
     fontFamily: 'Work Sans',
-    fontSize: '90%',
-    fontWeight: 'lighter',
   },
   descriptionContainer: {
     fontFamily: 'Work Sans',
@@ -123,6 +116,14 @@ const useStyles = makeStyles({
   },
   iconColour: {
     color: '#53AA48',
+  },
+  produceIconCross: {
+    color: '#8A7761',
+    marginRight: '-20px',
+  },
+  produceIconCheck: {
+    color: '#53AA48',
+    marginRight: '-20px',
   },
   shopButton: {
     backgroundColor: '#53AA48',
@@ -142,6 +143,7 @@ export default function FarmCard(props) {
     farmName, address, zipCode, description, operationTypeTags, farmingPracticeTags,
   } = props;
 
+  // TODO: get farm card photo and implement farm photo styling
   return (
     <Card
       className={[
@@ -150,7 +152,7 @@ export default function FarmCard(props) {
       ]}
       variant="outlined"
     >
-      {/* Header/non-collapsed card contains farm name, expand/collapse icon, tags for op type */}
+      {/* Header/non-collapsed card contains farm name, expand/collapse icon, tags for op type  */}
       <Grid
         container
         direction="row"
@@ -216,32 +218,30 @@ export default function FarmCard(props) {
               />
             ))}
           </div>
-          { /* Show farming practice tags if expanded */
-            isExpanded
-            && farmingPracticeTags.length >= 1 && (
-              <Grid
-                container
-                direction="row"
-                justify="flex-end"
-                alignItems="center"
-                className={classes.farmingTagsContainer}
-              >
-                <Typography
-                  className={classes.farmingText}
-                >
-                  Farming Practice:
-                </Typography>
-                {farmingPracticeTags.map((tag) => (
-                  <Chip
-                    label={tag}
-                    className={classes.farmingTags}
-                    size="small"
-                    variant="default"
-                  />
-                ))}
-              </Grid>
-            )
-          }
+          { isExpanded
+         && (
+         <Grid
+           container
+           direction="row"
+           justifyContent="flex-start"
+           alignItems="center"
+           className={classes.farmingTagsContainer}
+         >
+           <Typography
+             className={classes.farmingText}
+           >
+             Farming Practice:
+           </Typography>
+           {farmingPracticeTags.map((tag) => (
+             <Chip
+               label={tag}
+               className={classes.farmingTags}
+               size="small"
+               variant="default"
+             />
+           ))}
+         </Grid>
+         )}
         </Grid>
       </CardContent>
       {/* If uncollapsed, shows description and additional tags */}
@@ -258,23 +258,43 @@ export default function FarmCard(props) {
             justify="space-between"
             alignItems="flex-start"
           >
-            { // TODO: replace w/ actual produce types and update icons
-              farmingPracticeTags.length >= 1 && (
-                <div className={classes.produceTypesContainer}>
-                  <div>
-                    Produce Types Sold:
-                  </div>
-                  {farmingPracticeTags.map((tag) => (
-                    <Chip
-                      label={tag}
-                      className={classes.produceTypesTags}
-                      size="small"
-                      variant="default"
-                    />
-                  ))}
-                </div>
-              )
-            }
+            {/* TODO: replace w/ actual produce types and corresponding icons from airtable */}
+            <div className={classes.produceTypesContainer}>
+              <div>
+                Produce Types Sold:
+              </div>
+              <div className={classes.produceTypesTags}>
+                <Grid
+                  container
+                  direction="row"
+                  justify="space-between"
+                  alignItems="flex-start"
+                >
+                  <DoneRoundedIcon className={classes.produceIconCheck} />
+                  <Typography className={classes.produceTypography}>
+                    Vegetables
+                  </Typography>
+                  <DoneRoundedIcon className={classes.produceIconCheck} />
+                  <Typography className={classes.produceTypography}>
+                    Fruits
+                  </Typography>
+                  <CloseRoundedIcon className={classes.produceIconCross} />
+                  <Typography className={classes.produceTypography}>
+                    Legumes
+                  </Typography>
+                  <DoneRoundedIcon className={classes.produceIconCheck} />
+                  <Typography className={classes.produceTypography}>
+                    Grains
+                  </Typography>
+                  <CloseRoundedIcon className={classes.produceIconCross} />
+                  <Typography className={classes.produceTypography}>
+                    Oats
+                  </Typography>
+
+                </Grid>
+              </div>
+
+            </div>
             <Button
               className={classes.shopButton}
               variant="container"

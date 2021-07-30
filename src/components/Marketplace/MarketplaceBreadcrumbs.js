@@ -102,18 +102,18 @@ export default function MarketplaceRouter({
           // eslint-disable-next-line no-nested-ternary
           return last && pathnames.length > 1 ? (
             <Typography to={to} key={to} className={classes.lastCrumbText}>
-              {breadcrumbMap[to].name}
+              {breadcrumbMap[to] ? breadcrumbMap[to].name : 'loading'}
             </Typography>
           ) : (
-            breadcrumbMap[to].linkable
+            breadcrumbMap[to] !== undefined && breadcrumbMap[to].linkable
               ? (
                 <Link to={to} key={to} className={classes.crumbLinkText}>
-                  {breadcrumbMap[to].name}
+                  {breadcrumbMap[to] ? breadcrumbMap[to].name : 'loading'}
                 </Link>
               )
               : (
                 <Typography to={to} key={to} className={classes.crumbText}>
-                  {breadcrumbMap[to].name}
+                  {breadcrumbMap[to] ? breadcrumbMap[to].name : 'loading'}
                 </Typography>
               )
           );

@@ -12,7 +12,8 @@ export default function Navbar(props) {
   /* authenticated is a boolean and userRole is a string that can be
     can either be: {'', 'buyer', 'vendor', 'agency'} */
   const {
-    authenticated, userRole, setAuthAndRefreshNavbar, setUserRoleAndRefreshNavbar,
+    authenticated, userRole, setAuthAndRefreshNavbar, setUserRoleAndRefreshNavbar, loading,
+    accountApproved, registrationApproved,
   } = props;
   const path = useLocation().pathname;
   const [click, setClick] = useState(false);
@@ -67,17 +68,24 @@ export default function Navbar(props) {
        || path === '/forsellers' || path === '/about' ? 'navbar' : 'navbar'}
       >
         <div className="navbar-container">
-          <NavLink to="/" onClick={closeMobileMenu}>
-            <img src={logo} alt="Logo" className="navbar-logo" />
-          </NavLink>
-          <div
-            className="menu-icon"
-            onClick={handleClick}
-            aria-hidden="true"
-          >
-            <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
-          </div>
-          {(authenticated) && (
+          {(!authenticated
+          || (!loading && accountApproved !== false && registrationApproved !== false)) && (
+          <>
+
+            <NavLink to="/" onClick={closeMobileMenu}>
+              <img src={logo} alt="Logo" className="navbar-logo" />
+            </NavLink>
+            <div
+              className="menu-icon"
+              onClick={handleClick}
+              aria-hidden="true"
+            >
+              <i className={click ? 'fas fa-times' : 'fas fa-bars'} />
+            </div>
+          </>
+          )}
+
+          {authenticated && (accountApproved === 'approved' && registrationApproved === 'approved') && accountApproved !== false && registrationApproved !== false && (
             <ul className={click ? 'nav-menu active' : 'nav-menu'}>
               {(click || showDefaultNavbar) && (
               <>
@@ -152,6 +160,74 @@ export default function Navbar(props) {
               </>
               )}
             </ul>
+          )}
+
+          {(authenticated && (accountApproved === 'unapproved' || registrationApproved === 'unapproved')) && accountApproved !== false && registrationApproved !== false && (
+          <ul className={click ? 'nav-menu active' : 'nav-menu'}>
+            {(click || showDefaultNavbar) && (
+            <>
+              <li className="nav-item">
+                <NavLink
+                  to="/forbuyers"
+                  activeClassName="nav-links-active"
+                  className="nav-links"
+                  onClick={closeMobileMenu}
+                >
+                  For Buyers
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  to="/forsellers"
+                  activeClassName="nav-links-active"
+                  className="nav-links"
+                  onClick={closeMobileMenu}
+                >
+                  For Sellers
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  to="/contact"
+                  activeClassName="nav-links-active"
+                  className="nav-links"
+                  onClick={closeMobileMenu}
+                >
+                  Contact
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  to="/about"
+                  activeClassName="nav-links-active"
+                  className="nav-links"
+                  onClick={closeMobileMenu}
+                >
+                  About
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <NavLink
+                  to="/signup"
+                  activeClassName="nav-links-active"
+                  className="nav-links"
+                  onClick={closeMobileMenu}
+                >
+                  Sign Up
+                </NavLink>
+              </li>
+              <li className="nav-item">
+                <div
+                  className="nav-links"
+                  onClick={handleLogOut}
+                  aria-hidden="true"
+                >
+                  Sign Out
+                </div>
+              </li>
+            </>
+            )}
+          </ul>
           )}
 
           {(!authenticated) && (
@@ -233,5 +309,8 @@ Navbar.propTypes = {
   userRole: PropTypes.string.isRequired,
   setAuthAndRefreshNavbar: PropTypes.func.isRequired,
   setUserRoleAndRefreshNavbar: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  accountApproved: PropTypes.string.isRequired,
+  registrationApproved: PropTypes.string.isRequired,
 
 };

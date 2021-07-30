@@ -1,31 +1,30 @@
 /* Container for all Cart Screen display components */
+
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Airtable from 'airtable';
 import {
-  Card, CardContent, Grid, Typography, ButtonBase, makeStyles,
+  Card, CardContent, Grid, Typography, ButtonBase, Button, makeStyles,
 } from '@material-ui/core';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import CartItem from './CartItem';
 import CartCardHeader from './CartCardHeader';
-import CartEmptyScreen from './CartEmptyScreen';
 import Fruit3 from '../../assets/images/Fruit3.svg';
 import Fruit4 from '../../assets/images/Fruit4.svg';
 import '../../styles/fonts.css';
-import { store } from '../../lib/redux/store';
-import { base } from '../../lib/airtable/airtable';
+
+// airtable setup
+const airtableConfig = {
+  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
+};
+
+const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 // custom styling
 const useStyles = makeStyles({
   root: {
     position: 'relative',
     minHeight: '100vh',
-  },
-  container: {
-    position: 'relative',
-    width: '73%',
-    alignSelf: 'center',
-    margin: 'auto',
-    minWidth: '700px',
   },
   cartHeader: {
     fontFamily: 'Work Sans',
@@ -34,11 +33,17 @@ const useStyles = makeStyles({
     color: '#373737',
     paddingTop: '2%',
   },
+  container: {
+    position: 'relative',
+    width: '78%',
+    alignSelf: 'center',
+    margin: 'auto',
+    minWidth: '700px',
+  },
   cartCard: {
     paddingTop: '10px',
     paddingLeft: '30px',
     paddingRight: '30px',
-    paddingBottom: '10px',
     margin: 'auto',
     boxShadow: '0px 0px 20px rgba(0, 0, 0, 0.1)',
     borderRadius: '15px',
@@ -89,29 +94,23 @@ const useStyles = makeStyles({
     fontWeight: 'normal',
     fontSize: '24px',
     lineHeight: '140%',
-    textTransform: 'uppercase',
     color: '#FFFFFF',
-    padding: 5,
-    paddingInline: 20,
-
     background: '#53AA48',
-    borderRadius: '6px',
-    textDecoration: 'none',
   },
   fruit3: {
     position: 'absolute',
-    width: '180px',
+    width: '140px',
     height: 'auto',
-    right: '.5vw',
-    top: '50vh',
+    right: '1%',
+    bottom: '22%',
     zIndex: '-2',
   },
   fruit4: {
     position: 'absolute',
-    width: '160px',
+    width: '140px',
     height: 'auto',
-    right: '0vw',
-    top: '69vh',
+    right: '0%',
+    bottom: '10%',
     zIndex: '-1',
   },
   green: {
@@ -121,8 +120,6 @@ const useStyles = makeStyles({
 
 function CartScreen() {
   const [cartListings, setCartListings] = useState([]);
-  const [farmsDict, setFarmsDict] = useState({});
-  // dictionary of farms in form { id: [name, subtotal]}
   const [subtotal, setSubtotal] = useState(0);
   const [loading, setLoading] = useState(true);
   // TODO: style error message display
@@ -130,80 +127,39 @@ function CartScreen() {
 
   const classes = useStyles();
 
-  // calls airtable on start to fetch listings in cart, sort by farm, and calculate subtotals
-  useEffect(async () => {
+  // calls airtable on start to fetch listings in cart and calculate a subtotal
+  useEffect(() => {
     setSubtotal(0);
-
-    base('Users').find(store.getState().userData.user.id, (err, user) => {
-      if (err) { setErrorMessage(err.message); return; }
-      let items = [];
-      const tempFarms = {};
-
-      // fetch each item in the user's cart
-      if (user.fields.cart) {
-        user.fields.cart.forEach((id) => {
-          base('Reserved Listings').find(id, (e, item) => {
-            if (e) { setErrorMessage(e.message); return; }
-            items = [...items, item];
-            setCartListings(items);
-
-            // fetch item's farm and add to farms if necessary
-            const farmID = item.fields['farm id'];
-            base('Farms').find(farmID, (error, farm) => {
-              if (error) { setErrorMessage(error.message); }
-              if (!tempFarms[farmID]) {
-              // this was my solution to needing to store a subtotal for each farm
-                tempFarms[farmID] = { name: farm.fields['farm name'], subtotal: 0 };
-              }
-
-              // fetch price of listing and add to farm subtotal and overall subtotal
-              // this call is nested to ensure it is called after any farm objects are created
-              base('Listings').find(item.fields['listing id'][0], (er, record) => {
-                if (er) { setErrorMessage(er.message); return; }
-                const useAgencyPrice = store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type'];
-                const currCartItemPrice = useAgencyPrice ? record.fields['agency price per grouped produce type'] : record.fields['standard price per grouped produce type'];
-                const currCartItemCost = item.fields.pallets * record.fields['grouped produce type per pallet'] * currCartItemPrice;
-                tempFarms[farmID].subtotal += currCartItemCost;
-                setSubtotal((prevTotal) => (prevTotal + currCartItemCost));
-              });
-            });
-            setFarmsDict(tempFarms);
-          });
-        });
-      }
-    });
-    setLoading(false);
+    base('Reserved Listings').select({ view: 'Grid view' }).all().then((records) => {
+      records.map((element) => base('Listings').find(element.fields['listing id'][0], (err, record) => {
+        const currCartItemPrice = element.fields.pallets * record.fields['standard price per pallet'];
+        setSubtotal((prevTotal) => (prevTotal + currCartItemPrice));
+      }));
+      setCartListings(records);
+      setLoading(false);
+    })
+      .catch((error) => {
+        setErrorMessage(error.message);
+      });
   }, []);
 
-  // todo: update farm subtotals as well
   // update subtotal function that is passed to each listing detail allowing adjustments
   // (ex. on quantity change, or listing is removed)
-  function updateSubtotal(change, farmID) {
-    const newFarms = farmsDict;
-    newFarms[farmID].subtotal += change;
-    setFarmsDict(newFarms);
+  function updateSubtotal(change) {
     setSubtotal((prevTotal) => (prevTotal + change));
   }
 
   // removes reservedListing from airtable and cartListings state
   // is also passed to detail view that has the delete button
-  function removeListing(id, farmID) {
+  function removeListing(id) {
     base('Reserved Listings').destroy([id],
       (err) => {
         if (err) {
-          setErrorMessage(err.message);
+          setErrorMessage(err);
         }
       });
 
-    // update the listings in the cartListings array
-    // remove the farm if it has no remaining listings
-    setCartListings((prevListings) => {
-      const newListings = prevListings.filter((listing) => listing.id !== id);
-      if (newListings.filter((listing) => listing.fields['farm id'][0] === farmID).length === 0) {
-        delete farmsDict[farmID];
-      }
-      return newListings;
-    });
+    setCartListings(cartListings.filter((listing) => listing.id !== id));
   }
 
   return (
@@ -212,84 +168,52 @@ function CartScreen() {
         <Typography className={classes.cartHeader}>
           Cart
         </Typography>
-        {!loading && (cartListings.length !== 0 ? (
-          <>
-            { Object.entries(farmsDict).map(([id, farm]) => (
-              <>
-                <Typography className={classes.farmLabel}>
-                  Shopping from
-                  {' '}
-                  {farm.name}
-                </Typography>
+        <Typography className={classes.farmLabel}>
+          Shopping from Farm
+        </Typography>
 
-                <Card className={classes.cartCard}>
-                  <CardContent>
-                    <CartCardHeader />
-                    { cartListings.filter((listing) => listing.fields['farm id'][0] === id).map((cartListing) => (
-                      <CartItem
-                        key={cartListing.id}
-                        reservedListingID={cartListing.id}
-                        pallets={cartListing.fields.pallets}
-                        listingID={cartListing.fields['listing id']}
-                        farmID={cartListing.fields['farm id'][0]}
-                        updateSubtotal={updateSubtotal}
-                        removeListing={removeListing}
-                      />
-                    ))}
-                    <Grid container alignItems="center" justify="flex-end">
-                      <Grid item xs />
-                      <Grid item>
-                        <Typography gutterBottom className={classes.subtotalLabel} align="center">
-                          SUBTOTAL:
-                        </Typography>
-                      </Grid>
-                      <Grid item xs={3} s={2} lg={2}>
-                        <Typography gutterBottom className={classes.subtotal} align="right">
-                          $
-                          {parseFloat(farm.subtotal).toFixed(2)}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              </>
-            ))}
-
-            {Object.entries(farmsDict).length > 1 && (
-            <Grid container alignItems="center" justify="flex-end" style={{ paddingTop: 24 }}>
-              <Grid item xs />
-              <Grid item>
-                <Typography gutterBottom className={classes.subtotalLabel} align="center">
-                  OVERALL SUBTOTAL:
-                </Typography>
+        {!loading && (
+          <Card className={classes.cartCard}>
+            <CardContent>
+              <CartCardHeader />
+              { cartListings.map((cartListing) => (
+                <CartItem
+                  key={cartListing.id}
+                  reservedListingID={cartListing.id}
+                  pallets={cartListing.fields.pallets}
+                  listingID={cartListing.fields['listing id']}
+                  updateSubtotal={updateSubtotal}
+                  removeListing={removeListing}
+                />
+              ))}
+              <Grid container alignItems="center" justify="flex-end">
+                <Grid item xs />
+                <Grid item xs={3} md={2}>
+                  <Typography gutterBottom className={classes.subtotalLabel} align="center">
+                    SUBTOTAL:
+                  </Typography>
+                </Grid>
+                <Grid item xs={1}>
+                  <Typography gutterBottom className={classes.subtotal} align="center">
+                    $
+                    {parseFloat(subtotal).toFixed(2)}
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid item xs={3} s={2} md={2}>
-                <Typography gutterBottom className={classes.subtotal} align="center">
-                  $
-                  {parseFloat(subtotal).toFixed(2)}
-                </Typography>
-              </Grid>
-            </Grid>
-            )}
-            <span className={classes.buttonContainer}>
-              <ButtonBase>
-                <ArrowBack className={classes.green} />
-                <div className={classes.continueShoppingButton}>Continue shopping</div>
-              </ButtonBase>
-              <Link className={classes.checkoutButton} to="/cart/checkout">
-                Proceed
-              </Link>
-            </span>
-          </>
-        ) : (<CartEmptyScreen />))}
+            </CardContent>
+          </Card>
+        )}
+        <span className={classes.buttonContainer}>
+          <ButtonBase>
+            <ArrowBack className={classes.green} />
+            <div className={classes.continueShoppingButton}>Continue shopping</div>
+          </ButtonBase>
+          <Button variant="contained" className={classes.checkoutButton}>Checkout</Button>
+        </span>
+        {errorMessage && <p>{errorMessage}</p>}
       </div>
-      {errorMessage && <p>{errorMessage}</p>}
-      {!loading && cartListings.length !== 0 && (
-        <>
-          <img src={Fruit3} alt="" className={classes.fruit3} />
-          <img src={Fruit4} alt="" className={classes.fruit4} />
-        </>
-      )}
+      <img src={Fruit3} alt="" className={classes.fruit3} />
+      <img src={Fruit4} alt="" className={classes.fruit4} />
     </div>
 
   );

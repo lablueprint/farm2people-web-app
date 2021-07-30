@@ -72,7 +72,7 @@ const useStyles = makeStyles({
     color: '#FFFFFF',
     paddingBottom: '5%',
   },
-  startShoppingButton: {
+  signUpForFreeButton: {
     fontFamily: 'Work Sans',
     background: '#53AA48',
     borderRadius: '6px',
@@ -150,12 +150,6 @@ const useStyles = makeStyles({
 export default function ForSellersScreen() {
   const classes = useStyles();
   const handleContactClick = () => { history.push('/contact'); };
-  const handleSignInClick = () => {
-    history.push('/signin');
-  };
-  const handleSignUpClick = () => {
-    history.push('/signup');
-  };
   return (
     <div>
       <div className={classes.headerContainer}>
@@ -164,7 +158,7 @@ export default function ForSellersScreen() {
           <Typography className={classes.introText}>
             Sell your produce directly to a network of local food providers
           </Typography>
-          <Button onClick={handleSignInClick} className={classes.startShoppingButton} variant="contained" color="primary" type="button">Start Shopping</Button>
+          <Button className={classes.signUpForFreeButton} variant="contained" color="primary" type="button">Sign Up For Free</Button>
         </div>
       </div>
       <div className={classes.centerContainer}>
@@ -191,7 +185,7 @@ export default function ForSellersScreen() {
         <h3 className={classes.sellerSignUpText}>
           We are here to support you! Sell your produce today.
         </h3>
-        <Button onClick={handleSignUpClick} className={classes.signUpButtonGreen} variant="contained" color="primary" type="button">Sign Up Now</Button>
+        <Button className={classes.signUpButtonGreen} variant="contained" color="primary" type="button">Sign Up Now</Button>
         <div className={classes.horizontalContainer}>
           <Typography className={classes.questionText}>
             Have questions? Visit the&nbsp;

@@ -1,7 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container, Grid, Typography } from '@material-ui/core';
-import PropTypes from 'prop-types';
 import FilterMenu from './FilterMenu';
 import PriceMenu from './PriceMenu';
 import SortMenu from './SortMenu';
@@ -39,13 +38,7 @@ const useStyles = makeStyles({
 });
 
 /* Sidebar with filter selections for types + sorting */
-export default function MarketplaceSidebar({
-  updateSortOrder,
-  itemTypeFilters, itemsPerItemType, onItemFilterChange,
-  prodTypeFilters, itemsPerProdType, onProduceFilterChange,
-  priceOptions, itemsPerPrice, onPriceFilterChange,
-  farmSeasonFilters, itemsPerFarmSeason, onSeasonFilterChange,
-}) {
+export default function MarketplaceSidebar() {
   const classes = useStyles();
 
   return (
@@ -62,58 +55,20 @@ export default function MarketplaceSidebar({
       <Typography className={classes.filterText}>
         FILTERS
       </Typography>
-      <SortMenu
-        sortOptions={[
-          { label: 'Sell by date: earliest first', target: 'sell by date' },
-          { label: 'First available date: earliest first', target: 'first available date' },
-          { label: 'Available until: earliest first', target: 'available until' },
-          { label: 'Recently added first', target: 'date entered' },
-          { label: 'Alphabetical order', target: 'produce name' },
-        ]}
-        updateSortOrder={updateSortOrder}
-      />
-      <FilterMenu
-        menuTitle="Item Type"
-        filterOptions={itemTypeFilters}
-        itemsPerOption={itemsPerItemType}
-        onFilterChange={onItemFilterChange}
-        isLast={false}
-      />
+      <SortMenu sortOptions={['Sell by date: earliest first', 'First available date: earliest first', 'Available until: earliest first', 'Recently added first', 'Alphabetical order']} />
+      {/* TODO: Item type menu only shows for agency buyer view */}
+      <FilterMenu menuTitle="Item Type" filterOptions={['Agency Price', 'Standard Items']} isLast={false} />
       <FilterMenu
         menuTitle="Produce Type"
-        filterOptions={prodTypeFilters}
-        itemsPerOption={itemsPerProdType}
+        filterOptions={['Vegetables', 'Fruits', 'Legumes', 'Grains', 'Oats']}
         isLast={false}
-        onFilterChange={onProduceFilterChange}
       />
-      <PriceMenu
-        priceOptions={priceOptions}
-        itemsPerPrice={itemsPerPrice}
-        onFilterChange={onPriceFilterChange}
-      />
+      <PriceMenu priceOptions={[0, 15, 30, 45, 75, 60]} />
       <FilterMenu
         menuTitle="Farming Season"
-        filterOptions={farmSeasonFilters}
-        itemsPerOption={itemsPerFarmSeason}
+        filterOptions={['Fall', 'Winter', 'Summer', 'Spring']}
         isLast
-        onFilterChange={onSeasonFilterChange}
       />
     </Container>
   );
 }
-
-MarketplaceSidebar.propTypes = {
-  updateSortOrder: PropTypes.func.isRequired,
-  itemTypeFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
-  onItemFilterChange: PropTypes.func.isRequired,
-  itemsPerItemType: PropTypes.arrayOf(PropTypes.number).isRequired,
-  prodTypeFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
-  itemsPerProdType: PropTypes.arrayOf(PropTypes.number).isRequired,
-  onProduceFilterChange: PropTypes.func.isRequired,
-  priceOptions: PropTypes.arrayOf(PropTypes.number).isRequired,
-  itemsPerPrice: PropTypes.arrayOf(PropTypes.number).isRequired,
-  onPriceFilterChange: PropTypes.func.isRequired,
-  farmSeasonFilters: PropTypes.arrayOf(PropTypes.string).isRequired,
-  itemsPerFarmSeason: PropTypes.arrayOf(PropTypes.number).isRequired,
-  onSeasonFilterChange: PropTypes.func.isRequired,
-};

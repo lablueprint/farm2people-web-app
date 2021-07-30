@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { green } from '@material-ui/core/colors';
 import AddIcon from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
-import AddListingPopup from './AddListingPopup';
+import AddListing from './AddListing';
 
 const useStyles = makeStyles({
   button: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles({
 });
 
 export default function AddListingButton({
-  createRecord, produceTypes,
+  createRecord,
 }) {
   const classes = useStyles();
   const [editActive, setEditActive] = useState(false);
@@ -35,26 +35,17 @@ export default function AddListingButton({
   };
   return (
     <>
-      <Button variant="contained" size="medium" color="primary" onClick={handleClickOpen} className={classes.button}>
+      <Button variant="contained" size="medium" color="primary" onClick={handleClickOpen} className={classes.button} classes={{ label: classes.text }}>
         <AddIcon />
         <Typography variant="button" display="block" className={classes.text}>
           Add Listing
         </Typography>
       </Button>
-      <AddListingPopup
-        closeDialog={handleClose}
-        isOpen={editActive}
-        modifyListings={createRecord}
-        produceTypes={produceTypes}
-      />
+      <AddListing closeDialog={handleClose} isOpen={editActive} modifyListings={createRecord} />
     </>
   );
 }
 
 AddListingButton.propTypes = {
   createRecord: PropTypes.func.isRequired,
-  produceTypes: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string,
-    fields: PropTypes.shape({}),
-  })).isRequired,
 };

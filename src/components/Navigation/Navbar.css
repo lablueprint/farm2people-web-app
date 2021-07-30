@@ -5,7 +5,7 @@ integrate media queries with makeStyles */
   position: sticky; 
   top: 0;
   background: white;
-  z-index:4; 
+  z-index:1; 
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
   min-height: 90px;
   display: flex;
@@ -107,7 +107,6 @@ color: #373737;
 
   .nav-links:hover {
     background-color: #242424;
-    height: 40%;
     color: #ffffff;
     border-radius: 0;
     text-decoration: none;

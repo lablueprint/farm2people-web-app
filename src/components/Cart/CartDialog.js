@@ -51,19 +51,10 @@ const useStyles = makeStyles({
     textAlign: 'center',
     color: '#373737',
   },
-  alertTitle: {
-    fontFamily: 'Work Sans',
-    fontStyle: 'normal',
-    fontWeight: 700,
-    fontSize: '17px',
-    lineHeight: '140%',
-    textAlign: 'center',
-    color: '#373737',
-  },
 });
 
 function CartDialog({
-  alert, title, message, close, getResponse,
+  alert, message, close, getResponse,
 }) {
   const classes = useStyles();
 
@@ -74,14 +65,7 @@ function CartDialog({
       aria-labelledby="Alert Dialog"
       className={classes.alertCard}
     >
-
       <DialogContent>
-        {title != null
-        && (
-        <Typography gutterBottom className={classes.alertTitle}>
-          {title}
-        </Typography>
-        )}
         <Typography gutterBottom className={classes.alertText}>
           {message}
         </Typography>
@@ -113,11 +97,6 @@ CartDialog.propTypes = {
   close: PropTypes.func.isRequired,
   message: PropTypes.string.isRequired,
   getResponse: PropTypes.bool.isRequired,
-  title: PropTypes.string,
-};
-
-CartDialog.defaultProps = {
-  title: null,
 };
 
 export default CartDialog;

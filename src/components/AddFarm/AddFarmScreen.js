@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import './AddFarmScreen.css';
 import { makeStyles } from '@material-ui/core/styles';
-import { base } from '../../lib/airtable/airtable';
 
 const useStyles = makeStyles({
   root: {
@@ -13,6 +12,11 @@ const useStyles = makeStyles({
     minHeight: '100vh',
   },
 });
+// Airtable set-up here
+const Airtable = require('airtable');
+
+const base = new Airtable({ apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY })
+  .base(process.env.REACT_APP_AIRTABLE_BASE_KEY);
 
 export default function AddFarmScreen() {
   const [farmName, setFarmName] = useState(null);

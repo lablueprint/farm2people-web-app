@@ -6,11 +6,9 @@ import InventoryManagerScreen from './components/InventoryManager';
 import MarketplaceScreen from './components/Marketplace';
 import ContactScreen from './components/Contact';
 import CartScreen from './components/Cart';
-import { CheckoutScreen, CheckoutSuccess } from './components/Checkout';
 import ProfileScreen from './components/Profile';
 import SignInScreen from './components/SignIn';
 import SignUpScreen from './components/SignUp';
-import { AgencyRegistrationScreen, ProducerRegistrationScreen } from './components/Registration';
 import {
   LandingScreen, ForBuyersScreen, ForSellersScreen, AboutScreen,
 } from './components/PublicView';
@@ -23,7 +21,6 @@ export default function App() {
   const publicPermission = ['']; /* only for users who are not logged in */
   const sellingPermissions = ['vendor'];
   const purchasingPermissions = ['buyer', 'agency'];
-  const orgPermissions = ['vendor', 'agency'];
   const allPermissions = ['buyer', 'agency', 'vendor'];
   const getInitialRole = () => (store.getState().userData == null ? '' : store.getState().userData.user.fields['user type']);
   const getInitialAuth = () => (store.getState().authenticated);
@@ -51,8 +48,6 @@ export default function App() {
           <PrivateRoute allowedRoles={purchasingPermissions} path="/marketplace" exact component={MarketplaceScreen} />
           <PrivateRoute allowedRoles={allPermissions} path="/profile" exact component={ProfileScreen} />
           <PrivateRoute allowedRoles={purchasingPermissions} path="/cart" exact component={CartScreen} />
-          <PrivateRoute allowedRoles={purchasingPermissions} path="/cart/checkout" exact component={CheckoutScreen} />
-          <PrivateRoute allowedRoles={purchasingPermissions} path="/cart/success" exact component={CheckoutSuccess} />
           <Route path="/contact" exact component={ContactScreen} />
           <Route
             path="/signin"
@@ -69,8 +64,6 @@ export default function App() {
           <PrivateRoute allowedRoles={publicPermission} path="/forbuyers" exact component={ForBuyersScreen} />
           <PrivateRoute allowedRoles={publicPermission} path="/forsellers" exact component={ForSellersScreen} />
           <PrivateRoute allowedRoles={publicPermission} path="/about" exact component={AboutScreen} />
-          {userRole === 'agency' ? <PrivateRoute allowedRoles={orgPermissions} path="/registration" exact component={AgencyRegistrationScreen} />
-            : <PrivateRoute allowedRoles={orgPermissions} path="/registration" exact component={ProducerRegistrationScreen} /> }
         </Switch>
         <Footer />
       </Router>

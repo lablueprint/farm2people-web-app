@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import Airtable from 'airtable';
 import { makeStyles } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-import AddCartPopup from './Checkout/AddCartPopup';
 import FarmCard from './FarmCard';
 import ProduceCard from './ProduceCard';
 import MarketplaceHeader from './Header/MarketplaceHeader';
 import MarketplaceSidebar from './Sidebar/MarketplaceSidebar';
-import { base } from '../../lib/airtable/airtable';
 import '../../styles/fonts.css';
-import { store } from '../../lib/redux/store';
+import CardView from './CardView';
 
 const useStyles = makeStyles({
   root: {
@@ -21,247 +20,78 @@ const useStyles = makeStyles({
   },
 });
 
-const INITIAL_POPUP_PRODUCE = {
-  crop: '',
-  price: 0,
-  farmName: '',
-  palletsAvailable: 0,
-  produceImg: '',
-  listingID: '',
-  farmID: '',
+// Airtable set-up
+const airtableConfig = {
+  apiKey: process.env.REACT_APP_AIRTABLE_USER_KEY,
+  baseKey: process.env.REACT_APP_AIRTABLE_BASE_KEY,
 };
+
+const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
+
 export default function MarketplaceScreen() {
   const [farmListings, setFarmListings] = useState([]);
-  const [filteredFarms, setFilteredFarms] = useState([]);
   const [produceListings, setProduceListings] = useState([]);
-  const [filteredProduce, setFilteredProduce] = useState([]);
   const [tabValue, setTabValue] = useState('all'); // Either 'all' for produce or 'farm' for farms
   const [numResults, setNumResults] = useState(10); // # of results to display
-  const [popupProduce, setPopupProduce] = useState(INITIAL_POPUP_PRODUCE);
-  const [open, setOpen] = useState(false);
-  const [searchTerms, setSearchTerms] = useState(''); // user entered search terms
-
+  const [isSelected, setIsSelected] = useState(false);
+  // const [cardName, setCardName] = useState('');
+  // const [cardImage, setCardImage] = useState('');
+  const [produceID, setProduceID] = useState('');
+  const [produceDict, setProduceDict] = useState({});
+  const classes = useStyles();
   function getFarmRecords() {
     base('Farms').select({ view: 'Grid view' }).all()
       .then((farmRecords) => {
         setFarmListings(farmRecords);
-        setFilteredFarms(farmRecords);
       });
   }
-
-  const getInitialRole = () => (store.getState().userData == null ? '' : store.getState().userData.user.fields['user type']);
   // Get prod id, grouped unit type, price per grouped unit for each produce record
-  function getProduceRecords() {
-    base('Listings').select({ view: 'Grid view' }).all()
+  async function getProduceRecords() {
+    // TODO: change Listing UPDATED back to Listings
+    await base('Listing UPDATED').select({ view: 'Grid view' }).all()
       .then((produceRecords) => {
-        const processedProduceRecords = [];
+        const filteredProduceRecords = [];
+        const tempProduceDict = produceDict;
         produceRecords.forEach((record) => {
-          // If this record is private, skip it so it's not displayed
-          if (record.fields.privatized) {
-            return;
-          }
           const pricePerGroup = record.fields['standard price per grouped produce type'] || 0;
-          const agencyPricePerGroup = record.fields['agency price per grouped produce type'] || 0;
           const groupPerPallet = record.fields['grouped produce type per pallet'] || 0;
-          let palletPrice = pricePerGroup * groupPerPallet;
-          let hasAgencyPrice = false;
-          const userRole = getInitialRole();
-          if (userRole === 'agency' && agencyPricePerGroup < pricePerGroup) {
-            hasAgencyPrice = true;
-            palletPrice = agencyPricePerGroup * groupPerPallet;
-          }
-          // Capitalise 1st letter of produce type to match filtering
-          let produceType = record.fields['produce category'] ? record.fields['produce category'][0] : 'No category';
-          produceType = produceType.charAt(0).toUpperCase() + produceType.slice(1);
+          const palletPrice = pricePerGroup * groupPerPallet;
           const recordInfo = {
             listingID: record.fields['listing id'],
             produceID: record.fields.produce ? record.fields.produce[0] : -1,
             farmID: record.fields['farm id'],
-            palletPrice,
+            palletPrice: palletPrice !== 0 ? palletPrice : -1,
             season: record.fields['growing season'] || 'No season',
-            produceType,
-            palletsAvailable: record.fields['pallets available'] || 0,
-            hasAgencyPrice,
-            // fields for sorting
-            'sell by date': record.fields['sell by date'] || 0,
-            'first available date': record.fields['first available date'] || 0,
-            'available until': record.fields['available until'] || 0,
-            'date entered': record.fields['data entered'] || 0,
-            'produce name': record.fields['produce name'] || 'No name',
           };
-          processedProduceRecords.push(recordInfo);
+
+          const farmArr = record.fields['farm id'].toString().split(',');
+          base('Farms').find(farmArr[0]).then((farmObj) => {
+            tempProduceDict[record.fields.produce ? record.fields.produce[0] : -1] = {
+              produceName: 'Produce Name',
+              image: 'Image Name',
+              description: record.fields.details || 'Description not found',
+              palletPrice: palletPrice !== 0 ? palletPrice : -1,
+              expirationDate: record.fields['sell by date'] || 'Date not found',
+              dateEntered: record.fields['date entered'] || 'Date not found',
+              firstAvailable: record.fields['first available date'] || 'Date not found',
+              availableUntil: record.fields['available until'] || 'Date not found',
+              season: record.fields['growing season'] || 'No season',
+              unitType: record.fields['grouped produce type'] || 'Type not found',
+              unitsPerPallet: record.fields['master units per pallet'] || -1,
+              lbsPerUnit: record.fields['lbs per grouped produce type'] || -1,
+              unitsAvailable: record.fields['pallets available'] || -1,
+              unitsPending: record.fields['pallets pending'] || -1,
+              unitsSold: record.fields['pallets sold'] || -1,
+              farmName: farmObj.fields['farm name'] || 'Farm not found',
+              individualUnit: record.fields['individual produce unit'] || 'Unit not found',
+              bunchesCrate: record.fields['grouped produce type per master unit'] || 'Bunches not found',
+            };
+          });
+          filteredProduceRecords.push(recordInfo);
         });
-        setProduceListings(processedProduceRecords);
+        setProduceDict(tempProduceDict);
+        setProduceListings(filteredProduceRecords);
       });
-  }
-
-  // Passed to sidebar and sort menu component, tracks current sort option
-  const [sortOrder, setSortOrder] = useState('sell by date');
-
-  // Manages farm season filtering (fx, filter options, # of items per option)
-  const [checkedSeasonFilters, setCheckedSeasonFilters] = useState([]);
-  // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
-  const onSeasonFilterChange = (newFilters) => {
-    setCheckedSeasonFilters(newFilters);
-  };
-  const farmSeasonFilters = ['Fall', 'Winter', 'Summer', 'Spring'];
-  const [itemsPerFarmSeason, setSeasonItems] = useState([]);
-
-  // Manages item type filtering
-  const [checkedItemTypes, setCheckedItemTypes] = useState([]);
-  const onItemFilterChange = (newFilters) => {
-    setCheckedItemTypes(newFilters);
-  };
-  const itemTypeFilters = ['Agency Price', 'Standard Items'];
-  const [itemsPerItemType, setItemsPerItemType] = useState([]);
-
-  // Manages produce type filtering
-  const [checkedProdFilters, setCheckedProdFilters] = useState([]);
-  // Called by child comp when season filters changed, sets new filters or empty [] if none/reset
-  const onProduceFilterChange = (newFilters) => {
-    setCheckedProdFilters(newFilters);
-  };
-  const produceTypeFilters = ['Vegetable', 'Fruit', 'Legume', 'Grain', 'Oat'];
-  const [itemsPerProdType, setProdItems] = useState([]);
-
-  // Manages pallet price filtering
-  const [checkedPriceFilters, setCheckedPriceFilters] = useState([]);
-  const [appliedRange, setAppliedRange] = useState([]); // [] if no applied min/max
-  const onPriceFilterChange = (newFilters) => {
-    // Parse the min + max #s from each range by splitting + filtering the string
-    const newPriceRanges = [];
-    newFilters.forEach((prices) => {
-      let nums = prices.replace(/\D/g, '#'); // regex expr to replace non-digits w/ #
-      nums = nums.split('#').filter((elem) => elem !== ''); // split into array, filter to only get nums
-      if (prices.includes('APPLIED')) { // Apply new min/max range
-        setAppliedRange(nums);
-      } else if (prices.includes('UNAPPLY')) { // Unapply range
-        setAppliedRange([]);
-      } else { // Filter option
-        newPriceRanges.push(nums);
-      }
-    });
-    setCheckedPriceFilters(newPriceRanges);
-  };
-  const priceOptions = [0, 15, 30, 45, 60, 75];
-  const [itemsPerPrice, setPriceItems] = useState([]);
-
-  // Fx to get # of items per filter option to display in the filter menus
-  function getNumItemsPerCategory() {
-    // Get items per farming season
-    const perSeason = [];
-    farmSeasonFilters.forEach((season) => {
-      const currentSeasonItems = produceListings.filter(
-        (listing) => listing.season === season,
-      );
-      perSeason.push(currentSeasonItems.length);
-    });
-    setSeasonItems(perSeason);
-
-    // Get items per item type (agency or standard)
-    const numAgencyItems = produceListings.filter((listing) => listing.hasAgencyPrice).length;
-    const numStandardItems = produceListings.length - numAgencyItems;
-    setItemsPerItemType([numAgencyItems, numStandardItems]);
-
-    // Get items per produce type
-    const perProdType = [];
-    produceTypeFilters.forEach((prodType) => {
-      const currentProdItems = produceListings.filter(
-        (listing) => listing.produceType === prodType,
-      );
-      perProdType.push(currentProdItems.length);
-    });
-    setProdItems(perProdType);
-
-    // Get items per price range (0-15, 15-30, 30-45, 45-60, 60-75)
-    const perPrice = [0, 0, 0, 0, 0];
-    produceListings.forEach((listing) => {
-      const thisPrice = listing.palletPrice;
-      if (thisPrice >= priceOptions[0] && thisPrice <= priceOptions[1]) {
-        perPrice[0] += 1;
-      }
-      if (thisPrice >= priceOptions[1] && thisPrice <= priceOptions[2]) {
-        perPrice[1] += 1;
-      }
-      if (thisPrice >= priceOptions[2] && thisPrice <= priceOptions[3]) {
-        perPrice[2] += 1;
-      }
-      if (thisPrice >= priceOptions[3] && thisPrice <= priceOptions[4]) {
-        perPrice[3] += 1;
-      }
-      if (thisPrice >= priceOptions[4] && thisPrice <= priceOptions[5]) {
-        perPrice[4] += 1;
-      }
-    });
-    setPriceItems(perPrice);
-  }
-
-  // Go through the selected filter ranges + check if this price w/in any of them
-  function inFilterPriceRange(num) {
-    let output = false;
-    checkedPriceFilters.forEach((range) => {
-      const priceMin = parseInt(range[0], 10);
-      const priceMax = parseInt(range[1], 10);
-      if (num >= priceMin && num <= priceMax) {
-        output = true;
-      }
-    });
-    return output;
-  }
-
-  function inAppliedRange(num) {
-    const priceMin = parseInt(appliedRange[0], 10);
-    const priceMax = parseInt(appliedRange[1], 10);
-    if (num >= priceMin && num <= priceMax) {
-      return true;
-    }
-    return false;
-  }
-
-  // sortedListings needs to be separate and non-state to prevent display lag
-  const sortedListings = produceListings;
-  // sort by provided sortOrder if there is one, otherwise no sort
-  sortedListings.sort((firstListing, secondListing) => (
-    firstListing[sortOrder] > secondListing[sortOrder] ? 1 : -1
-  ));
-
-  // Limits rendered produced cards to only those matching the selected filters
-  function filterProduce() {
-    let filteredListings = sortedListings;
-    if (checkedSeasonFilters.length > 0) {
-      filteredListings = filteredListings.filter(
-        (listing) => checkedSeasonFilters.includes(listing.season),
-      );
-    }
-    if (checkedProdFilters.length > 0) {
-      filteredListings = filteredListings.filter(
-        (listing) => checkedProdFilters.includes(listing.produceType),
-      );
-    }
-    // If applied range exists, hard limit to min/max
-    if (appliedRange.length > 0) {
-      filteredListings = filteredListings.filter(
-        (listing) => inAppliedRange(listing.palletPrice),
-      );
-    }
-    if (checkedPriceFilters.length > 0) {
-      filteredListings = filteredListings.filter(
-        (listing) => inFilterPriceRange(listing.palletPrice),
-      );
-    }
-    // Only filter if 1 of standard/agency options checked (if both, filtering is redundant)
-    if (checkedItemTypes.length === 1) {
-      if (checkedItemTypes[0] === 'Agency Price') {
-        filteredListings = filteredListings.filter(
-          (listing) => listing.hasAgencyPrice === true,
-        );
-      } else {
-        filteredListings = filteredListings.filter(
-          (listing) => listing.hasAgencyPrice === false,
-        );
-      }
-    }
-    setFilteredProduce(filteredListings);
   }
 
   // Get records from Airtable whenever DOM mounts and updates/changes
@@ -269,122 +99,14 @@ export default function MarketplaceScreen() {
     getFarmRecords();
     getProduceRecords();
   }, []);
-  // Make sure # of produce items per category updates whenever produce listings change
-  useEffect(() => {
-    getNumItemsPerCategory();
-  }, [produceListings]);
+  // Get total number of results depending on if produce or farm
+  const totalResults = tabValue === 'all' ? produceListings.length : farmListings.length;
+  return (!isSelected || produceID === 'Produce not found') ? (
 
-  // Make sure that filterProduce + isfilter bool updates whenever any of the filters/sort changes
-  const [isFiltered, setIsFiltered] = useState(false); // True if any filter types are checked
-  useEffect(() => {
-    filterProduce();
-    const newIsFiltered = !(checkedSeasonFilters.length === 0 && checkedProdFilters.length === 0
-      && checkedPriceFilters.length === 0 && appliedRange.length === 0
-      && checkedItemTypes.length === 0);
-    setIsFiltered(newIsFiltered);
-  }, [checkedSeasonFilters, checkedProdFilters, checkedPriceFilters, appliedRange,
-    checkedItemTypes, sortOrder]);
-
-  const classes = useStyles();
-
-  // Get total number of results depending on if (filtered/unfiltered) produce or farm
-  // eslint-disable-next-line no-nested-ternary
-  const totalResults = tabValue === 'all'
-    ? (isFiltered ? filteredProduce.length : produceListings.length) : farmListings.length;
-
-  const handleOpenCartPopup = () => {
-    setOpen(true);
-  };
-  const handleCloseCartPopup = () => {
-    setOpen(false);
-  };
-
-  // helper fx to check any string for search term
-  const checkFieldForSearchTerm = (field) => {
-    const reg = new RegExp(searchTerms, 'i');
-    return field && reg.test(field);
-  };
-
-  const filterFarmsBySearch = () => {
-    const filtered = farmListings.filter((farm) => checkFieldForSearchTerm(farm.fields['farm name']) === true);
-    setFilteredFarms(filtered);
-  };
-
-  // helper fx to async check produce name
-  const searchProduceName = (produce) => {
-    const { produceID } = produce;
-    let containsTerm = false;
-
-    if (produceID === undefined || produceID.length < 5) { return false; }
-
-    return new Promise((resolve) => {
-      base('Produce Type').find(produceID).then((produceObj) => {
-        if (checkFieldForSearchTerm(produceObj.fields['produce type']) === true) { containsTerm = true; }
-        return resolve(containsTerm);
-      });
-    });
-  };
-
-  // helper fx to async check produce farm name
-  const searchProduceFarmName = (produce) => {
-    const { farmID } = produce;
-    let containsTerm = false;
-
-    if (farmID === undefined || farmID[0].length < 5) { return false; }
-
-    const farmArr = farmID.toString().split(',');
-    return new Promise((resolve) => {
-      base('Farms').find(farmArr[0]).then((farmObj) => {
-        if (checkFieldForSearchTerm(farmObj.fields['farm name']) === true) { containsTerm = true; }
-        return resolve(containsTerm);
-      });
-    });
-  };
-
-  // helper fx to check individual produce for name or farm name match to search term
-  async function searchProduce(produce) {
-    return await searchProduceName(produce) || searchProduceFarmName(produce);
-  }
-
-  // filter produce by name/farm match to user search terms
-  async function filterProducebySearch() {
-    const data = Array.from(produceListings);
-    Promise.all(data.map((produce) => searchProduce(produce)))
-    // Use the result of the promises to filter the produceListings
-      .then((result) => setFilteredProduce(data.filter((element, index) => result[index])));
-  }
-
-  // run on submit of search bar (search icon or enter clicked)
-  // may be useful to add any side bar filtering methods here too
-  const filterBySearch = () => {
-    filterProducebySearch();
-    filterFarmsBySearch();
-  };
-
-  return (
     <Grid container className={classes.root}>
-      <AddCartPopup
-        popupProduce={popupProduce}
-        open={open}
-        handleCloseCartPopup={handleCloseCartPopup}
-      />
       <Grid item className={classes.sidebar}>
         {/* Entire marketplace sidebar, contains toolbars for filter selection */}
-        <MarketplaceSidebar
-          updateSortOrder={setSortOrder}
-          itemTypeFilters={itemTypeFilters}
-          itemsPerItemType={itemsPerItemType}
-          onItemFilterChange={onItemFilterChange}
-          prodTypeFilters={produceTypeFilters}
-          itemsPerProdType={itemsPerProdType}
-          onProduceFilterChange={onProduceFilterChange}
-          priceOptions={priceOptions}
-          itemsPerPrice={itemsPerPrice}
-          onPriceFilterChange={onPriceFilterChange}
-          farmSeasonFilters={farmSeasonFilters}
-          itemsPerFarmSeason={itemsPerFarmSeason}
-          onSeasonFilterChange={onSeasonFilterChange}
-        />
+        <MarketplaceSidebar />
       </Grid>
       <Grid item xs>
         {/* Entire marketplace header, contains tabs, view, and search */}
@@ -394,48 +116,27 @@ export default function MarketplaceScreen() {
           totalResults={totalResults}
           numResults={numResults}
           setNumResults={setNumResults}
-          searchTerms={searchTerms}
-          setSearchTerms={setSearchTerms}
-          filterBySearch={filterBySearch}
         />
         <Grid container direction="row" justify="flex-start">
           {/* Map each array of produceListing info to render a ProduceCard */
-            tabValue === 'all' && !isFiltered && sortedListings.map((produce) => (
+            tabValue === 'all' && produceListings.map((produce) => (
               <ProduceCard
                 key={produce.listingID}
-                listingID={produce.listingID}
-                handleOpenCartPopup={handleOpenCartPopup}
-                setPopupProduce={setPopupProduce}
                 /* ProduceCard will get produce name, photo, + farm name by ids */
                 produceID={produce.produceID || null}
                 farmID={produce.farmID || null}
                 palletPrice={produce.palletPrice}
-                palletsAvailable={produce.palletsAvailable}
                 season={produce.season}
-                hasAgencyPrice={produce.hasAgencyPrice}
-              />
-            ))
-          }
-          {/* Map each array of produceListing info to render a ProduceCard */
-            tabValue === 'all' && isFiltered && filteredProduce.map((produce) => (
-              <ProduceCard
-                key={produce.listingID}
-                listingID={produce.listingID}
-                handleOpenCartPopup={handleOpenCartPopup}
-                setPopupProduce={setPopupProduce}
-                /* ProduceCard will get produce name, photo, + farm name by ids */
-                produceID={produce.produceID || null}
-                farmID={produce.farmID || null}
-                palletPrice={produce.palletPrice}
-                palletsAvailable={produce.palletsAvailable}
-                season={produce.season}
-                hasAgencyPrice={produce.hasAgencyPrice}
+                setIsSelected={setIsSelected}
+                setProduceID={setProduceID}
+                produceDict={produceDict}
+                setProduceDict={setProduceDict}
               />
             ))
           }
         </Grid>
         {/* Map each array of farmListing info to render a FarmCard */
-          tabValue === 'farm' && filteredFarms.map((farm) => (
+          tabValue === 'farm' && farmListings.map((farm) => (
             <FarmCard
               key={farm.id}
               farmName={farm.fields['farm name'] || 'No farm name'}
@@ -449,5 +150,10 @@ export default function MarketplaceScreen() {
         }
       </Grid>
     </Grid>
+  ) : (
+    <CardView
+      setIsSelected={setIsSelected}
+      cardRecord={produceDict[produceID]}
+    />
   );
 }

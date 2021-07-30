@@ -5,15 +5,15 @@ import { makeStyles, withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Checkbox from '@material-ui/core/Checkbox';
 import UnitTypeCard from './UnitTypeCard';
-import ListingInputField from '../ListingInputField';
-import Bag from '../../../assets/images/bag.svg';
-import Box from '../../../assets/images/box.svg';
-import Bunch from '../../../assets/images/bunch.svg';
-import Bushel from '../../../assets/images/bushel.svg';
-import Cartons from '../../../assets/images/cartons.svg';
-import Case from '../../../assets/images/case.svg';
-import Crate from '../../../assets/images/crate.svg';
-import Each from '../../../assets/images/each.svg';
+import ListingInputField from '../../ListingInputField';
+import Bag from '../../../../assets/images/bag.svg';
+import Box from '../../../../assets/images/box.svg';
+import Bunch from '../../../../assets/images/bunch.svg';
+import Bushel from '../../../../assets/images/bushel.svg';
+import Cartons from '../../../../assets/images/cartons.svg';
+import Case from '../../../../assets/images/case.svg';
+import Crate from '../../../../assets/images/crate.svg';
+import Each from '../../../../assets/images/each.svg';
 
 const useStyles = makeStyles({
   heading: {

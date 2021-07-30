@@ -11,7 +11,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import Grid from '@material-ui/core/Grid';
 import Collapse from '@material-ui/core/Collapse';
-import ListingInputField from './ListingInputField';
+import ListingInputField from '../ListingInputField';
 
 const useStyles = makeStyles({
   root: {

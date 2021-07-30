@@ -12,9 +12,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import LockOpenOutlinedIcon from '@material-ui/icons/LockOpenOutlined';
 import LockIcon from '@material-ui/icons/Lock';
 import IconButton from '@material-ui/core/IconButton';
-import GreenCheckbox from './GreenCheckbox';
+import GreenCheckbox from '../GreenCheckbox';
 import EditListingPopup from './EditListingPopup';
-import OrangeCat from '../../assets/images/OrangeCat.jpeg';
+import OrangeCat from '../../../assets/images/OrangeCat.jpeg';
 
 const useStyles = makeStyles({
   loading: {

@@ -22,7 +22,7 @@ import DatesStep from './ListingSteps/DatesStep';
 import PhotoStep from './ListingSteps/PhotoStep';
 import ConfirmationStep from './ListingSteps/ConfirmationStep';
 import SuccessStep from './ListingSteps/SuccessStep';
-import { store } from '../../lib/redux/store';
+import { store } from '../../../lib/redux/store';
 
 const useStyles = makeStyles({
   dialogTitle: {

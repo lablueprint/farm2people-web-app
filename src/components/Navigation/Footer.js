@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import { store } from '../../lib/redux/store';
 import '../../styles/fonts.css';
 import greenLogo from '../../assets/images/F2P-green-logo.svg';
@@ -45,6 +46,8 @@ const useStyles = makeStyles({
     '&:hover': {
       fontWeight: 'bold',
       color: '#484848',
+      cursor: 'pointer',
+
     },
   },
 
@@ -56,7 +59,9 @@ const useStyles = makeStyles({
   },
 
 });
-function Footer() {
+function Footer({
+  loading, accountApproved, registrationApproved, handleLogOut,
+}) {
   const classes = useStyles();
   const getInitialRole = () => (store.getState().userData == null ? '' : store.getState().userData.user.fields['user type']);
   const userRole = getInitialRole();
@@ -65,7 +70,70 @@ function Footer() {
       <NavLink className={classes.footerLogo} to="/">
         <img src={greenLogo} alt="Logo" />
       </NavLink>
-      {((userRole === 'buyer' || userRole === 'agency')
+      {(userRole === 'vendor' || userRole === 'buyer' || userRole === 'agency') && (accountApproved === 'unapproved' || registrationApproved === 'unapproved')
+              && (
+                <ul className={classes.footerList}>
+                  <li className={classes.footerItemTitle}>
+                    Navigation
+                  </li>
+                  <li className={classes.footerItem}>
+                    <NavLink
+                      to="/forbuyers"
+                      className={classes.footerLink}
+                      activeClassName={classes.navLinksActive}
+                    >
+                      For Buyers
+                    </NavLink>
+                  </li>
+                  <li className={classes.footerItem}>
+                    <NavLink
+                      to="/forsellers"
+                      className={classes.footerLink}
+                      activeClassName={classes.navLinksActive}
+                    >
+                      For Sellers
+                    </NavLink>
+                  </li>
+                  <li className={classes.footerItem}>
+                    <NavLink
+                      to="/contact"
+                      className={classes.footerLink}
+                      activeClassName={classes.navLinksActive}
+                    >
+                      Contact
+                    </NavLink>
+                  </li>
+                  <li className={classes.footerItem}>
+                    <NavLink
+                      to="/about"
+                      className={classes.footerLink}
+                      activeClassName={classes.navLinksActive}
+                    >
+                      About
+                    </NavLink>
+                  </li>
+                  <li className={classes.footerItem}>
+                    <NavLink
+                      to="/signup"
+                      className={classes.footerLink}
+                      activeClassName={classes.navLinksActive}
+                    >
+                      Sign Up
+                    </NavLink>
+                  </li>
+                  <li className={classes.footerItem}>
+                    <div
+                      className={classes.footerLink}
+                      onClick={handleLogOut}
+                      aria-hidden="true"
+                    >
+                      Sign Out
+                    </div>
+
+                  </li>
+                </ul>
+              )}
+      {((userRole === 'buyer' || userRole === 'agency') && (!loading && accountApproved === 'approved' && registrationApproved === 'approved')
               && (
                 <ul className={classes.footerList}>
                   <li className={classes.footerItemTitle}>
@@ -109,7 +177,7 @@ function Footer() {
                   </li>
                 </ul>
               ))}
-      {((userRole === 'vendor')
+      {(userRole === 'vendor' && (!loading && accountApproved === 'approved' && registrationApproved === 'approved')
               && (
                 <ul className={classes.footerList}>
                   <li className={classes.footerItemTitle}>
@@ -144,7 +212,7 @@ function Footer() {
                   </li>
                 </ul>
               ))}
-      {((userRole === '')
+      {(userRole === '')
               && (
                 <ul className={classes.footerList}>
                   <li className={classes.footerItemTitle}>
@@ -205,7 +273,7 @@ function Footer() {
                     </NavLink>
                   </li>
                 </ul>
-              ))}
+              )}
       <ul className={classes.footerList}>
         <li className={classes.footerItemTitle}>
           Contact
@@ -225,3 +293,11 @@ function Footer() {
 }
 
 export default Footer;
+
+Footer.propTypes = {
+  registrationApproved: PropTypes.bool.isRequired,
+  accountApproved: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
+  handleLogOut: PropTypes.func.isRequired,
+
+};

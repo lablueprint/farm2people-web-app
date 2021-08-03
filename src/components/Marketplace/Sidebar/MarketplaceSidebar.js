@@ -50,15 +50,7 @@ export default function MarketplaceSidebar({
 
   return (
     <Container className={classes.sidebarContainer}>
-      <Grid container direction="row" className={classes.titleContainer}>
-        <Typography className={classes.marketplaceText}>
-          Marketplace /
-        </Typography>
-        {/* TODO: get real page name */}
-        <Typography className={classes.pageText}>
-          PageName
-        </Typography>
-      </Grid>
+      <Grid container direction="row" className={classes.titleContainer} />
       <Typography className={classes.filterText}>
         FILTERS
       </Typography>

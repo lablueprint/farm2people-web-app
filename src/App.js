@@ -6,7 +6,7 @@ import { Alert, AlertTitle } from '@material-ui/lab';
 import { store, history } from './lib/redux/store';
 import { Navbar, Footer, PrivateRoute } from './components/Navigation';
 import InventoryManagerScreen from './components/InventoryManager';
-import MarketplaceScreen from './components/Marketplace';
+import MarketplaceRouter from './components/Marketplace';
 import ContactScreen from './components/Contact';
 import CartScreen from './components/Cart';
 import { CheckoutScreen, CheckoutSuccess } from './components/Checkout';
@@ -74,8 +74,8 @@ export default function App() {
   const [showAlert, setAlert] = useState(false);
 
   const getHomeComponent = () => {
-    if (authenticated === true && accountApproved === 'approved' && registrationApproved === 'approved') {
-      return userRole === 'vendor' ? InventoryManagerScreen : MarketplaceScreen;
+    if (authenticated === true) {
+      return userRole === 'vendor' ? InventoryManagerScreen : MarketplaceRouter;
     }
     if (!authenticated || (accountApproved !== false && registrationApproved !== false)) {
       return LandingScreen;
@@ -190,7 +190,7 @@ export default function App() {
           <Switch>
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions path="/" exact component={getHomeComponent()} />
             <PrivateRoute loading={loading} allowedRoles={sellingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/inventorymanager" exact component={InventoryManagerScreen} />
-            <PrivateRoute loading={loading} allowedRoles={purchasingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/marketplace" exact component={MarketplaceScreen} />
+            <PrivateRoute loading={loading} allowedRoles={purchasingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/marketplace" exact component={MarketplaceRouter} />
             <PrivateRoute loading={loading} allowedRoles={allAuthenticatedPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/profile" exact component={ProfileScreen} />
             <PrivateRoute loading={loading} allowedRoles={purchasingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/cart" exact component={CartScreen} />
             <PrivateRoute loading={loading} allowedRoles={purchasingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/cart/checkout" exact component={CheckoutScreen} />

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Button, Card, CardContent, Chip, Collapse, Grid, IconButton, Typography,
 } from '@material-ui/core';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
@@ -140,8 +141,14 @@ export default function FarmCard(props) {
   const classes = useStyles();
   const [isExpanded, setIsExpanded] = useState(false);
   const {
-    farmName, address, zipCode, description, operationTypeTags, farmingPracticeTags,
+    farmID, farmName, address, zipCode, description, operationTypeTags, farmingPracticeTags,
   } = props;
+  const history = useHistory();
+
+  // Route to new link when shopping by specific farm
+  const shopByFarm = () => {
+    history.push(`/marketplace/shopByFarm/${farmID}`);
+  };
 
   // TODO: get farm card photo and implement farm photo styling
   return (
@@ -299,6 +306,7 @@ export default function FarmCard(props) {
               className={classes.shopButton}
               variant="container"
               disableElevation
+              onClick={shopByFarm}
             >
               SHOP THIS FARM
             </Button>
@@ -310,6 +318,7 @@ export default function FarmCard(props) {
 }
 
 FarmCard.propTypes = {
+  farmID: PropTypes.string.isRequired,
   farmName: PropTypes.string.isRequired,
   address: PropTypes.string.isRequired,
   zipCode: PropTypes.number.isRequired,

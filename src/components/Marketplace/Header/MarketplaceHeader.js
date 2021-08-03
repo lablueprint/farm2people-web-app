@@ -23,7 +23,7 @@ const useStyles = makeStyles({
     fontSize: '35px',
     fontWeight: 'bold',
     color: '#373737',
-    marginTop: '2.8%',
+    marginTop: '2%',
     marginBottom: '2.5%',
   },
   // Search text styling
@@ -88,19 +88,20 @@ const useStyles = makeStyles({
 
 /* Marketplace header: title, view results, search bar, and tab selector */
 export default function MarketplaceHeader({
-  tabValue, setTabValue, totalResults, numResults, setNumResults, searchTerms, setSearchTerms,
-  filterBySearch,
+  tabValue, setTabValue, totalResults, numResults, setNumResults, searchBarInput, setSearchBarInput,
+  shopByFarmName, searchTerms, search,
 }) {
   const classes = useStyles();
 
   // update search terms on text field input
   const handleChange = (event) => {
-    setSearchTerms(event.target.value);
+    setSearchBarInput(event.target.value);
   };
 
+  // search on submit
   const handleSubmit = (event) => {
     event.preventDefault();
-    filterBySearch();
+    search();
   };
 
   return (
@@ -151,7 +152,7 @@ export default function MarketplaceHeader({
                 }}
                 className={classes.searchBarContainer}
                 size="small"
-                value={searchTerms}
+                value={searchBarInput}
                 onChange={handleChange}
               />
             </form>
@@ -159,7 +160,13 @@ export default function MarketplaceHeader({
         </Grid>
       </Grid>
       {/* Tab title text + 2 tab selectors */}
-      <TabHeader tabValue={tabValue} setTabValue={setTabValue} />
+      <TabHeader
+        tabValue={tabValue}
+        setTabValue={setTabValue}
+        shopByFarmName={shopByFarmName}
+        searchBarInput={searchBarInput}
+        searchTerms={searchTerms}
+      />
       <img
         src={Fruit1}
         alt="fruit1"
@@ -180,7 +187,9 @@ MarketplaceHeader.propTypes = {
   totalResults: PropTypes.number.isRequired,
   numResults: PropTypes.number.isRequired,
   setNumResults: PropTypes.func.isRequired,
+  search: PropTypes.func.isRequired,
+  searchBarInput: PropTypes.string.isRequired,
+  setSearchBarInput: PropTypes.func.isRequired,
+  shopByFarmName: PropTypes.string.isRequired,
   searchTerms: PropTypes.string.isRequired,
-  setSearchTerms: PropTypes.func.isRequired,
-  filterBySearch: PropTypes.func.isRequired,
 };

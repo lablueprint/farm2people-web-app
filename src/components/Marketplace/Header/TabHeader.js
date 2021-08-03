@@ -38,11 +38,15 @@ const useStyles = makeStyles({
 });
 
 /* Contains title/search text + tab bar, w/ two tabs for all produce + farms */
-export default function TabHeader({ tabValue, setTabValue }) {
+// TODO: search terms should only be displayed if search has been completed
+export default function TabHeader({
+  tabValue, setTabValue, searchTerms, shopByFarmName,
+}) {
   const classes = useStyles();
   const handleChange = (event, newValue) => {
     setTabValue(newValue);
   };
+  const tabLabel = tabValue === 'all' ? 'ALL PRODUCE' : (shopByFarmName.toUpperCase() || 'ALL FARMS');
 
   return (
     <AppBar
@@ -57,7 +61,7 @@ export default function TabHeader({ tabValue, setTabValue }) {
         alignItems="center"
       >
         <Typography className={classes.tabTitleText}>
-          {tabValue === 'all' ? 'ALL PRODUCE' : 'ALL FARMS'}
+          {searchTerms ? `"${searchTerms}"` : tabLabel}
         </Typography>
         <Tabs
           value={tabValue}
@@ -83,4 +87,6 @@ export default function TabHeader({ tabValue, setTabValue }) {
 TabHeader.propTypes = {
   tabValue: PropTypes.string.isRequired,
   setTabValue: PropTypes.func.isRequired,
+  shopByFarmName: PropTypes.string.isRequired,
+  searchTerms: PropTypes.string.isRequired,
 };

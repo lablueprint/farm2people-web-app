@@ -74,7 +74,7 @@ export default function App() {
   const [showAlert, setAlert] = useState(false);
 
   const getHomeComponent = () => {
-    if (authenticated === true) {
+    if (authenticated === true && accountApproved === 'approved' && registrationApproved === 'approved') {
       return userRole === 'vendor' ? InventoryManagerScreen : MarketplaceRouter;
     }
     if (!authenticated || (accountApproved !== false && registrationApproved !== false)) {

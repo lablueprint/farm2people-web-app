@@ -190,7 +190,7 @@ export default function App() {
           <Switch>
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions path="/" exact component={getHomeComponent()} />
             <PrivateRoute loading={loading} allowedRoles={sellingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/inventorymanager" exact component={InventoryManagerScreen} />
-            <PrivateRoute loading={loading} allowedRoles={purchasingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/marketplace" exact component={MarketplaceRouter} />
+            <PrivateRoute loading={loading} allowedRoles={purchasingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/marketplace" component={MarketplaceRouter} />
             <PrivateRoute loading={loading} allowedRoles={allAuthenticatedPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/profile" exact component={ProfileScreen} />
             <PrivateRoute loading={loading} allowedRoles={purchasingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/cart" exact component={CartScreen} />
             <PrivateRoute loading={loading} allowedRoles={purchasingPermissions} approvalPermissions={bothApprovedPermission(accountApproved, registrationApproved)} path="/cart/checkout" exact component={CheckoutScreen} />

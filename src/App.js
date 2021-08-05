@@ -158,7 +158,7 @@ export default function App() {
       base('Users').find(userID, (err, record) => {
         if (err) {
           setAlert(true);
-          setErrorMsg(err);
+          setErrorMsg('Error rendering');
         } else {
           setRegistrationApproved(record.fields['registration approval']);
           setAccountApproved(record.fields['account approval']);

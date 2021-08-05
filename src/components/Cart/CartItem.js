@@ -20,7 +20,6 @@ export default function CartItem({
       setListingDetails(record);
       setLoading(false);
       setUsingAgencyPrice(store.getState().userData.user.fields['user type'] === 'agency' && record.fields['agency price per grouped produce type'] && record.fields['agency price per grouped produce type'] < record.fields['standard price per grouped produce type']);
-      console.log(record.fields['agency price per grouped produce type']);
     });
   }, []);
 

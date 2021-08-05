@@ -103,14 +103,11 @@ const useStyles = makeStyles({
 
 export default function ProduceCard(props) {
   const {
-    // eslint-disable-next-line
-    produceID, farmID, palletPrice, handleOpenCartPopup, setPopupProduce, season, // (TODO: remove later when season is used)
+    produceID, farmID, palletPrice, handleOpenCartPopup, setPopupProduce,
     palletsAvailable, listingID, hasAgencyPrice,
   } = props;
   const [farmName, setFarmName] = useState('');
   const [produceName, setProduceName] = useState('');
-  // eslint-disable-next-line no-unused-vars
-  const [produceCategory, setProduceCategory] = useState(''); // (TODO: remove later when used)
   const [produceImg, setProduceImg] = useState('');
 
   // Get farm name from Airtable if produce has farm id linked to it
@@ -132,8 +129,6 @@ export default function ProduceCard(props) {
     } else {
       base('Farms').find(produceID).then((produceObj) => {
         setProduceName(produceObj.fields['produce type'] || 'Produce not found');
-        const category = produceObj.fields['produce category'];
-        setProduceCategory(category || 'No category');
       });
       base('Produce Type').find(produceID).then((produceType) => {
         if (produceType.fields['produce picture']) {
@@ -152,7 +147,7 @@ export default function ProduceCard(props) {
       palletsAvailable,
       produceImg,
       listingID,
-      farmID: farmID[0],
+      farmID: farmID === null ? -1 : farmID[0],
     });
   };
 
@@ -216,7 +211,6 @@ ProduceCard.propTypes = {
   farmID: PropTypes.arrayOf(PropTypes.string).isRequired,
   palletPrice: PropTypes.number.isRequired,
   hasAgencyPrice: PropTypes.bool.isRequired,
-  season: PropTypes.string.isRequired,
   palletsAvailable: PropTypes.number.isRequired,
   listingID: PropTypes.string.isRequired,
 };

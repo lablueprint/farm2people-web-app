@@ -114,6 +114,7 @@ const useStyles = makeStyles({
   contactBanner: {
     filter: 'brightness(80%)',
     paddingBottom: '40px',
+    overflow: 'hidden',
   },
   btn: {
     backgroundColor: '#53AA48',

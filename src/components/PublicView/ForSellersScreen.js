@@ -164,7 +164,7 @@ export default function ForSellersScreen() {
           <Typography className={classes.introText}>
             Sell your produce directly to a network of local food providers
           </Typography>
-          <Button onClick={handleSignInClick} className={classes.startShoppingButton} variant="contained" color="primary" type="button">Start Shopping</Button>
+          <Button onClick={handleSignInClick} className={classes.startShoppingButton} variant="contained" color="primary" type="button">Start Selling</Button>
         </div>
       </div>
       <div className={classes.centerContainer}>

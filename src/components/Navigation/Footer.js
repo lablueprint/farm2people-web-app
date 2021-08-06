@@ -105,15 +105,6 @@ function Footer({
                   </li>
                   <li className={classes.footerItem}>
                     <NavLink
-                      to="/about"
-                      className={classes.footerLink}
-                      activeClassName={classes.navLinksActive}
-                    >
-                      About
-                    </NavLink>
-                  </li>
-                  <li className={classes.footerItem}>
-                    <NavLink
                       to="/signup"
                       className={classes.footerLink}
                       activeClassName={classes.navLinksActive}
@@ -243,15 +234,6 @@ function Footer({
                       activeClassName={classes.navLinksActive}
                     >
                       Contact
-                    </NavLink>
-                  </li>
-                  <li className={classes.footerItem}>
-                    <NavLink
-                      to="/about"
-                      className={classes.footerLink}
-                      activeClassName={classes.navLinksActive}
-                    >
-                      About
                     </NavLink>
                   </li>
                   <li className={classes.footerItem}>

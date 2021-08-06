@@ -15,7 +15,7 @@ import SignInScreen from './components/SignIn';
 import SignUpScreen from './components/SignUp';
 import { AgencyRegistrationScreen, ProducerRegistrationScreen } from './components/Registration';
 import {
-  LandingScreen, ForBuyersScreen, ForSellersScreen, AboutScreen,
+  LandingScreen, ForBuyersScreen, ForSellersScreen
 } from './components/PublicView';
 import { base } from './lib/airtable/airtable';
 import { RegistrationLimbo, SignupLimbo } from './components/Limbo';
@@ -210,7 +210,6 @@ export default function App() {
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions={eitherUnapprovedPermission(accountApproved, registrationApproved)} path="/landing" exact component={LandingScreen} />
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions={eitherUnapprovedPermission(accountApproved, registrationApproved)} path="/forbuyers" exact component={ForBuyersScreen} />
             <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions={eitherUnapprovedPermission(accountApproved, registrationApproved)} path="/forsellers" exact component={ForSellersScreen} />
-            <PrivateRoute loading={loading} allowedRoles={allPermissions} approvalPermissions={eitherUnapprovedPermission(accountApproved, registrationApproved)} path="/about" exact component={AboutScreen} />
           </Switch>
           <Footer
             loading={loading}

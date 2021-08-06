@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import './Navbar.css';
 import '../../styles/fonts.css';
 import PropTypes from 'prop-types';
@@ -11,7 +11,6 @@ export default function Navbar(props) {
   const {
     authenticated, userRole, loading, accountApproved, registrationApproved, handleLogOut,
   } = props;
-  const path = useLocation().pathname;
   const [click, setClick] = useState(false);
   const [showDefaultNavbar, setShowDefaultNavbar] = useState(true);
 
@@ -32,11 +31,7 @@ export default function Navbar(props) {
 
   return (
     <>
-      {/* TODO: Right here, we were are able to put in different styles depending on the paths.
-      For the first 'navbar', we need to replace that with the transparent navbar stylings  */}
-      <nav className={(authenticated === false && path === '/') || path === '/forbuyers'
-       || path === '/forsellers' || path === '/about' ? 'navbar' : 'navbar'}
-      >
+      <nav className="navbar">
         <div className="navbar-container">
           {(!authenticated
           || (!loading && accountApproved !== false && registrationApproved !== false)) && (
@@ -168,16 +163,6 @@ export default function Navbar(props) {
               </li>
               <li className="nav-item">
                 <NavLink
-                  to="/about"
-                  activeClassName="nav-links-active"
-                  className="nav-links"
-                  onClick={closeMobileMenu}
-                >
-                  About
-                </NavLink>
-              </li>
-              <li className="nav-item">
-                <NavLink
                   to="/signup"
                   activeClassName="nav-links-active"
                   className="nav-links"
@@ -232,16 +217,6 @@ export default function Navbar(props) {
                       onClick={closeMobileMenu}
                     >
                       Contact
-                    </NavLink>
-                  </li>
-                  <li className="nav-item">
-                    <NavLink
-                      to="/about"
-                      activeClassName="nav-links-active"
-                      className="nav-links"
-                      onClick={closeMobileMenu}
-                    >
-                      About
                     </NavLink>
                   </li>
                   <li className="nav-item">

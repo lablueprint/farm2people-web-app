@@ -6,8 +6,11 @@ import Button from '@material-ui/core/Button';
 import {
   Typography,
 } from '@material-ui/core';
-import ContactBanner from '../../assets/images/ContactBanner.png';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
 import Circle from '../../assets/images/CircleLogo.svg';
+import ContactBanner from '../../assets/images/ContactBanner.png';
 import FB from '../../assets/images/FB.svg';
 import LI from '../../assets/images/LI.svg';
 import IG from '../../assets/images/IG.svg';
@@ -120,6 +123,11 @@ const useStyles = makeStyles({
     paddingBottom: '30px',
     width: '150%',
   },
+  alertModal: {
+    fontFamily: 'Work Sans',
+    fontSize: '15px',
+    color: '#373737',
+  },
 });
 
 const INITIAL_FORM_STATE = {
@@ -133,6 +141,12 @@ const INITIAL_FORM_STATE = {
 
 export default function ContactScreen() {
   const [formState, setFormState] = useState(INITIAL_FORM_STATE);
+  const [showAlert, setShowAlert] = useState(false);
+
+  const handleCloseAlert = () => {
+    setShowAlert(false);
+  };
+
   const onChange = (event) => {
     event.preventDefault();
     setFormState(
@@ -156,10 +170,23 @@ export default function ContactScreen() {
       },
     }]);
     setFormState(INITIAL_FORM_STATE);
+    setShowAlert(true);
   };
   const classes = useStyles();
   return (
     <div className={classes.root}>
+      <Dialog
+        open={showAlert}
+        onClose={handleCloseAlert}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent>
+          <DialogContentText className={classes.alertModal}>
+            Your email has been sent to Farm2People!
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
       <img src={ContactBanner} alt="" className={classes.contactBanner} />
       <div>
         <img src={Circle} alt="" />

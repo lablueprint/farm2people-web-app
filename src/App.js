@@ -15,7 +15,7 @@ import SignInScreen from './components/SignIn';
 import SignUpScreen from './components/SignUp';
 import { AgencyRegistrationScreen, ProducerRegistrationScreen } from './components/Registration';
 import {
-  LandingScreen, ForBuyersScreen, ForSellersScreen
+  LandingScreen, ForBuyersScreen, ForSellersScreen,
 } from './components/PublicView';
 import { base } from './lib/airtable/airtable';
 import { RegistrationLimbo, SignupLimbo } from './components/Limbo';

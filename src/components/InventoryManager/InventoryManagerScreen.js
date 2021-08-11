@@ -13,12 +13,12 @@ const useStyles = makeStyles({
   root: {
     position: 'relative',
     minHeight: '100vh',
-    maxWidth: '100%',
+    maxWidth: '98%',
   },
   dashboard: {
     marginTop: '2%',
     marginBottom: '2%',
-    paddingLeft: '5rem',
+    paddingLeft: '4rem',
   },
   text: {
     fontFamily: 'Work Sans',
@@ -94,11 +94,11 @@ export default function InventoryManagerScreen() {
   const filterByPrice = (listing, filter) => {
     let condition = true;
     const price = listing.fields['standard price per grouped produce type'];
-    if (filter[0] > 0) {
-      condition = condition && price > priceFilter[0];
+    if (filter[0] >= 0) {
+      condition = condition && price >= priceFilter[0];
     }
-    if (filter[1] > 0) {
-      condition = condition && price < priceFilter[1];
+    if (filter[1] >= 0) {
+      condition = condition && price <= priceFilter[1];
     }
     return condition;
   };
@@ -270,7 +270,7 @@ export default function InventoryManagerScreen() {
     <>
       <div className={classes.root}>
         <Grid container spacing={3} className={classes.dashboard} justify="center">
-          <Grid container item spacing={3} xs={9} alignContent="flex-start">
+          <Grid container item spacing={3} xl={9} lg={9} md={7} sm={6} xs={6} alignContent="flex-start">
             <Grid container item xs={12} alignContent="flex-start">
               <Typography variant="h4" className={classes.text}>
                 Seller Dashboard
@@ -297,8 +297,8 @@ export default function InventoryManagerScreen() {
               />
             </Grid>
           </Grid>
-          <Grid container item xs={3} justify="center">
-            <Grid item md={11} lg={10}>
+          <Grid container item xs={6} sm={6} md={5} lg={3} xl={3} justify="center">
+            <Grid item md={9} lg={11}>
               <InventoryManagerSidebar
                 updateProduceCategoryFilter={
                   (option) => updateFilter(option, produceCategoryFilter, setProduceCategoryFilter)

@@ -74,6 +74,10 @@ const useStyles = makeStyles({
   paddingLeft: {
     paddingLeft: '.5rem',
   },
+  hidden: {
+    height: '0px',
+    width: '0px',
+  },
 });
 
 function AutoCompleteInputField({
@@ -106,6 +110,11 @@ function AutoCompleteInputField({
               {...params}
               placeholder={placeholder}
               variant="outlined"
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                }
+              }}
               required
             />
           )}
@@ -255,7 +264,7 @@ function NumberInputField({
 }
 
 function DateInputField({
-  id, name, label, val, onChange, placeholder,
+  id, name, label, val, onChange, placeholder, minDate,
 }) {
   const classes = useStyles();
   return (
@@ -272,6 +281,7 @@ function DateInputField({
           value={val}
           InputProps={{
             classes: { input: classes.text },
+            inputProps: { min: minDate },
           }}
           onChange={onChange}
           className={classes.inputField}
@@ -284,13 +294,24 @@ function DateInputField({
   );
 }
 
-function DisabledInputField() {
-  return <TextField type="hidden" />;
+function HiddenInputField({ val, onInvalid }) {
+  const classes = useStyles();
+  return (
+    <TextField
+      className={classes.hidden}
+      value={val}
+      required
+      onInvalid={(e) => {
+        e.preventDefault();
+        onInvalid();
+      }}
+    />
+  );
 }
 
 export default function ListingInputField({
   id, name, label, type, val, onChange, options, getLabel,
-  placeholder, onButtonClick,
+  placeholder, onButtonClick, onInvalid, minDate,
 }) {
   switch (type) {
     case 'currency':
@@ -346,10 +367,11 @@ export default function ListingInputField({
           val={val}
           onChange={onChange}
           placeholder={placeholder}
+          minDate={minDate}
         />
       );
     default:
-      return <DisabledInputField />;
+      return <HiddenInputField val={val} onInvalid={onInvalid} />;
   }
 }
 
@@ -411,6 +433,12 @@ DateInputField.propTypes = {
   ]).isRequired,
   onChange: PropTypes.func.isRequired,
   placeholder: PropTypes.string.isRequired,
+  minDate: PropTypes.string.isRequired,
+};
+
+HiddenInputField.propTypes = {
+  val: PropTypes.string.isRequired,
+  onInvalid: PropTypes.func.isRequired,
 };
 
 ListingInputField.defaultProps = {
@@ -421,6 +449,8 @@ ListingInputField.defaultProps = {
   label: '',
   onButtonClick: () => { },
   getLabel: (option) => option,
+  onInvalid: () => { },
+  minDate: '',
 };
 
 ListingInputField.propTypes = {
@@ -441,4 +471,6 @@ ListingInputField.propTypes = {
   getLabel: PropTypes.func,
   placeholder: PropTypes.string,
   onButtonClick: PropTypes.func,
+  onInvalid: PropTypes.func,
+  minDate: PropTypes.string,
 };

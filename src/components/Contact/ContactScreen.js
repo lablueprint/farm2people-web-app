@@ -167,10 +167,18 @@ export default function ContactScreen() {
         <br />
         <br />
         <Typography className={classes.text}> Follow</Typography>
-        <img className={classes.img} src={IG} alt="" />
-        <img className={classes.img} src={FB} alt="" />
-        <img className={classes.img} src={LI} alt="" />
-        <img className={classes.img} src={TW} alt="" />
+        <a href="https://www.instagram.com/farm2peoplela/">
+          <img className={classes.img} src={IG} alt="" />
+        </a>
+        <a href="https://www.facebook.com/farm2people/">
+          <img className={classes.img} src={FB} alt="" />
+        </a>
+        <a href="https://www.linkedin.com/company/farm2people/">
+          <img className={classes.img} src={LI} alt="" />
+        </a>
+        <a href="https://twitter.com/farm2people">
+          <img className={classes.img} src={TW} alt="" />
+        </a>
       </div>
       <div className={classes.topList}>
         <ul className={classes.list}>

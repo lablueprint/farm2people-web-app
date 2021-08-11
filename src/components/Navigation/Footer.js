@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { store } from '../../lib/redux/store';
 import '../../styles/fonts.css';
 import greenLogo from '../../assets/images/F2P-green-logo.svg';
+import blueprintLogo from '../../assets/images/BlueprintLogo.svg';
 
 const useStyles = makeStyles({
   root: {
@@ -20,6 +21,22 @@ const useStyles = makeStyles({
     paddingLeft: '10%',
     paddingRight: '16%',
     alignSelf: 'center',
+  },
+  blueprintContainer: {
+    alignItems: 'center',
+    paddingLeft: '5%',
+    paddingRight: '5%',
+    display: 'flex',
+    flexDirection: 'rowx',
+    alignSelf: 'flex-end',
+  },
+  createdText: {
+    paddingBottom: 10,
+    paddingRight: 8,
+    fontFamily: 'Work Sans',
+    fontWeight: 600,
+    fontSize: '15px',
+    color: 'rgba(55, 55, 55, 0.8)',
   },
   footerItem: {
     fontFamily: 'Work Sans',
@@ -270,6 +287,14 @@ function Footer({
           farm2people.org
         </li>
       </ul>
+      <div className={classes.blueprintContainer}>
+        <p className={classes.createdText}>
+          Created by
+        </p>
+        <a href="https://lablueprint.org/">
+          <img src={blueprintLogo} alt="Logo" />
+        </a>
+      </div>
     </div>
   );
 }

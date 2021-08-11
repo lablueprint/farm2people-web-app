@@ -23,7 +23,6 @@ const useStyles = makeStyles({
 export default function DatesStep({
   onChangeField, listingRecord,
 }) {
-  // TODO : Make the calendar button open the date picker
   const classes = useStyles();
   const question = 'When is your produce available?';
   return (
@@ -44,6 +43,8 @@ export default function DatesStep({
               type="date"
               onChange={onChangeField}
               val={listingRecord['first available date']}
+              // current date in YYYY-MM-DD format
+              minDate={new Date().toISOString().substring(0, 10)}
             />
           </Grid>
         </Grid>
@@ -56,6 +57,7 @@ export default function DatesStep({
               type="date"
               onChange={onChangeField}
               val={listingRecord['sell by date']}
+              minDate={listingRecord['first available date'] || new Date().toISOString().substring(0, 10)}
             />
           </Grid>
         </Grid>
@@ -68,6 +70,7 @@ export default function DatesStep({
               type="date"
               onChange={onChangeField}
               val={listingRecord['available until']}
+              minDate={listingRecord['first available date'] || new Date().toISOString().substring(0, 10)}
             />
           </Grid>
         </Grid>

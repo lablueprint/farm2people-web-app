@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import Checkbox from '@material-ui/core/Checkbox';
+import GreenCheckbox from '../../GreenCheckbox';
 import UnitTypeCard from './UnitTypeCard';
 import ListingInputField from '../../ListingInputField';
 import Bag from '../../../../assets/images/bag.svg';
@@ -43,17 +43,14 @@ const useStyles = makeStyles({
     fontWeight: '600',
     fontSize: '1.05rem',
   },
-});
-
-const GreenCheckbox = withStyles({
-  root: {
-    color: '#53AA48',
-    '&$checked': {
-      color: '#53AA48',
-    },
+  error: {
+    border: '1px solid red',
+    borderRadius: '10px',
   },
-  checked: {},
-})((props) => <Checkbox color="default" {...props} />);
+  unitCard: {
+    width: '20%',
+  },
+});
 
 const toPlural = (input) => (
   input === 'box' ? input.concat('es') : input.concat('s')
@@ -63,6 +60,8 @@ export default function UnitsStep({
   onChangeField, listingRecord, setListingRecord,
 }) {
   const classes = useStyles();
+  const [errorIndividualProduceUnit, setErrorIndividualProduceUnit] = useState(false);
+  const [errorGroupedProduceType, setErrorGroupedProduceType] = useState(false);
   const onSelect = (field, label) => {
     setListingRecord({ ...listingRecord, [field]: label });
   };
@@ -130,39 +129,63 @@ export default function UnitsStep({
         <Grid item container xs={12}>
           <Typography className={classes.heading}>{questions[0]}</Typography>
         </Grid>
-        <Grid container item xs={12} spacing={2}>
+        <Grid
+          container
+          item
+          xs={12}
+          spacing={1}
+        >
           <Grid item xs={12}>
+            <ListingInputField val={listingRecord['individual produce unit']} type="hidden" onInvalid={() => setErrorIndividualProduceUnit(true)} />
             <Typography className={classes.subheading}>
               Individual Produce Unit
             </Typography>
           </Grid>
-          {IndividualProduceUnits.map((name) => (
-            <Grid item xs={2} key={name.value}>
-              <UnitTypeCard
-                onSelect={() => onSelect('individual produce unit', name.value)}
-                label={name.value}
-                selected={name.value === listingRecord['individual produce unit']}
-                url={name.url}
-              />
-            </Grid>
-          ))}
+          <Grid container item xs={6} spacing={2} className={errorIndividualProduceUnit ? classes.error : ''}>
+            {IndividualProduceUnits.map((name) => (
+              <Grid item xs={4} key={name.value}>
+                <UnitTypeCard
+                  onSelect={() => {
+                    onSelect('individual produce unit', name.value);
+                    setErrorIndividualProduceUnit(false);
+                  }}
+                  label={name.value}
+                  selected={name.value === listingRecord['individual produce unit']}
+                  url={name.url}
+                />
+              </Grid>
+            ))}
+          </Grid>
         </Grid>
-        <Grid container item xs={12} spacing={2}>
+        <Grid
+          container
+          item
+          xs={12}
+          spacing={1}
+        >
           <Grid item xs={12}>
+            <ListingInputField val={listingRecord['grouped produce type']} type="hidden" onInvalid={() => setErrorGroupedProduceType(true)} />
             <Typography className={classes.subheading}>
               Grouped Produce Type
             </Typography>
           </Grid>
-          {GroupedProduceTypes.map((name) => (
-            <Grid item xs={2} key={name.value}>
-              <UnitTypeCard
-                onSelect={() => onSelect('grouped produce type', name.value)}
-                label={name.value}
-                selected={name.value === listingRecord['grouped produce type']}
-                url={name.url}
-              />
+          <Grid container item xs={12}>
+            <Grid container item xs={10} className={errorGroupedProduceType ? classes.error : ''} spacing={2}>
+              {GroupedProduceTypes.map((name) => (
+                <Grid item key={name.value} className={classes.unitCard}>
+                  <UnitTypeCard
+                    onSelect={() => {
+                      onSelect('grouped produce type', name.value);
+                      setErrorGroupedProduceType(false);
+                    }}
+                    label={name.value}
+                    selected={name.value === listingRecord['grouped produce type']}
+                    url={name.url}
+                  />
+                </Grid>
+              ))}
             </Grid>
-          ))}
+          </Grid>
         </Grid>
         <ListingInputField
           id="standard-number"

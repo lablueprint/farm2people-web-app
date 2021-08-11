@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import headerBanner from '../../assets/images/HeaderBanner.jpg';
-import treesBanner from '../../assets/images/TreesBanner.svg';
+import grassBanner from '../../assets/images/GrassBanner.svg';
 import fruit from '../../assets/images/LandingScreenFruit.svg';
 import '../../styles/fonts.css';
 import { history } from '../../lib/redux/store';
@@ -17,10 +17,9 @@ const useStyles = makeStyles({
     width: '100%',
     backgroundImage: `url(${headerBanner})`,
   },
-  treesContainer: {
+  grassContainer: {
     paddingTop: '3%',
     paddingBottom: '3%',
-    filter: 'brightness(90%)',
     overflow: 'hidden',
     backgroundRepeat: 'no-repeat',
     maxWidth: '100%',
@@ -28,7 +27,7 @@ const useStyles = makeStyles({
     backgroundPosition: 'center',
     margin: '0 auto',
     width: '100%',
-    backgroundImage: `url(${treesBanner})`,
+    backgroundImage: `url(${grassBanner})`,
   },
   introContainer: {
     paddingLeft: '200px',
@@ -159,6 +158,7 @@ const useStyles = makeStyles({
     paddingRight: 15,
   },
   roleSignUpText: {
+    fontFamily: 'Work Sans',
     fontSize: '25px',
     width: '300px',
     textAlign: 'center',
@@ -226,7 +226,7 @@ export default function LandingScreen() {
       <div className={classes.centerContainer}>
         <img className={classes.fruitImg} src={fruit} alt="fruit" />
       </div>
-      <div className={classes.treesContainer}>
+      <div className={classes.grassContainer}>
         <div className={classes.centerContainer}>
           <h2 className={classes.quoteBoldText}>
             “Delivering a vision for sustainable, inclusive, efficient,

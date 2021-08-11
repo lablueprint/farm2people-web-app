@@ -117,6 +117,7 @@ const useStyles = makeStyles({
     color: '#FFFFFF',
   },
   sellerSignUpText: {
+    fontFamily: 'Work Sans',
     fontSize: '35px',
     width: '600px',
     textAlign: 'center',

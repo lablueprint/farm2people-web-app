@@ -9,14 +9,22 @@ import {
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import Circle from '../../assets/images/CircleLogo.svg';
+import Airtable from 'airtable';
 import ContactBanner from '../../assets/images/ContactBanner.png';
+import Circle from '../../assets/images/CircleLogo.svg';
 import FB from '../../assets/images/FB.svg';
 import LI from '../../assets/images/LI.svg';
 import IG from '../../assets/images/IG.svg';
 import TW from '../../assets/images/TW.svg';
 import farmerSideImg from '../../assets/images/FarmerContact.png';
-import { base } from '../../lib/airtable/airtable';
+
+// airtable setup
+const airtableConfig = {
+  apiKey: process.env.REACT_APP_AIRTABLE_EMAIL_USER_KEY,
+  baseKey: process.env.REACT_APP_AIRTABLE_EMAIL_BASE_KEY,
+};
+
+const base = new Airtable({ apiKey: airtableConfig.apiKey }).base(airtableConfig.baseKey);
 
 const useStyles = makeStyles({
   root: {

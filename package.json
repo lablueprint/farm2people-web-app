@@ -16,14 +16,21 @@
     "@unicef/material-ui-currency-textfield": "^0.8.6",
     "airlock-server": "^0.3.1",
     "airtable": "^0.10.1",
+    "babel-plugin-polyfill-corejs2": "^0.2.2",
+    "babel-plugin-polyfill-corejs3": "^0.2.4",
+    "babel-plugin-polyfill-regenerator": "^0.2.2",
     "bcryptjs": "^2.4.3",
     "clsx": "^1.1.1",
     "connected-react-router": "^6.8.0",
     "emailjs-com": "^2.6.4",
     "font-awesome": "^4.7.0",
     "history": "^4.10.1",
+    "lodash": "^4.17.21",
+    "lodash.isequalwith": "^4.4.0",
     "material-ui-image": "^3.3.2",
+    "path-starts-with": "^2.0.0",
     "prop-types": "^15.7.2",
+    "queue-microtask": "^1.2.3",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-multi-carousel": "^2.6.2",
@@ -32,7 +39,9 @@
     "react-scripts": "4.0.1",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
-    "web-vitals": "^0.2.4"
+    "validator": "^13.6.0",
+    "web-vitals": "^0.2.4",
+    "yocto-queue": "^0.1.0"
   },
   "scripts": {
     "start": "cross-env PORT=8000 react-scripts start",
@@ -60,6 +69,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.4",
     "airtable-schema-generator": "^1.5.1",
     "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",

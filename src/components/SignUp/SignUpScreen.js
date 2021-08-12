@@ -4,6 +4,7 @@ import { makeStyles, createMuiTheme } from '@material-ui/core/styles';
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
+import validator from 'validator';
 import {
   Typography,
   Grid,
@@ -184,17 +185,17 @@ export default function SignUpScreen() {
     setCurrentStep(currentStep + 1);
   }, [currentStep, role]);
 
-  const isMatchingPasswordInputs = useMemo(() => (
-    formState.password !== formState.confirmPassword
-      || formState.password === ''
-      || formState.email === ''
-  ),
-  [formState]);
-
   function validateEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   }
+
+  const isMatchingPasswordInputs = useMemo(() => (
+    formState.password !== formState.confirmPassword
+      || formState.password === ''
+      || formState.email === '' || !validateEmail(formState.email)
+  ),
+  [formState]);
 
   const repeatPwdGenerateErrorMsg = useMemo(() => {
     let msg = '';
@@ -229,8 +230,8 @@ export default function SignUpScreen() {
     if (formState.zipcode !== '' && (!isNumeric(formState.zipcode) || formState.zipcode.length !== 5)) {
       msg = 'Location (zipcode) should hold a five digit number!';
     }
-    if (formState.phone !== '' && !isNumeric(formState.phone)) {
-      msg = 'Phone should be a number!';
+    if (formState.phone !== '' && !validator.isMobilePhone(formState.phone)) {
+      msg = 'Please enter a valid phone number!';
     }
     return msg;
   },

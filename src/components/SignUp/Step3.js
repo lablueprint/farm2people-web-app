@@ -75,6 +75,7 @@ export default function Step3(props) {
           fullWidth
           label="Location"
           name="zipcode"
+          placeholder="Zipcode"
           value={formState.zipcode}
           onChange={handleChange}
         />
@@ -102,6 +103,7 @@ export default function Step3(props) {
           id="lname"
           name="lastName"
           placeholder="Last Name"
+          label="Last Name"
           value={formState.lastName}
           onChange={handleChange}
         />
